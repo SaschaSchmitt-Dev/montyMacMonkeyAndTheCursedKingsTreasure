@@ -1,8 +1,13 @@
-/** The first static cave background. */
+/** One complete section of a cave background layer. */
 class Background extends DrawableObject {
-    /** @param {Function} onLoad - Requests a redraw after loading. */
-    constructor(onLoad) {
+    /**
+     * @param {number} layer - Layer number, from 1 to 3.
+     * @param {string} section - Section letter A, B or C.
+     * @param {Function} onLoad - Requests a redraw after loading.
+     */
+    constructor(layer, section, onLoad) {
         super();
-        this.loadImage('assets/images/backgrounds/jungle-cave/layer_01_A.png', onLoad);
+        const path = 'assets/images/backgrounds/jungle-cave/';
+        this.loadImage(`${path}layer_0${layer}_${section}.png`, onLoad);
     }
 }

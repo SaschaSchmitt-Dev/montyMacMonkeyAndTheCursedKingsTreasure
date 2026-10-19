@@ -2,7 +2,9 @@
 class World {
     canvas;
     ctx;
-    background;
+    backgrounds = [];
+    parallaxFactors = [0.22, 0.48, 0.80];
+    cameraX = 0;
     ground;
     character;
     lastTime = null;
@@ -14,10 +16,34 @@ class World {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.background = new Background(() => this.draw());
+        this.createBackgrounds();
         this.ground = new Ground(() => this.draw());
         this.character = new Character(() => this.draw());
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
+    }
+
+
+    /** Loads all three full-size sections for each of the three cave layers. */
+    createBackgrounds() {
+        for (let layer = 1; layer <= 3; layer++) {
+            const sections = ['A', 'B', 'C'].map((section) =>
+                new Background(layer, section, () => this.draw())
+            );
+            this.backgrounds.push(sections);
+        }
+    }
+
+
+    /** @param {number} layer - Zero-based layer index. */
+    drawBackgroundLayer(layer) {
+        const width = this.canvas.width;
+        const viewX = this.cameraX * this.parallaxFactors[layer];
+        const currentSection = Math.floor(viewX / width);
+        for (let section = currentSection - 1; section <= currentSection + 1; section++) {
+            const index = ((section % 3) + 3) % 3;
+            const x = Math.round(section * width - viewX);
+            this.backgrounds[layer][index].draw(this.ctx, x);
+        }
     }
 
 
@@ -53,8 +79,10 @@ class World {
     /** Redraws loaded objects in a fixed order, independent of loading order. */
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.background.draw(this.ctx);
-        this.ground.draw(this.ctx);
+        this.drawBackgroundLayer(0);
+        this.drawBackgroundLayer(1);
+        this.ground.draw(this.ctx, this.cameraX);
         this.character.draw(this.ctx);
+        this.drawBackgroundLayer(2);
     }
 }

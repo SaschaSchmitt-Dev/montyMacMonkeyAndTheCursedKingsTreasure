@@ -21,10 +21,11 @@ class DrawableObject {
     /**
      * Draws the object once its image has loaded successfully.
      * @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
+     * @param {number} x - Optional screen position for repeated sections.
      */
-    draw(ctx) {
+    draw(ctx, x = this.x) {
         if (this.img.complete && this.img.naturalWidth > 0) {
-            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+            ctx.drawImage(this.img, x, this.y, this.width, this.height);
         }
     }
 }
