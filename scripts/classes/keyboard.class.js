@@ -4,7 +4,8 @@ class Keyboard {
     right = false;
     jump = false;
     throw = false;
-    bindings = { ArrowLeft: 'left', ArrowRight: 'right', Space: 'jump', KeyD: 'throw' };
+    lastDirection = null;
+    bindings = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', Space: 'throw' };
 
     /** @param {HTMLCanvasElement} canvas - Focusable game canvas. */
     constructor(canvas) {
@@ -35,8 +36,23 @@ class Keyboard {
      */
     setKey(code, pressed) {
         if (Object.hasOwn(this.bindings, code)) {
-            this[this.bindings[code]] = pressed;
+            const action = this.bindings[code];
+            if (pressed && !this[action] && (action === 'left' || action === 'right')) {
+                this.lastDirection = action;
+            }
+            this[action] = pressed;
         }
+    }
+
+
+    /** @returns {number} -1 for left, 1 for right, or 0 for no held direction. */
+    getDirection() {
+        if (this.left && this.right) {
+            return this.lastDirection === 'left' ? -1 : 1;
+        }
+        if (this.left) return -1;
+        if (this.right) return 1;
+        return 0;
     }
 
 
@@ -46,5 +62,6 @@ class Keyboard {
         this.right = false;
         this.jump = false;
         this.throw = false;
+        this.lastDirection = null;
     }
 }
