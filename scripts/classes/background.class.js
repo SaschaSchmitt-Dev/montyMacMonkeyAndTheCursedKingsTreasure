@@ -8,6 +8,6 @@ class Background extends DrawableObject {
     constructor(layer, section, onLoad) {
         super();
         const path = 'assets/images/backgrounds/jungle-cave/';
-        this.loadImage(`${path}layer_0${layer}_${section}.png`, onLoad);
+        this.loadImage(`${path}layer-0${layer}-${section.toLowerCase()}.png`, onLoad);
     }
 }

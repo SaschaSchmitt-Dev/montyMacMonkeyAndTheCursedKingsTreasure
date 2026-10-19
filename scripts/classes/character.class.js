@@ -1,29 +1,113 @@
-/** Indiana Monkey with horizontal movement and an idle image. */
-class Character extends DrawableObject {
+/** Indiana Monkey with running and a single animated jump. */
+class Character extends MovableObject {
     x = 120;
     y = 314;
     width = 128;
     height = 128;
-    speed = 220;
-    facingLeft = false;
+    idlePath = 'assets/images/character/idle/idle-00.png';
+    runImages = [];
+    jumpImages = [];
+    animation = 'idle';
+    animationTime = 0;
+    moving = false;
+    jumpHeld = false;
+    takeoffTime = 0;
+    landingTime = 0;
+    airTime = 0;
 
     /** @param {Function} onLoad - Requests a redraw after loading. */
     constructor(onLoad) {
         super();
-        this.loadImage('assets/images/character/idle/idle_00.png', onLoad);
+        this.loadImage(this.idlePath, onLoad);
+        this.imageCache[this.idlePath] = this.img;
+        this.runImages = this.createFramePaths('run-right/run', 8);
+        this.jumpImages = this.createFramePaths('jump/jump', 6);
+        this.loadImages([...this.runImages, ...this.jumpImages], onLoad);
     }
 
 
     /**
-     * Moves within the current canvas while keeping the last facing direction.
+     * @param {string} name - Animation folder and filename prefix.
+     * @param {number} count - Number of consecutive frames.
+     * @returns {string[]} Animation paths in playback order.
+     */
+    createFramePaths(name, count) {
+        return Array.from({ length: count }, (_, index) =>
+            `assets/images/character/${name}-${String(index).padStart(2, '0')}.png`
+        );
+    }
+
+
+    /**
      * @param {number} deltaTime - Frame duration in seconds.
-     * @param {number} direction - -1 for left, 1 for right, or 0.
+     * @param {Keyboard} keyboard - Current input state.
      * @param {number} screenWidth - Width of the playable area.
      */
-    move(deltaTime, direction, screenWidth) {
-        if (direction !== 0) this.facingLeft = direction < 0;
-        this.x += direction * this.speed * deltaTime;
-        this.x = Math.max(0, Math.min(this.x, screenWidth - this.width));
+    update(deltaTime, keyboard, screenWidth) {
+        const previousX = this.x;
+        this.move(deltaTime, keyboard.getDirection(), screenWidth);
+        this.moving = this.x !== previousX;
+        this.readJumpInput(keyboard.jump);
+        this.updateJump(deltaTime);
+        this.updateAnimation(deltaTime);
+    }
+
+
+    /** @param {boolean} pressed - Whether the jump key is held. */
+    readJumpInput(pressed) {
+        if (pressed && !this.jumpHeld && this.isGrounded()
+            && this.takeoffTime === 0 && this.landingTime === 0) {
+            this.takeoffTime = 0.08;
+        }
+        this.jumpHeld = pressed;
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds. */
+    updateJump(deltaTime) {
+        this.landingTime = Math.max(0, this.landingTime - deltaTime);
+        if (this.takeoffTime > 0) {
+            this.updateTakeoff(deltaTime);
+            return;
+        }
+        const wasInAir = !this.isGrounded();
+        if (wasInAir) this.airTime += deltaTime;
+        this.applyGravity(deltaTime);
+        if (wasInAir && this.isGrounded()) this.landingTime = 0.1;
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds. */
+    updateTakeoff(deltaTime) {
+        this.takeoffTime = Math.max(0, this.takeoffTime - deltaTime);
+        if (this.takeoffTime === 0) {
+            this.airTime = 0;
+            this.jump();
+        }
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds. */
+    updateAnimation(deltaTime) {
+        const jumping = !this.isGrounded() || this.takeoffTime > 0 || this.landingTime > 0;
+        const nextAnimation = jumping ? 'jump' : (this.moving ? 'run' : 'idle');
+        this.animationTime = nextAnimation === this.animation ? this.animationTime + deltaTime : 0;
+        this.animation = nextAnimation;
+        let path = this.idlePath;
+        if (this.animation === 'run') path = this.runImages[Math.floor(this.animationTime / 0.08) % 8];
+        if (this.animation === 'jump') path = this.jumpImages[this.getJumpFrame()];
+        const image = this.imageCache[path];
+        if (image.complete && image.naturalWidth > 0) this.img = image;
+    }
+
+
+    /** @returns {number} Pose for takeoff, ascent, apex, fall or landing. */
+    getJumpFrame() {
+        if (this.takeoffTime > 0) return 0;
+        if (this.landingTime > 0) return 5;
+        if (Math.abs(this.velocityY) < 100) return 3;
+        if (this.velocityY < 0) return this.airTime < 0.09 ? 1 : 2;
+        return 4;
     }
 
 

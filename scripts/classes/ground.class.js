@@ -6,7 +6,7 @@ class Ground extends DrawableObject {
     /** @param {Function} onLoad - Requests a redraw after loading. */
     constructor(onLoad) {
         super();
-        this.loadImage('assets/images/objects/platforms/platform_01_ground_straight.png', onLoad);
+        this.loadImage('assets/images/objects/platforms/platform-01-ground-straight.png', onLoad);
     }
 
 

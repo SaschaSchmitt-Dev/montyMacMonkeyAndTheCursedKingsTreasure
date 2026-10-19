@@ -5,6 +5,7 @@ class DrawableObject {
     width = 960;
     height = 540;
     img;
+    imageCache = {};
 
     /**
      * Loads an image and requests a redraw when it is ready.
@@ -15,6 +16,21 @@ class DrawableObject {
         this.img = new Image();
         this.img.onload = onLoad;
         this.img.src = path;
+    }
+
+
+    /**
+     * Preloads animation frames without replacing the current image.
+     * @param {string[]} paths - Paths to the animation images.
+     * @param {Function} onLoad - Requests a redraw after loading.
+     */
+    loadImages(paths, onLoad) {
+        paths.forEach((path) => {
+            const image = new Image();
+            image.onload = onLoad;
+            image.src = path;
+            this.imageCache[path] = image;
+        });
     }
 
 

@@ -56,7 +56,7 @@ class World {
     gameLoop(time) {
         if (!this.active) return;
         this.deltaTime = this.getDeltaTime(time);
-        this.character.move(this.deltaTime, this.keyboard.getDirection(), this.canvas.width);
+        this.character.update(this.deltaTime, this.keyboard, this.canvas.width);
         this.draw();
         this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
     }
