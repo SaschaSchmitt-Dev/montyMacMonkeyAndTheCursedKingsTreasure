@@ -2,6 +2,7 @@
 class World {
     canvas;
     ctx;
+    keyboard;
     backgrounds = [];
     parallaxFactors = [0.22, 0.48, 0.80];
     cameraX = 0;
@@ -12,10 +13,14 @@ class World {
     animationFrame;
     active = true;
 
-    /** @param {HTMLCanvasElement} canvas - Canvas used for the scene. */
-    constructor(canvas) {
+    /**
+     * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
+     * @param {Keyboard} keyboard - Current player input.
+     */
+    constructor(canvas, keyboard) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
+        this.keyboard = keyboard;
         this.createBackgrounds();
         this.ground = new Ground(() => this.draw());
         this.character = new Character(() => this.draw());
@@ -51,6 +56,7 @@ class World {
     gameLoop(time) {
         if (!this.active) return;
         this.deltaTime = this.getDeltaTime(time);
+        this.character.move(this.deltaTime, this.keyboard.getDirection(), this.canvas.width);
         this.draw();
         this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
     }
