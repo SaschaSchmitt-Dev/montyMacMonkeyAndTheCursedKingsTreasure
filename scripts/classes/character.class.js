@@ -53,10 +53,11 @@ class Character extends MovableObject {
     }
 
 
-    /** @param {boolean} pressed - Whether the jump key is held. */
+    /** @param {boolean} pressed - A new press may interrupt the landing pose. */
     readJumpInput(pressed) {
         if (pressed && !this.jumpHeld && this.isGrounded()
-            && this.takeoffTime === 0 && this.landingTime === 0) {
+            && this.takeoffTime === 0) {
+            this.landingTime = 0;
             this.takeoffTime = 0.08;
         }
         this.jumpHeld = pressed;
