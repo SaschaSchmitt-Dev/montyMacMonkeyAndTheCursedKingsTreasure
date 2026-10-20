@@ -9,6 +9,9 @@ class Character extends MovableObject {
     jumpImages = [];
     restImages = [];
     inactiveTime = 0;
+    sleepScale = 0.8;
+    sleepOffsetY = 2;
+    sleepAngle = -6;
     animation = 'idle';
     animationTime = 0;
     moving = false;
@@ -196,9 +199,19 @@ class Character extends MovableObject {
         if (!this.img.complete || this.img.naturalWidth === 0) return;
         const drawWidth = this.img.naturalWidth * this.height / this.img.naturalHeight;
         ctx.save();
-        ctx.translate(this.x + this.width / 2, 0);
+        ctx.translate(this.x + this.width / 2, this.y + this.height * 244 / 256);
         ctx.scale(this.facingLeft ? -1 : 1, 1);
-        ctx.drawImage(this.img, -drawWidth / 2, this.y, drawWidth, this.height);
+        this.rotateSleepPose(ctx);
+        ctx.drawImage(this.img, -drawWidth / 2, -this.height * 244 / 256, drawWidth, this.height);
         ctx.restore();
+    }
+
+
+    /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context. */
+    rotateSleepPose(ctx) {
+        if (this.animation !== 'sleep') return;
+        ctx.translate(0, this.sleepOffsetY);
+        ctx.rotate(this.sleepAngle * Math.PI / 180);
+        ctx.scale(this.sleepScale, this.sleepScale);
     }
 }
