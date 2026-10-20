@@ -3,8 +3,8 @@ class World {
     canvas;
     ctx;
     keyboard;
+    level;
     backgrounds = [];
-    parallaxFactors = [0.22, 0.48, 0.80];
     cameraX = 0;
     ground;
     character;
@@ -16,15 +16,26 @@ class World {
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
      * @param {Keyboard} keyboard - Current player input.
+     * @param {Level} level - Level dimensions and starting position.
      */
-    constructor(canvas, keyboard) {
+    constructor(canvas, keyboard, level) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.keyboard = keyboard;
+        this.level = level;
         this.createBackgrounds();
         this.ground = new Ground(() => this.draw());
-        this.character = new Character(() => this.draw());
+        this.createCharacter();
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
+    }
+
+
+    /** Places the player using the current level's starting coordinates. */
+    createCharacter() {
+        this.character = new Character(() => this.draw());
+        this.character.x = this.level.characterStartX;
+        this.character.y = this.level.groundY;
+        this.character.groundY = this.level.groundY;
     }
 
 
@@ -42,7 +53,7 @@ class World {
     /** @param {number} layer - Zero-based layer index. */
     drawBackgroundLayer(layer) {
         const width = this.canvas.width;
-        const viewX = this.cameraX * this.parallaxFactors[layer];
+        const viewX = this.cameraX * this.level.parallaxFactors[layer];
         const currentSection = Math.floor(viewX / width);
         for (let section = currentSection - 1; section <= currentSection + 1; section++) {
             const index = ((section % 3) + 3) % 3;
@@ -56,9 +67,27 @@ class World {
     gameLoop(time) {
         if (!this.active) return;
         this.deltaTime = this.getDeltaTime(time);
-        this.character.update(this.deltaTime, this.keyboard, this.canvas.width);
+        this.character.update(this.deltaTime, this.keyboard, this.level.width);
+        this.updateCamera();
         this.draw();
         this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
+    }
+
+
+    /** Follows the player after the first third of the screen, within the level. */
+    updateCamera() {
+        const maxCameraX = Math.max(0, this.level.width - this.canvas.width);
+        const wantedX = this.character.x - this.canvas.width / 3;
+        this.cameraX = Math.max(0, Math.min(wantedX, maxCameraX));
+    }
+
+
+    /** Draws world coordinates relative to the camera without moving the HUD. */
+    drawCharacter() {
+        this.ctx.save();
+        this.ctx.translate(-Math.round(this.cameraX), 0);
+        this.character.draw(this.ctx);
+        this.ctx.restore();
     }
 
 
@@ -88,7 +117,7 @@ class World {
         this.drawBackgroundLayer(0);
         this.drawBackgroundLayer(1);
         this.ground.draw(this.ctx, this.cameraX);
-        this.character.draw(this.ctx);
+        this.drawCharacter();
         this.drawBackgroundLayer(2);
     }
 }

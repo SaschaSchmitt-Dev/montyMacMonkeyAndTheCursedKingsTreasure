@@ -91,11 +91,11 @@ class Character extends MovableObject {
     /**
      * @param {number} deltaTime - Frame duration in seconds.
      * @param {Keyboard} keyboard - Current input state.
-     * @param {number} screenWidth - Width of the playable area.
+     * @param {number} levelWidth - Width of the playable level.
      */
-    update(deltaTime, keyboard, screenWidth) {
+    update(deltaTime, keyboard, levelWidth) {
         const previousX = this.x;
-        this.move(deltaTime, keyboard.getDirection(), screenWidth);
+        this.move(deltaTime, keyboard.getDirection(), levelWidth);
         this.moving = this.x !== previousX;
         this.readJumpInput(keyboard.jump);
         this.updateJump(deltaTime);

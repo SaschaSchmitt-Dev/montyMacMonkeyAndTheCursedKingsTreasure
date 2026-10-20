@@ -10,12 +10,12 @@ class MovableObject extends DrawableObject {
     /**
      * @param {number} deltaTime - Frame duration in seconds.
      * @param {number} direction - -1 for left, 1 for right, or 0.
-     * @param {number} screenWidth - Width of the playable area.
+     * @param {number} levelWidth - Width of the playable level.
      */
-    move(deltaTime, direction, screenWidth) {
+    move(deltaTime, direction, levelWidth) {
         if (direction !== 0) this.facingLeft = direction < 0;
         this.x += direction * this.speed * deltaTime;
-        this.x = Math.max(0, Math.min(this.x, screenWidth - this.width));
+        this.x = Math.max(0, Math.min(this.x, levelWidth - this.width));
     }
 
 
