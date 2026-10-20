@@ -7,6 +7,8 @@ class Character extends MovableObject {
     idlePath = 'assets/images/character/idle/idle-00.png';
     runImages = [];
     jumpImages = [];
+    restImages = [];
+    inactiveTime = 0;
     animation = 'idle';
     animationTime = 0;
     moving = false;
@@ -26,7 +28,8 @@ class Character extends MovableObject {
         this.imageCache[this.idlePath] = this.img;
         this.runImages = this.createFramePaths('run-right/run', 8);
         this.jumpImages = this.createFramePaths('jump/jump', 6);
-        this.loadImages([...this.runImages, ...this.jumpImages], onLoad);
+        this.restImages = this.createFramePaths('rest/rest', 6);
+        this.loadImages([...this.runImages, ...this.jumpImages, ...this.restImages], onLoad);
         this.setupIdleAnimations(onLoad);
     }
 
@@ -93,6 +96,7 @@ class Character extends MovableObject {
         this.moving = this.x !== previousX;
         this.readJumpInput(keyboard.jump);
         this.updateJump(deltaTime);
+        this.updateSleep(deltaTime, keyboard);
         this.updateAnimation(deltaTime);
     }
 
@@ -132,18 +136,48 @@ class Character extends MovableObject {
     }
 
 
+    /**
+     * @param {number} deltaTime - Frame duration in seconds.
+     * @param {Keyboard} keyboard - Current input state.
+     */
+    updateSleep(deltaTime, keyboard) {
+        const input = keyboard.getDirection() !== 0 || keyboard.jump || keyboard.throw;
+        if (input || !this.isGrounded() || this.takeoffTime > 0 || this.landingTime > 0) {
+            this.inactiveTime = 0;
+        } else {
+            this.inactiveTime = Math.min(15, this.inactiveTime + deltaTime);
+        }
+    }
+
+
+    /** @returns {string} Highest-priority animation for the current state. */
+    getAnimation() {
+        const jumping = !this.isGrounded() || this.takeoffTime > 0 || this.landingTime > 0;
+        if (jumping) return 'jump';
+        if (this.inactiveTime >= 15) return 'sleep';
+        return this.moving ? 'run' : 'idle';
+    }
+
+
     /** @param {number} deltaTime - Frame duration in seconds. */
     updateAnimation(deltaTime) {
-        const jumping = !this.isGrounded() || this.takeoffTime > 0 || this.landingTime > 0;
-        const nextAnimation = jumping ? 'jump' : (this.moving ? 'run' : 'idle');
+        const nextAnimation = this.getAnimation();
         this.animationTime = nextAnimation === this.animation ? this.animationTime + deltaTime : 0;
         this.animation = nextAnimation;
         if (this.animation !== 'idle') this.resetIdle();
-        let path = this.animation === 'idle' ? this.getIdlePath(deltaTime) : this.idlePath;
-        if (this.animation === 'run') path = this.runImages[Math.floor(this.animationTime / 0.08) % 8];
-        if (this.animation === 'jump') path = this.jumpImages[this.getJumpFrame()];
-        const image = this.imageCache[path];
+        const image = this.imageCache[this.getAnimationPath(deltaTime)];
         if (image.complete && image.naturalWidth > 0) this.img = image;
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds.
+     * @returns {string} Image path for the current animation frame.
+     */
+    getAnimationPath(deltaTime) {
+        if (this.animation === 'run') return this.runImages[Math.floor(this.animationTime / 0.08) % 8];
+        if (this.animation === 'jump') return this.jumpImages[this.getJumpFrame()];
+        if (this.animation === 'sleep') return this.restImages[Math.min(5, Math.floor(this.animationTime / 0.18))];
+        return this.getIdlePath(deltaTime);
     }
 
 
@@ -159,14 +193,12 @@ class Character extends MovableObject {
 
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context. */
     draw(ctx) {
+        if (!this.img.complete || this.img.naturalWidth === 0) return;
+        const drawWidth = this.img.naturalWidth * this.height / this.img.naturalHeight;
         ctx.save();
-        if (this.facingLeft) {
-            ctx.translate(this.x + this.width, 0);
-            ctx.scale(-1, 1);
-            super.draw(ctx, 0);
-        } else {
-            super.draw(ctx);
-        }
+        ctx.translate(this.x + this.width / 2, 0);
+        ctx.scale(this.facingLeft ? -1 : 1, 1);
+        ctx.drawImage(this.img, -drawWidth / 2, this.y, drawWidth, this.height);
         ctx.restore();
     }
 }
