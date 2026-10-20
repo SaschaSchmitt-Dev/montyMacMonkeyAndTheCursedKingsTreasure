@@ -3,6 +3,7 @@ class Level {
     width;
     characterStartX;
     groundY;
+    enemies = [];
     parallaxFactors = [0.22, 0.48, 0.80];
 
     /**

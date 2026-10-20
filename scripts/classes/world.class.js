@@ -68,6 +68,7 @@ class World {
         if (!this.active) return;
         this.deltaTime = this.getDeltaTime(time);
         this.character.update(this.deltaTime, this.keyboard, this.level.width);
+        this.level.enemies.forEach((enemy) => enemy.update(this.deltaTime, this.level.width));
         this.updateCamera();
         this.draw();
         this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
@@ -82,10 +83,11 @@ class World {
     }
 
 
-    /** Draws world coordinates relative to the camera without moving the HUD. */
-    drawCharacter() {
+    /** Draws enemies and player relative to the camera without moving the HUD. */
+    drawFigures() {
         this.ctx.save();
         this.ctx.translate(-Math.round(this.cameraX), 0);
+        this.level.enemies.forEach((enemy) => enemy.draw(this.ctx));
         this.character.draw(this.ctx);
         this.ctx.restore();
     }
@@ -117,7 +119,7 @@ class World {
         this.drawBackgroundLayer(0);
         this.drawBackgroundLayer(1);
         this.ground.draw(this.ctx, this.cameraX);
-        this.drawCharacter();
+        this.drawFigures();
         this.drawBackgroundLayer(2);
     }
 }

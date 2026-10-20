@@ -1,0 +1,71 @@
+/** An animated ground enemy; combat and random spawning follow separately. */
+class Enemy extends MovableObject {
+    static types = {
+        'vine-lizard': { speed: 140, width: 120, height: 80, facesLeft: false, stompable: true },
+        'thorn-beetle': { speed: 95, width: 108, height: 72, facesLeft: false, stompable: true },
+        'armored-armadillo': { speed: 55, width: 132, height: 88, facesLeft: true, stompable: false }
+    };
+    type;
+    frames;
+    animationTime = 0;
+    direction = -1;
+    spriteFacesLeft;
+    canBeStomped;
+
+    /**
+     * @param {string} type - Enemy type from Enemy.types.
+     * @param {number} x - Starting world position.
+     * @param {number} floorY - Visible floor surface in world coordinates.
+     */
+    constructor(type, x, floorY) {
+        super();
+        this.configure(type, x, floorY);
+        this.frames = Array.from({ length: 4 }, (_, index) =>
+            `assets/images/enemies/${type}/movement/frame-0${index + 1}.png`
+        );
+        this.loadImages(this.frames);
+        this.img = this.imageCache[this.frames[0]];
+    }
+
+
+    /** @param {string} type - Enemy type.
+     * @param {number} x - Starting position.
+     * @param {number} floorY - Floor surface.
+     */
+    configure(type, x, floorY) {
+        const settings = Enemy.types[type];
+        this.type = type;
+        this.x = x;
+        this.speed = settings.speed;
+        this.width = settings.width;
+        this.height = settings.height;
+        this.y = floorY - this.height * 0.94;
+        this.spriteFacesLeft = settings.facesLeft;
+        this.canBeStomped = settings.stompable;
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds.
+     * @param {number} levelWidth - Horizontal level boundary.
+     */
+    update(deltaTime, levelWidth) {
+        this.move(deltaTime, this.direction, levelWidth);
+        if (this.x <= 0) this.direction = 1;
+        if (this.x >= levelWidth - this.width) this.direction = -1;
+        this.animationTime += deltaTime;
+        const path = this.frames[Math.floor(this.animationTime / 0.12) % this.frames.length];
+        const image = this.imageCache[path];
+        if (image.complete && image.naturalWidth > 0) this.img = image;
+    }
+
+
+    /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context. */
+    draw(ctx) {
+        if (!this.img.complete || this.img.naturalWidth === 0) return;
+        ctx.save();
+        ctx.translate(this.x + this.width / 2, this.y);
+        ctx.scale(this.facingLeft !== this.spriteFacesLeft ? -1 : 1, 1);
+        ctx.drawImage(this.img, -this.width / 2, 0, this.width, this.height);
+        ctx.restore();
+    }
+}
