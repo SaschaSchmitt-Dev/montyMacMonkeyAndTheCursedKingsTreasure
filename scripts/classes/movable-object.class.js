@@ -2,7 +2,7 @@
 class MovableObject extends DrawableObject {
     speed = 350;
     facingLeft = false;
-    groundY = 314;
+    groundY = 320;
     velocityY = 0;
     gravity = 1800;
     jumpSpeed = 680;

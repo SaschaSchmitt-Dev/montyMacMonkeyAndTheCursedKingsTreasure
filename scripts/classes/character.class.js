@@ -1,7 +1,7 @@
 /** Indiana Monkey with running and a single animated jump. */
 class Character extends MovableObject {
     x = 120;
-    y = 314;
+    y = 320;
     width = 128;
     height = 128;
     idlePath = 'assets/images/character/idle/idle-00.png';
@@ -10,8 +10,8 @@ class Character extends MovableObject {
     restImages = [];
     inactiveTime = 0;
     sleepScale = 0.8;
-    sleepOffsetY = 2;
-    sleepAngle = -6;
+    sleepOffsetY = 12;
+    sleepAngle = -8;
     animation = 'idle';
     animationTime = 0;
     moving = false;
