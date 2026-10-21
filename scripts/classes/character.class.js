@@ -5,6 +5,7 @@ class Character extends MovableObject {
     width = 128;
     height = 128;
     floorGroundY = 320;
+    ammo = 0;
     idlePath = 'assets/images/character/idle/idle-00.png';
     runImages = [];
     jumpImages = [];
@@ -102,7 +103,7 @@ class Character extends MovableObject {
         this.updateSupport(platforms);
         this.readJumpInput(keyboard.jump);
         this.updateJump(deltaTime);
-        this.updateSleep(deltaTime, keyboard);
+        this.updateSleep(deltaTime, keyboard, platforms);
         this.updateAnimation(deltaTime);
     }
 
@@ -159,14 +160,33 @@ class Character extends MovableObject {
     /**
      * @param {number} deltaTime - Frame duration in seconds.
      * @param {Keyboard} keyboard - Current input state.
+     * @param {Platform[]} platforms - Available resting surfaces.
      */
-    updateSleep(deltaTime, keyboard) {
+    updateSleep(deltaTime, keyboard, platforms) {
         const input = keyboard.getDirection() !== 0 || keyboard.jump || keyboard.throw;
-        if (input || !this.isGrounded() || this.takeoffTime > 0 || this.landingTime > 0) {
+        if (input || !this.isGrounded() || this.takeoffTime > 0 || this.landingTime > 0
+            || !this.hasSleepingSpace(platforms)) {
             this.inactiveTime = 0;
         } else {
             this.inactiveTime = Math.min(15, this.inactiveTime + deltaTime);
         }
+    }
+
+
+    /** @param {Platform[]} platforms - Ledges supporting the lying figure.
+     * @returns {boolean} Whether the sleeping pose fits on the current surface.
+     */
+    hasSleepingSpace(platforms) {
+        if (this.groundY === this.floorGroundY) return true;
+        const image = this.imageCache[this.restImages[5]];
+        if (!image.complete || image.naturalHeight === 0) return false;
+        const imageWidth = image.naturalWidth * this.height / image.naturalHeight;
+        const tiltMargin = this.height * Math.abs(Math.sin(this.sleepAngle * Math.PI / 180));
+        const halfWidth = (imageWidth / 2 + tiltMargin) * this.sleepScale;
+        const centerX = this.x + this.width / 2;
+        return platforms.some((platform) => Math.abs(platform.surfaceY - this.y - this.height * 244 / 256) < 0.1
+            && centerX - halfWidth >= platform.x + platform.width * 0.06
+            && centerX + halfWidth <= platform.x + platform.width * 0.94);
     }
 
 

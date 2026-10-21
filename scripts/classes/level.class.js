@@ -5,6 +5,7 @@ class Level {
     groundY;
     enemies = [];
     platforms = [];
+    ammoPickups = [];
     parallaxFactors = [0.22, 0.48, 0.80];
 
     /**
@@ -27,6 +28,20 @@ class Level {
             this.platforms.push(new Platform(x, surfaceY));
             this.platforms.push(new Platform(x + 270, surfaceY - 80));
         }
+    }
+
+
+    /** Places banana bunches on the floor and on every upper ledge. */
+    createAmmo() {
+        this.ammoPickups = [];
+        for (let x = 400; x + 48 <= this.width - 200; x += 1500) {
+            this.ammoPickups.push(new BananaAmmo(x, this.groundY + 122));
+        }
+        this.platforms.forEach((platform, index) => {
+            if (index % 2 === 1) {
+                this.ammoPickups.push(new BananaAmmo(platform.x + 86, platform.surfaceY));
+            }
+        });
     }
 
 

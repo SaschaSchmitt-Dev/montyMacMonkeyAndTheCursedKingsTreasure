@@ -69,10 +69,24 @@ class World {
         if (!this.active) return;
         this.deltaTime = this.getDeltaTime(time);
         this.character.update(this.deltaTime, this.keyboard, this.level.width, this.level.platforms);
+        this.collectAmmo();
         this.level.enemies.forEach((enemy) => enemy.update(this.deltaTime, this.level.width));
         this.updateCamera();
         this.draw();
         this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
+    }
+
+
+    /** Removes touched bunches and updates the visible ammunition count. */
+    collectAmmo() {
+        this.level.ammoPickups = this.level.ammoPickups.filter((pickup) => {
+            if (!pickup.touches(this.character)) return true;
+            this.character.ammo += pickup.amount;
+            return false;
+        });
+        const counter = document.getElementById('ammo-counter');
+        const text = `Bananen: ${this.character.ammo}`;
+        if (counter.textContent !== text) counter.textContent = text;
     }
 
 
@@ -89,6 +103,7 @@ class World {
         this.ctx.save();
         this.ctx.translate(-Math.round(this.cameraX), 0);
         this.level.platforms.forEach((platform) => platform.draw(this.ctx));
+        this.level.ammoPickups.forEach((pickup) => pickup.draw(this.ctx));
         this.level.enemies.forEach((enemy) => enemy.draw(this.ctx));
         this.character.draw(this.ctx);
         this.ctx.restore();

@@ -6,5 +6,6 @@ function createLevel1() {
     const level = new Level(levelSections * sectionWidth, 120, 320);
     level.createEnemies();
     level.createPlatforms(platformHeight);
+    level.createAmmo();
     return level;
 }
