@@ -72,6 +72,7 @@ class World {
         const previousFeet = this.character.y + this.character.height * 244 / 256;
         this.character.update(this.deltaTime, this.keyboard, this.level.width, this.level.platforms);
         this.collectAmmo();
+        this.updateScoreItems();
         this.checkEnemyContact(previousFeet);
         this.updateCamera();
         this.draw();
@@ -116,6 +117,21 @@ class World {
     }
 
 
+    /** Animates treasures and collects each touched item once while alive. */
+    updateScoreItems() {
+        this.level.scoreItems.forEach((item) => item.update(this.deltaTime));
+        if (this.character.health === 0) return;
+        this.level.scoreItems = this.level.scoreItems.filter((item) => {
+            if (!item.touches(this.character)) return true;
+            this.character.score += item.points;
+            return false;
+        });
+        const counter = document.getElementById('score-counter');
+        const text = `Punkte: ${this.character.score}`;
+        if (counter.textContent !== text) counter.textContent = text;
+    }
+
+
     /** Follows the player after the first third of the screen, within the level. */
     updateCamera() {
         const maxCameraX = Math.max(0, this.level.width - this.canvas.width);
@@ -130,6 +146,7 @@ class World {
         this.ctx.translate(-Math.round(this.cameraX), 0);
         this.level.platforms.forEach((platform) => platform.draw(this.ctx));
         this.level.ammoPickups.forEach((pickup) => pickup.draw(this.ctx));
+        this.level.scoreItems.forEach((item) => item.draw(this.ctx));
         this.level.enemies.forEach((enemy) => enemy.draw(this.ctx));
         this.character.draw(this.ctx);
         this.ctx.restore();

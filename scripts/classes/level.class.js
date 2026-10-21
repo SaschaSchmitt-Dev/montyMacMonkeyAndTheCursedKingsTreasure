@@ -6,6 +6,7 @@ class Level {
     enemies = [];
     platforms = [];
     ammoPickups = [];
+    scoreItems = [];
     parallaxFactors = [0.22, 0.48, 0.80];
 
     /**
@@ -41,6 +42,21 @@ class Level {
             if (index % 2 === 1) {
                 this.ammoPickups.push(new BananaAmmo(platform.x + 86, platform.surfaceY));
             }
+        });
+    }
+
+
+    /** Places coins on the floor and more valuable treasures on ledges. */
+    createScoreItems() {
+        this.scoreItems = [];
+        for (let x = 1150; x + 200 <= this.width - 200; x += 1500) {
+            for (let index = 0; index < 3; index++) {
+                this.scoreItems.push(new ScoreItem('coin', x + index * 80, this.groundY + 122));
+            }
+        }
+        this.platforms.forEach((platform, index) => {
+            const type = index % 2 === 0 ? 'ingot' : 'relic';
+            this.scoreItems.push(new ScoreItem(type, platform.x + 35, platform.surfaceY));
         });
     }
 

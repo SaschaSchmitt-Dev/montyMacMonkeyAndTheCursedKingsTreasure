@@ -7,5 +7,6 @@ function createLevel1() {
     level.createEnemies();
     level.createPlatforms(platformHeight);
     level.createAmmo();
+    level.createScoreItems();
     return level;
 }

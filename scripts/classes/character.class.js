@@ -6,6 +6,7 @@ class Character extends MovableObject {
     height = 128;
     floorGroundY = 320;
     ammo = 0;
+    score = 0;
     ridingEnemy = null;
     health = 3;
     invulnerableTime = 0;
