@@ -12,6 +12,9 @@ class Enemy extends MovableObject {
     facingLeft = true;
     spriteFacesLeft;
     canBeStomped;
+    defeated = false;
+    deathTime = 0;
+    deathFrames = [];
 
     /**
      * @param {string} type - Enemy type from Enemy.types.
@@ -26,6 +29,25 @@ class Enemy extends MovableObject {
         );
         this.loadImages(this.frames);
         this.img = this.imageCache[this.frames[0]];
+        this.loadDeathFrames();
+    }
+
+
+    /** Loads the four images used when the enemy is defeated. */
+    loadDeathFrames() {
+        this.deathFrames = Array.from({ length: 4 }, (_, index) =>
+            `assets/images/enemies/${this.type}/death/frame-0${index + 1}.png`
+        );
+        this.loadImages(this.deathFrames);
+    }
+
+
+    /** Stops movement and starts the defeat animation once. */
+    defeat() {
+        if (this.defeated) return;
+        this.defeated = true;
+        this.deathTime = 0;
+        this.img = this.imageCache[this.deathFrames[0]];
     }
 
 
@@ -50,6 +72,7 @@ class Enemy extends MovableObject {
      * @param {number} levelWidth - Horizontal level boundary.
      */
     update(deltaTime, levelWidth) {
+        if (this.defeated) return this.updateDeath(deltaTime);
         this.move(deltaTime, this.direction, levelWidth);
         if (this.x <= 0) this.direction = 1;
         if (this.x >= levelWidth - this.width) this.direction = -1;
@@ -57,6 +80,14 @@ class Enemy extends MovableObject {
         const path = this.frames[Math.floor(this.animationTime / 0.12) % this.frames.length];
         const image = this.imageCache[path];
         if (image.complete && image.naturalWidth > 0) this.img = image;
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds. */
+    updateDeath(deltaTime) {
+        this.deathTime += deltaTime;
+        const frame = Math.min(3, Math.floor(this.deathTime / 0.15));
+        this.img = this.imageCache[this.deathFrames[frame]];
     }
 
 

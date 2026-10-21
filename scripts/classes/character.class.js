@@ -6,6 +6,12 @@ class Character extends MovableObject {
     height = 128;
     floorGroundY = 320;
     ammo = 0;
+    ridingEnemy = null;
+    health = 3;
+    invulnerableTime = 0;
+    hitTime = 0;
+    hitImages = [];
+    deathImages = [];
     idlePath = 'assets/images/character/idle/idle-00.png';
     runImages = [];
     jumpImages = [];
@@ -36,6 +42,29 @@ class Character extends MovableObject {
         this.restImages = this.createFramePaths('rest/rest', 6);
         this.loadImages([...this.runImages, ...this.jumpImages, ...this.restImages], onLoad);
         this.setupIdleAnimations(onLoad);
+        this.setupDamageAnimations(onLoad);
+    }
+
+
+    /** @param {Function} onLoad - Requests a redraw after loading. */
+    setupDamageAnimations(onLoad) {
+        this.hitImages = this.createFramePaths('hit/hit', 4);
+        this.deathImages = this.createFramePaths('death/death', 4);
+        this.loadImages([...this.hitImages, ...this.deathImages], onLoad);
+    }
+
+
+    /** Removes one life unless protection is active or no lives remain. */
+    takeHit() {
+        if (this.health === 0 || this.invulnerableTime > 0) return;
+        this.health--;
+        this.invulnerableTime = 1.2;
+        this.hitTime = 0.4;
+        this.inactiveTime = 0;
+        this.takeoffTime = 0;
+        this.landingTime = 0;
+        this.animation = '';
+        this.updateAnimation(0);
     }
 
 
@@ -97,6 +126,9 @@ class Character extends MovableObject {
      * @param {Platform[]} platforms - Floating landing surfaces.
      */
     update(deltaTime, keyboard, levelWidth, platforms = []) {
+        this.invulnerableTime = Math.max(0, this.invulnerableTime - deltaTime);
+        this.hitTime = Math.max(0, this.hitTime - deltaTime);
+        if (this.health === 0) return this.updateDeath(deltaTime, platforms);
         const previousX = this.x;
         this.move(deltaTime, keyboard.getDirection(), levelWidth);
         this.moving = this.x !== previousX;
@@ -104,6 +136,16 @@ class Character extends MovableObject {
         this.readJumpInput(keyboard.jump);
         this.updateJump(deltaTime);
         this.updateSleep(deltaTime, keyboard, platforms);
+        this.updateAnimation(deltaTime);
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds.
+     * @param {Platform[]} platforms - Surfaces below the falling figure.
+     */
+    updateDeath(deltaTime, platforms) {
+        this.updateSupport(platforms);
+        this.applyGravity(deltaTime);
         this.updateAnimation(deltaTime);
     }
 
@@ -118,6 +160,21 @@ class Character extends MovableObject {
             if (overlaps && this.y <= landingY + 0.01) {
                 this.groundY = Math.min(this.groundY, landingY);
             }
+        }
+        this.updateEnemySupport();
+    }
+
+
+    /** Keeps the current armored back as support only while standing above it. */
+    updateEnemySupport() {
+        const enemy = this.ridingEnemy;
+        if (!enemy) return;
+        const landingY = enemy.y + enemy.height * 0.2 - this.height * 244 / 256;
+        if (enemy.defeated || this.velocityY < 0 || Math.abs(this.y - landingY) > 0.1
+            || !EnemyCollisions.overlapsHorizontally(this, enemy)) {
+            this.ridingEnemy = null;
+        } else {
+            this.groundY = Math.min(this.groundY, landingY);
         }
     }
 
@@ -192,6 +249,8 @@ class Character extends MovableObject {
 
     /** @returns {string} Highest-priority animation for the current state. */
     getAnimation() {
+        if (this.health === 0) return 'death';
+        if (this.hitTime > 0) return 'hit';
         const jumping = !this.isGrounded() || this.takeoffTime > 0 || this.landingTime > 0;
         if (jumping) return 'jump';
         if (this.inactiveTime >= 15) return 'sleep';
@@ -214,6 +273,8 @@ class Character extends MovableObject {
      * @returns {string} Image path for the current animation frame.
      */
     getAnimationPath(deltaTime) {
+        if (this.animation === 'death') return this.deathImages[Math.min(3, Math.floor(this.animationTime / 0.16))];
+        if (this.animation === 'hit') return this.hitImages[Math.min(3, Math.floor(this.animationTime / 0.1))];
         if (this.animation === 'run') return this.runImages[Math.floor(this.animationTime / 0.08) % 8];
         if (this.animation === 'jump') return this.jumpImages[this.getJumpFrame()];
         if (this.animation === 'sleep') return this.restImages[Math.min(5, Math.floor(this.animationTime / 0.18))];
@@ -236,6 +297,7 @@ class Character extends MovableObject {
         if (!this.img.complete || this.img.naturalWidth === 0) return;
         const drawWidth = this.img.naturalWidth * this.height / this.img.naturalHeight;
         ctx.save();
+        if (this.health > 0 && this.invulnerableTime > 0 && Math.floor(this.invulnerableTime * 12) % 2) ctx.globalAlpha = 0.45;
         ctx.translate(this.x + this.width / 2, this.y + this.height * 244 / 256);
         ctx.scale(this.facingLeft ? -1 : 1, 1);
         this.rotateSleepPose(ctx);

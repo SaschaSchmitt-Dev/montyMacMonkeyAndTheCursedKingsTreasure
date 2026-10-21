@@ -68,17 +68,43 @@ class World {
     gameLoop(time) {
         if (!this.active) return;
         this.deltaTime = this.getDeltaTime(time);
+        this.updateEnemies();
+        const previousFeet = this.character.y + this.character.height * 244 / 256;
         this.character.update(this.deltaTime, this.keyboard, this.level.width, this.level.platforms);
         this.collectAmmo();
-        this.level.enemies.forEach((enemy) => enemy.update(this.deltaTime, this.level.width));
+        this.checkEnemyContact(previousFeet);
         this.updateCamera();
         this.draw();
         this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
     }
 
 
+    /** Moves enemies and carries a player resting on an armored back. */
+    updateEnemies() {
+        const carrier = this.character.ridingEnemy;
+        const previousX = carrier ? carrier.x : 0;
+        this.level.enemies.forEach((enemy) => enemy.update(this.deltaTime, this.level.width));
+        if (carrier && !carrier.defeated && this.character.isGrounded()) {
+            this.character.x += carrier.x - previousX;
+            this.character.x = Math.max(0, Math.min(this.character.x, this.level.width - this.character.width));
+        }
+    }
+
+
+    /** @param {number} previousFeet - Foot height before this frame's movement. */
+    checkEnemyContact(previousFeet) {
+        EnemyCollisions.check(this.character, this.level.enemies, previousFeet);
+        this.level.enemies = this.level.enemies.filter((enemy) => !enemy.defeated || enemy.deathTime < 0.6);
+        const counter = document.getElementById('health-counter');
+        const text = this.character.health > 0 ? `Leben: ${this.character.health}` : 'Game Over';
+        if (counter.textContent !== text) counter.textContent = text;
+        document.getElementById('restart-button').hidden = this.character.health > 0;
+    }
+
+
     /** Removes touched bunches and updates the visible ammunition count. */
     collectAmmo() {
+        if (this.character.health === 0) return;
         this.level.ammoPickups = this.level.ammoPickups.filter((pickup) => {
             if (!pickup.touches(this.character)) return true;
             this.character.ammo += pickup.amount;
