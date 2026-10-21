@@ -4,6 +4,7 @@ class Character extends MovableObject {
     y = 320;
     width = 128;
     height = 128;
+    floorGroundY = 320;
     idlePath = 'assets/images/character/idle/idle-00.png';
     runImages = [];
     jumpImages = [];
@@ -92,15 +93,31 @@ class Character extends MovableObject {
      * @param {number} deltaTime - Frame duration in seconds.
      * @param {Keyboard} keyboard - Current input state.
      * @param {number} levelWidth - Width of the playable level.
+     * @param {Platform[]} platforms - Floating landing surfaces.
      */
-    update(deltaTime, keyboard, levelWidth) {
+    update(deltaTime, keyboard, levelWidth, platforms = []) {
         const previousX = this.x;
         this.move(deltaTime, keyboard.getDirection(), levelWidth);
         this.moving = this.x !== previousX;
+        this.updateSupport(platforms);
         this.readJumpInput(keyboard.jump);
         this.updateJump(deltaTime);
         this.updateSleep(deltaTime, keyboard);
         this.updateAnimation(deltaTime);
+    }
+
+
+    /** @param {Platform[]} platforms - Ledges below the player's feet. */
+    updateSupport(platforms) {
+        this.groundY = this.floorGroundY;
+        for (const platform of platforms) {
+            const landingY = platform.surfaceY - this.height * 244 / 256;
+            const overlaps = this.x + this.width * 0.7 > platform.x + platform.width * 0.06
+                && this.x + this.width * 0.3 < platform.x + platform.width * 0.94;
+            if (overlaps && this.y <= landingY + 0.01) {
+                this.groundY = Math.min(this.groundY, landingY);
+            }
+        }
     }
 
 

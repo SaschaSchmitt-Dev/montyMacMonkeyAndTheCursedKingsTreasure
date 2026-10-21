@@ -5,7 +5,7 @@ class MovableObject extends DrawableObject {
     groundY = 320;
     velocityY = 0;
     gravity = 1800;
-    jumpSpeed = 680;
+    jumpSpeed = 720;
 
     /**
      * @param {number} deltaTime - Frame duration in seconds.

@@ -1,4 +1,4 @@
-/** An animated ground enemy; combat follows separately. */
+/** An animated enemy that moves along the ground. */
 class Enemy extends MovableObject {
     static types = {
         'vine-lizard': { speed: 140, width: 120, height: 80, facesLeft: false, stompable: true },

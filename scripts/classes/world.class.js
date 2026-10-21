@@ -36,6 +36,7 @@ class World {
         this.character.x = this.level.characterStartX;
         this.character.y = this.level.groundY;
         this.character.groundY = this.level.groundY;
+        this.character.floorGroundY = this.level.groundY;
     }
 
 
@@ -67,7 +68,7 @@ class World {
     gameLoop(time) {
         if (!this.active) return;
         this.deltaTime = this.getDeltaTime(time);
-        this.character.update(this.deltaTime, this.keyboard, this.level.width);
+        this.character.update(this.deltaTime, this.keyboard, this.level.width, this.level.platforms);
         this.level.enemies.forEach((enemy) => enemy.update(this.deltaTime, this.level.width));
         this.updateCamera();
         this.draw();
@@ -87,6 +88,7 @@ class World {
     drawFigures() {
         this.ctx.save();
         this.ctx.translate(-Math.round(this.cameraX), 0);
+        this.level.platforms.forEach((platform) => platform.draw(this.ctx));
         this.level.enemies.forEach((enemy) => enemy.draw(this.ctx));
         this.character.draw(this.ctx);
         this.ctx.restore();

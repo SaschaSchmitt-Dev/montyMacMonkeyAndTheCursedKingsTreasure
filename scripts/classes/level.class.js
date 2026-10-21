@@ -4,6 +4,7 @@ class Level {
     characterStartX;
     groundY;
     enemies = [];
+    platforms = [];
     parallaxFactors = [0.22, 0.48, 0.80];
 
     /**
@@ -15,6 +16,17 @@ class Level {
         this.width = width;
         this.characterStartX = characterStartX;
         this.groundY = groundY;
+    }
+
+
+    /** @param {number} heightAboveGround - Lower ledge height above the floor in pixels. */
+    createPlatforms(heightAboveGround = 115) {
+        this.platforms = [];
+        const surfaceY = this.groundY + 122 - heightAboveGround;
+        for (let x = 600; x + 490 <= this.width - 400; x += 1500) {
+            this.platforms.push(new Platform(x, surfaceY));
+            this.platforms.push(new Platform(x + 270, surfaceY - 80));
+        }
     }
 
 
