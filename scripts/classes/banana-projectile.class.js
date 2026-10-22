@@ -1,4 +1,4 @@
-/** A rotating banana with gravity and a short ground impact animation. */
+/** A rotating banana with gravity and a short impact animation. */
 class BananaProjectile extends MovableObject {
     width = 64;
     height = 64;
@@ -56,10 +56,18 @@ class BananaProjectile extends MovableObject {
     updateFlight(deltaTime) {
         this.x += (this.facingLeft ? -1 : 1) * this.speed * deltaTime;
         this.applyGravity(deltaTime);
-        if (this.isGrounded()) {
-            this.impacted = true;
-            this.animationTime = 0;
-        }
+        if (this.isGrounded()) this.impact();
+    }
+
+
+    /** Stops the banana and starts its impact animation once. */
+    impact() {
+        if (this.impacted) return;
+        this.impacted = true;
+        this.animationTime = 0;
+        this.velocityY = 0;
+        const image = this.imageCache[this.impactFrames[0]];
+        if (image.complete && image.naturalWidth > 0) this.img = image;
     }
 
 

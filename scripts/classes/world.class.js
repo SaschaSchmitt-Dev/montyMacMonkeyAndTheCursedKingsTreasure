@@ -89,6 +89,7 @@ class World {
     updateThrowing() {
         this.throwController.update(this);
         this.projectiles.forEach((projectile) => projectile.update(this.deltaTime));
+        ProjectileCollisions.check(this.projectiles, this.level.enemies);
         this.projectiles = this.projectiles.filter((projectile) => !projectile.finished
             && projectile.x + projectile.width >= 0 && projectile.x <= this.level.width);
     }
