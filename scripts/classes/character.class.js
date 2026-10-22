@@ -7,6 +7,8 @@ class Character extends MovableObject {
     floorGroundY = 320;
     ammo = 0;
     score = 0;
+    throwTime = 0;
+    throwImages = [];
     ridingEnemy = null;
     health = 3;
     invulnerableTime = 0;
@@ -252,6 +254,7 @@ class Character extends MovableObject {
     getAnimation() {
         if (this.health === 0) return 'death';
         if (this.hitTime > 0) return 'hit';
+        if (this.throwTime > 0) return 'throw';
         const jumping = !this.isGrounded() || this.takeoffTime > 0 || this.landingTime > 0;
         if (jumping) return 'jump';
         if (this.inactiveTime >= 15) return 'sleep';
@@ -276,6 +279,7 @@ class Character extends MovableObject {
     getAnimationPath(deltaTime) {
         if (this.animation === 'death') return this.deathImages[Math.min(3, Math.floor(this.animationTime / 0.16))];
         if (this.animation === 'hit') return this.hitImages[Math.min(3, Math.floor(this.animationTime / 0.1))];
+        if (this.animation === 'throw') return this.throwImages[Math.min(5, Math.floor((0.48 - this.throwTime) / 0.08))];
         if (this.animation === 'run') return this.runImages[Math.floor(this.animationTime / 0.08) % 8];
         if (this.animation === 'jump') return this.jumpImages[this.getJumpFrame()];
         if (this.animation === 'sleep') return this.restImages[Math.min(5, Math.floor(this.animationTime / 0.18))];

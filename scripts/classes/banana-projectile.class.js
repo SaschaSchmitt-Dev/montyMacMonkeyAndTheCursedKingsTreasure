@@ -1,0 +1,76 @@
+/** A rotating banana with gravity and a short ground impact animation. */
+class BananaProjectile extends MovableObject {
+    width = 64;
+    height = 64;
+    speed = 600;
+    gravity = 1200;
+    velocityY = -180;
+    animationTime = 0;
+    impacted = false;
+    finished = false;
+    frames;
+    impactFrames;
+
+    /** @param {Character} character - Throwing player.
+     * @param {boolean} facingLeft - Direction captured at the start of the throw.
+     * @param {number} floorY - Ground surface in world pixels.
+     */
+    constructor(character, facingLeft, floorY) {
+        super();
+        this.facingLeft = facingLeft;
+        this.x = character.x + (facingLeft ? -4 : character.width - 60);
+        this.y = character.y + 20;
+        this.groundY = floorY - this.height;
+        this.frames = this.createPaths('flight/banana', 60);
+        this.impactFrames = this.createPaths('impact/banana-impact', 5);
+        this.loadImages([...this.frames, ...this.impactFrames]);
+        this.img = this.imageCache[this.frames[0]];
+    }
+
+
+    /** @param {string} prefix - Folder and filename prefix.
+     * @param {number} count - Number of images.
+     * @returns {string[]} Ordered image paths.
+     */
+    createPaths(prefix, count) {
+        return Array.from({ length: count }, (_, index) =>
+            'assets/images/projectiles/banana/' + prefix + '-' + String(index).padStart(2, '0') + '.png'
+        );
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds. */
+    update(deltaTime) {
+        this.animationTime += deltaTime;
+        if (!this.impacted) this.updateFlight(deltaTime);
+        const paths = this.impacted ? this.impactFrames : this.frames;
+        const duration = this.impacted ? 0.05 : 1 / 60;
+        const frame = Math.floor(this.animationTime / duration) % paths.length;
+        const image = this.imageCache[paths[frame]];
+        if (image.complete && image.naturalWidth > 0) this.img = image;
+        if (this.impacted && this.animationTime >= 0.25) this.finished = true;
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds. */
+    updateFlight(deltaTime) {
+        this.x += (this.facingLeft ? -1 : 1) * this.speed * deltaTime;
+        this.applyGravity(deltaTime);
+        if (this.isGrounded()) {
+            this.impacted = true;
+            this.animationTime = 0;
+        }
+    }
+
+
+    /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context. */
+    draw(ctx) {
+        if (!this.img.complete || this.img.naturalWidth === 0) return;
+        ctx.save();
+        ctx.translate(this.x + this.width / 2, this.y);
+        ctx.scale(this.facingLeft ? -1 : 1, 1);
+        ctx.drawImage(this.img, -this.width / 2, 0, this.width, this.height);
+        ctx.restore();
+    }
+}
+

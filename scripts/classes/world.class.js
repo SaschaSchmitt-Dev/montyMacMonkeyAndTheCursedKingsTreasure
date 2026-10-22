@@ -12,6 +12,8 @@ class World {
     deltaTime = 0;
     animationFrame;
     active = true;
+    projectiles = [];
+    throwController;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
@@ -26,6 +28,7 @@ class World {
         this.createBackgrounds();
         this.ground = new Ground(() => this.draw());
         this.createCharacter();
+        this.throwController = new ThrowController(this.character);
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
     }
 
@@ -71,12 +74,22 @@ class World {
         this.updateEnemies();
         const previousFeet = this.character.y + this.character.height * 244 / 256;
         this.character.update(this.deltaTime, this.keyboard, this.level.width, this.level.platforms);
+        this.updateThrowing();
         this.collectAmmo();
         this.updateScoreItems();
         this.checkEnemyContact(previousFeet);
         this.updateCamera();
         this.draw();
         this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
+    }
+
+
+    /** Advances the throw, flying bananas and expired impact effects. */
+    updateThrowing() {
+        this.throwController.update(this);
+        this.projectiles.forEach((projectile) => projectile.update(this.deltaTime));
+        this.projectiles = this.projectiles.filter((projectile) => !projectile.finished
+            && projectile.x + projectile.width >= 0 && projectile.x <= this.level.width);
     }
 
 
@@ -148,6 +161,7 @@ class World {
         this.level.ammoPickups.forEach((pickup) => pickup.draw(this.ctx));
         this.level.scoreItems.forEach((item) => item.draw(this.ctx));
         this.level.enemies.forEach((enemy) => enemy.draw(this.ctx));
+        this.projectiles.forEach((projectile) => projectile.draw(this.ctx));
         this.character.draw(this.ctx);
         this.ctx.restore();
     }
