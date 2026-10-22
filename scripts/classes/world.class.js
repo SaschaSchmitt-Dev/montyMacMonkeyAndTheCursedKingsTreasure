@@ -14,6 +14,7 @@ class World {
     active = true;
     projectiles = [];
     throwController;
+    enemiesStarted = false;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
@@ -95,9 +96,10 @@ class World {
 
     /** Moves enemies and carries a player resting on an armored back. */
     updateEnemies() {
+        if (this.character.moving && this.character.health > 0) this.enemiesStarted = true;
         const carrier = this.character.ridingEnemy;
         const previousX = carrier ? carrier.x : 0;
-        this.level.enemies.forEach((enemy) => enemy.update(this.deltaTime, this.level.width));
+        this.level.enemies.forEach((enemy) => enemy.update(this.deltaTime, this.level.width, this.enemiesStarted));
         if (carrier && !carrier.defeated && this.character.isGrounded()) {
             this.character.x += carrier.x - previousX;
             this.character.x = Math.max(0, Math.min(this.character.x, this.level.width - this.character.width));

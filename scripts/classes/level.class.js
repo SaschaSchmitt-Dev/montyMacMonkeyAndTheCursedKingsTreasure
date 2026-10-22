@@ -61,15 +61,17 @@ class Level {
     }
 
 
-    /** Creates a fresh enemy layout with a clear start and spaced spawn areas. */
-    createEnemies() {
+    /** @param {number} patrolRadius - Maximum walking distance on either side of each spawn. */
+    createEnemies(patrolRadius = 240) {
         const types = Object.keys(Enemy.types);
         const lastX = this.width - 400 - 132;
         this.enemies = [];
         for (let slotX = 1000; slotX <= lastX; slotX += 700) {
             const offset = Math.random() * Math.min(240, lastX - slotX);
             const type = types[Math.floor(Math.random() * types.length)];
-            this.enemies.push(new Enemy(type, slotX + offset, this.groundY + 122));
+            const enemy = new Enemy(type, slotX + offset, this.groundY + 122);
+            enemy.patrolRadius = patrolRadius;
+            this.enemies.push(enemy);
         }
     }
 }

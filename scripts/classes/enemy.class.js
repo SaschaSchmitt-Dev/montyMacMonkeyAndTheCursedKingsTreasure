@@ -15,6 +15,8 @@ class Enemy extends MovableObject {
     defeated = false;
     deathTime = 0;
     deathFrames = [];
+    spawnX;
+    patrolRadius = 240;
 
     /**
      * @param {string} type - Enemy type from Enemy.types.
@@ -59,6 +61,7 @@ class Enemy extends MovableObject {
         const settings = Enemy.types[type];
         this.type = type;
         this.x = x;
+        this.spawnX = x;
         this.speed = settings.speed;
         this.width = settings.width;
         this.height = settings.height;
@@ -70,16 +73,30 @@ class Enemy extends MovableObject {
 
     /** @param {number} deltaTime - Frame duration in seconds.
      * @param {number} levelWidth - Horizontal level boundary.
+     * @param {boolean} canMove - Whether walking and its animation are enabled.
      */
-    update(deltaTime, levelWidth) {
+    update(deltaTime, levelWidth, canMove = true) {
         if (this.defeated) return this.updateDeath(deltaTime);
-        this.move(deltaTime, this.direction, levelWidth);
-        if (this.x <= 0) this.direction = 1;
-        if (this.x >= levelWidth - this.width) this.direction = -1;
+        if (!canMove) return;
+        this.moveOnPatrol(deltaTime, levelWidth);
         this.animationTime += deltaTime;
         const path = this.frames[Math.floor(this.animationTime / 0.12) % this.frames.length];
         const image = this.imageCache[path];
         if (image.complete && image.naturalWidth > 0) this.img = image;
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds.
+     * @param {number} levelWidth - Horizontal level boundary.
+     */
+    moveOnPatrol(deltaTime, levelWidth) {
+        const right = Math.max(0, Math.min(levelWidth - this.width, this.spawnX + this.patrolRadius));
+        const left = Math.min(right, Math.max(0, this.spawnX - this.patrolRadius));
+        this.move(deltaTime, this.direction, levelWidth);
+        this.x = Math.max(left, Math.min(this.x, right));
+        if (this.x <= left) this.direction = 1;
+        if (this.x >= right) this.direction = -1;
+        this.facingLeft = this.direction < 0;
     }
 
 
