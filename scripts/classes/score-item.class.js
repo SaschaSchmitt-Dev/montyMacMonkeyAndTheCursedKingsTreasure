@@ -10,6 +10,8 @@ class ScoreItem extends DrawableObject {
     points;
     frames;
     animationTime = 0;
+    frameCount = 24;
+    framesPerSecond = 24;
 
     /** @param {string} type - Treasure type from ScoreItem.types.
      * @param {number} x - Left edge in world pixels.
@@ -21,7 +23,7 @@ class ScoreItem extends DrawableObject {
         this.x = x;
         this.y = surfaceY - this.height;
         this.points = settings.points;
-        this.frames = Array.from({ length: 12 }, (_, index) =>
+        this.frames = Array.from({ length: this.frameCount }, (_, index) =>
             `assets/images/items/${settings.folder}/${settings.prefix}-${String(index).padStart(2, '0')}.png`
         );
         this.loadImages(this.frames);
@@ -32,7 +34,7 @@ class ScoreItem extends DrawableObject {
     /** @param {number} deltaTime - Frame duration in seconds. */
     update(deltaTime) {
         this.animationTime += deltaTime;
-        const frame = Math.floor(this.animationTime / 0.08) % this.frames.length;
+        const frame = Math.floor(this.animationTime * this.framesPerSecond) % this.frames.length;
         const image = this.imageCache[this.frames[frame]];
         if (image.complete && image.naturalWidth > 0) this.img = image;
     }
