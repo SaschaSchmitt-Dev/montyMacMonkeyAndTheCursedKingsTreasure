@@ -21,7 +21,7 @@ class Character extends MovableObject {
     restImages = [];
     inactiveTime = 0;
     sleepScale = 0.8;
-    sleepOffsetY = 12;
+    sleepOffsetY = 16;
     sleepAngle = -8;
     animation = 'idle';
     animationTime = 0;

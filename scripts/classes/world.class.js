@@ -15,6 +15,7 @@ class World {
     projectiles = [];
     throwController;
     enemiesStarted = false;
+    bossChamber;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
@@ -28,8 +29,10 @@ class World {
         this.level = level;
         this.createBackgrounds();
         this.ground = new Ground(() => this.draw());
+        this.ground.y += this.level.groundY - 330;
         this.createCharacter();
         this.throwController = new ThrowController(this.character);
+        this.bossChamber = new BossChamber(this.level, () => this.draw());
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
     }
 
@@ -72,6 +75,14 @@ class World {
     gameLoop(time) {
         if (!this.active) return;
         this.deltaTime = this.getDeltaTime(time);
+        if (!this.bossChamber.update(this)) this.updateScene();
+        this.draw();
+        this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
+    }
+
+
+    /** Updates the running level while no scene transition is active. */
+    updateScene() {
         this.updateEnemies();
         const previousFeet = this.character.y + this.character.height * 244 / 256;
         this.character.update(this.deltaTime, this.keyboard, this.level.width, this.level.platforms);
@@ -80,8 +91,22 @@ class World {
         this.updateScoreItems();
         this.checkEnemyContact(previousFeet);
         this.updateCamera();
-        this.draw();
-        this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
+    }
+
+
+    /** Places the player in a fresh room while preserving the collected resources. */
+    enterBossChamber() {
+        if (this.throwController.active) this.throwController.cancel(this.character);
+        const previous = this.character;
+        this.level = new Level(this.canvas.width, 120, previous.floorGroundY);
+        this.ground = new Ground(() => this.draw(), 'assets/images/objects/platforms/boss-chamber-ground.png');
+        this.ground.alignBossGround(this.canvas.width, previous.floorGroundY + 122);
+        this.keyboard.reset();
+        this.projectiles = [];
+        this.cameraX = 0;
+        this.createCharacter();
+        Object.assign(this.character, { health: previous.health, ammo: previous.ammo, score: previous.score });
+        this.throwController = new ThrowController(this.character);
     }
 
 
@@ -190,14 +215,48 @@ class World {
     }
 
 
+    /** Draws either the jungle layers or the fixed throne room. */
+    drawSceneBackground() {
+        if (this.bossChamber.inside) {
+            this.bossChamber.background.draw(this.ctx);
+        } else {
+            this.drawBackgroundLayer(0);
+            this.drawBackgroundLayer(1);
+        }
+    }
+
+
+    /** Draws the jungle foreground and the entrance over the player. */
+    drawSceneForeground() {
+        if (this.bossChamber.inside) return;
+        this.drawBackgroundLayer(2);
+        this.bossChamber.drawEntrance(this.ctx, Math.round(this.cameraX), 'front');
+    }
+
+
+    /** Joins the regular floor to the separate exit floor at a shared height. */
+    drawSceneGround() {
+        if (this.bossChamber.inside) return this.ground.draw(this.ctx, this.cameraX);
+        const cameraX = Math.round(this.cameraX);
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.rect(0, 0, Math.max(0, this.level.transitionX - cameraX), this.canvas.height);
+        this.ctx.clip();
+        this.ground.draw(this.ctx, cameraX);
+        this.ctx.restore();
+        this.bossChamber.drawGround(this.ctx, cameraX);
+    }
+
+
     /** Redraws loaded objects in a fixed order, independent of loading order. */
     draw() {
         if (!this.active) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawBackgroundLayer(0);
-        this.drawBackgroundLayer(1);
-        this.ground.draw(this.ctx, this.cameraX);
+        this.drawSceneBackground();
+        if (!this.bossChamber.inside) this.bossChamber.drawEntrance(this.ctx, Math.round(this.cameraX));
+        this.drawSceneGround();
         this.drawFigures();
-        this.drawBackgroundLayer(2);
+        this.drawSceneForeground();
+        this.bossChamber.drawFade(this.ctx);
     }
 }
