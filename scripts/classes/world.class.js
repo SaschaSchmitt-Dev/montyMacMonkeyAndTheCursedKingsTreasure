@@ -192,6 +192,7 @@ class World {
 
     /** Redraws loaded objects in a fixed order, independent of loading order. */
     draw() {
+        if (!this.active) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawBackgroundLayer(0);
         this.drawBackgroundLayer(1);
