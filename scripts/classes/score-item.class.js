@@ -1,9 +1,9 @@
-/** An animated treasure that awards points when collected. */
+﻿/** An animated treasure that awards points when collected. */
 class ScoreItem extends DrawableObject {
     static types = {
-        coin: { folder: 'gold-coin', prefix: 'coin', points: 10 },
-        ingot: { folder: 'gold-ingot', prefix: 'ingot', points: 50 },
-        relic: { folder: 'gold-score-relic', prefix: 'relic', points: 100 }
+        coin: { folder: 'gold-coin', prefix: 'coin', points: 10, rotationDuration: 1 },
+        ingot: { folder: 'gold-ingot', prefix: 'ingot', points: 50, rotationDuration: 2 },
+        relic: { folder: 'gold-score-relic', prefix: 'relic', points: 100, rotationDuration: 3 }
     };
     width = 40;
     height = 40;
@@ -11,7 +11,7 @@ class ScoreItem extends DrawableObject {
     frames;
     animationTime = 0;
     frameCount = 24;
-    framesPerSecond = 24;
+    framesPerSecond;
 
     /** @param {string} type - Treasure type from ScoreItem.types.
      * @param {number} x - Left edge in world pixels.
@@ -23,6 +23,7 @@ class ScoreItem extends DrawableObject {
         this.x = x;
         this.y = surfaceY - this.height;
         this.points = settings.points;
+        this.framesPerSecond = this.frameCount / settings.rotationDuration;
         this.frames = Array.from({ length: this.frameCount }, (_, index) =>
             `assets/images/items/${settings.folder}/${settings.prefix}-${String(index).padStart(2, '0')}.png`
         );
