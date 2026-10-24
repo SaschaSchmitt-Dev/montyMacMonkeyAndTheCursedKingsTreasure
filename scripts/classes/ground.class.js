@@ -28,11 +28,11 @@ class Ground extends DrawableObject {
      * @param {number} floorY - Player foot position on the floor.
      */
     alignBossGround(viewWidth, floorY) {
-        this.x = -30;
-        this.width = viewWidth + 60;
-        const scale = this.width / 2172;
-        this.height = 724 * scale;
-        this.y = floorY - 10 - 285 * scale;
+        this.x = 0;
+        this.width = viewWidth / 2;
+        const scale = this.width / 1024;
+        this.height = 268 * scale;
+        this.y = floorY - 10 - 64 * scale;
     }
 
 

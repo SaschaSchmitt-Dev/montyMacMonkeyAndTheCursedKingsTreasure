@@ -1,9 +1,19 @@
-﻿/** The monkey king casting curse orbs from a fixed position. */
+/** The monkey king casting curse orbs from a fixed position. */
 class Boss extends DrawableObject {
     width = 300;
     height = 200;
     frames = [];
     attackFrames = [];
+    hitFrames = [];
+    deathFrames = [];
+    maxHealth = 10;
+    invulnerableDuration = 1;
+    invulnerableTime = 0;
+    health = this.maxHealth;
+    hitTime = 0;
+    deathTime = 0;
+    deathOffsetY = 26;
+    defeated = false;
     projectiles = [];
     projectilePath = 'assets/images/projectiles/boss/curse-orb.png';
     animationTime = 0;
@@ -24,7 +34,41 @@ class Boss extends DrawableObject {
         this.frames = this.createFramePaths('idle', 2);
         this.attackFrames = this.createFramePaths('attack', 4);
         this.loadImages([...this.frames, ...this.attackFrames, this.projectilePath], onLoad);
+        this.loadDamageFrames(onLoad);
         this.img = this.imageCache[this.frames[0]];
+    }
+
+
+    /** @param {Function} onLoad - Requests a redraw after loading. */
+    loadDamageFrames(onLoad) {
+        this.hitFrames = this.createFramePaths('hit', 2);
+        this.deathFrames = this.createFramePaths('death', 4);
+        this.loadImages([...this.hitFrames, ...this.deathFrames], onLoad);
+    }
+
+
+    /** Removes one life unless the boss is defeated or temporarily protected. */
+    takeHit() {
+        if (this.defeated || this.invulnerableTime > 0) return;
+        this.health = Math.max(0, this.health - 1);
+        this.invulnerableTime = this.invulnerableDuration;
+        this.hitTime = 0.25;
+        if (this.health === 0) {
+            this.defeated = true;
+            this.attacking = false;
+            this.projectiles = [];
+        }
+        if (this.defeated || !this.attacking) this.updateDamageAnimation(0);
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds. */
+    updateDamageAnimation(deltaTime) {
+        if (this.defeated) this.deathTime += deltaTime;
+
+        const paths = this.defeated ? this.deathFrames : this.hitFrames;
+        const time = this.defeated ? this.deathTime * 5 : (0.25 - this.hitTime) * 8;
+        this.img = this.imageCache[paths[Math.min(paths.length - 1, Math.floor(time))]];
     }
 
 
@@ -45,13 +89,25 @@ class Boss extends DrawableObject {
     update(deltaTime, canAttack = true) {
         this.projectiles.forEach((projectile) => projectile.update(deltaTime));
         this.projectiles = this.projectiles.filter((projectile) => projectile.x + projectile.width >= 0);
+        if (this.defeated) return this.updateDamageAnimation(deltaTime);
+        this.invulnerableTime = Math.max(0, this.invulnerableTime - deltaTime);
+        this.hitTime = Math.max(0, this.hitTime - deltaTime);
+        this.updateAttackCycle(deltaTime, canAttack);
+        if (this.hitTime > 0 && !this.attacking) this.updateDamageAnimation(0);
+        else this.updateAnimation(deltaTime);
+    }
+
+
+    /** @param {number} deltaTime - Frame duration in seconds.
+     * @param {boolean} canAttack - Whether the player is alive.
+     */
+    updateAttackCycle(deltaTime, canAttack) {
         if (!canAttack) this.attacking = false;
         else if (this.attacking) this.advanceAttack(deltaTime);
         else {
             this.cooldown -= deltaTime;
             if (this.cooldown <= 0) this.startAttack();
         }
-        this.updateAnimation(deltaTime);
     }
 
 
@@ -93,7 +149,11 @@ class Boss extends DrawableObject {
     draw(ctx) {
         if (!this.img.complete || this.img.naturalWidth === 0) return;
         ctx.save();
-        ctx.translate(this.x + this.width, this.y);
+        if (!this.defeated && this.invulnerableTime > 0) {
+            ctx.globalAlpha = Math.floor(this.invulnerableTime * 12) % 2 === 0 ? 1 : 0.55;
+        }
+        const y = this.y + (this.defeated ? this.deathOffsetY : 0);
+        ctx.translate(this.x + this.width, y);
         ctx.scale(-1, 1);
         ctx.drawImage(this.img, 0, 0, this.width, this.height);
         ctx.restore();

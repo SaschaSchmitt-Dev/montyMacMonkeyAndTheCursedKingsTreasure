@@ -14,8 +14,22 @@ class ProjectileCollisions {
     }
 
 
+    /** @param {BananaProjectile[]} projectiles - Active bananas and impact effects.
+     * @param {Boss|null} boss - Boss in the active chamber, if present.
+     */
+    static checkBoss(projectiles, boss) {
+        if (!boss || boss.defeated) return;
+        for (const projectile of projectiles) {
+            if (projectile.impacted || projectile.finished || !this.touches(projectile, boss)) continue;
+            boss.takeHit();
+            projectile.impact();
+            if (boss.defeated) break;
+        }
+    }
+
+
     /** @param {BananaProjectile} projectile - Banana with transparent image margins.
-     * @param {Enemy} enemy - Living enemy body.
+     * @param {Enemy|Boss} enemy - Living opponent body.
      * @returns {boolean} Whether the visible body regions overlap.
      */
     static touches(projectile, enemy) {
