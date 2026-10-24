@@ -86,7 +86,7 @@ class World {
     /** Updates the running level while no scene transition is active. */
     updateScene() {
         this.updateEnemies();
-        if (this.boss) this.boss.update(this.deltaTime);
+        if (this.boss) this.boss.update(this.deltaTime, this.character.health > 0);
         const previousFeet = this.character.y + this.character.height * 244 / 256;
         this.character.update(this.deltaTime, this.keyboard, this.level.width, this.level.platforms);
         this.updateThrowing();
