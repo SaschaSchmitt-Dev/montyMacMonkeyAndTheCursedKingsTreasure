@@ -1,5 +1,6 @@
 /** A rotating banana with gravity and a short impact animation. */
 class BananaProjectile extends MovableObject {
+    static images = {};
     width = 64;
     height = 64;
     speed = 600;
@@ -21,10 +22,22 @@ class BananaProjectile extends MovableObject {
         this.x = character.x + (facingLeft ? -4 : character.width - 60);
         this.y = character.y + 20;
         this.groundY = floorY - this.height;
-        this.frames = this.createPaths('flight/banana', 60);
-        this.impactFrames = this.createPaths('impact/banana-impact', 5);
-        this.loadImages([...this.frames, ...this.impactFrames]);
+        BananaProjectile.preloadImages();
+        this.imageCache = BananaProjectile.images;
+        this.frames = BananaProjectile.createPaths('flight/banana', 60);
+        this.impactFrames = BananaProjectile.createPaths('impact/banana-impact', 5);
+
         this.img = this.imageCache[this.frames[0]];
+    }
+
+
+    /** Loads the shared flight and impact images once. */
+    static preloadImages() {
+        if (Object.keys(this.images).length > 0) return;
+        const loader = new DrawableObject();
+        loader.loadImages([...this.createPaths('flight/banana', 60),
+            ...this.createPaths('impact/banana-impact', 5)]);
+        this.images = loader.imageCache;
     }
 
 
@@ -32,7 +45,7 @@ class BananaProjectile extends MovableObject {
      * @param {number} count - Number of images.
      * @returns {string[]} Ordered image paths.
      */
-    createPaths(prefix, count) {
+    static createPaths(prefix, count) {
         return Array.from({ length: count }, (_, index) =>
             'assets/images/projectiles/banana/' + prefix + '-' + String(index).padStart(2, '0') + '.png'
         );

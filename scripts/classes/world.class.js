@@ -16,6 +16,7 @@ class World {
     throwController;
     enemiesStarted = false;
     bossChamber;
+    boss = null;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
@@ -28,6 +29,7 @@ class World {
         this.keyboard = keyboard;
         this.level = level;
         this.createBackgrounds();
+        BananaProjectile.preloadImages();
         this.ground = new Ground(() => this.draw());
         this.ground.y += this.level.groundY - 330;
         this.createCharacter();
@@ -84,6 +86,7 @@ class World {
     /** Updates the running level while no scene transition is active. */
     updateScene() {
         this.updateEnemies();
+        if (this.boss) this.boss.update(this.deltaTime);
         const previousFeet = this.character.y + this.character.height * 244 / 256;
         this.character.update(this.deltaTime, this.keyboard, this.level.width, this.level.platforms);
         this.updateThrowing();
@@ -99,13 +102,14 @@ class World {
         if (this.throwController.active) this.throwController.cancel(this.character);
         const previous = this.character;
         this.level = new Level(this.canvas.width, 120, previous.floorGroundY);
-        this.ground = new Ground(() => this.draw(), 'assets/images/objects/platforms/boss-chamber-ground.png');
+        this.ground = this.bossChamber.roomGround;
         this.ground.alignBossGround(this.canvas.width, previous.floorGroundY + 122);
         this.keyboard.reset();
         this.projectiles = [];
         this.cameraX = 0;
         this.createCharacter();
         Object.assign(this.character, { health: previous.health, ammo: previous.ammo, score: previous.score });
+        this.boss = this.bossChamber.boss;
         this.throwController = new ThrowController(this.character);
     }
 
@@ -189,6 +193,7 @@ class World {
         this.level.ammoPickups.forEach((pickup) => pickup.draw(this.ctx));
         this.level.scoreItems.forEach((item) => item.draw(this.ctx));
         this.level.enemies.forEach((enemy) => enemy.draw(this.ctx));
+        if (this.boss) this.boss.draw(this.ctx);
         this.projectiles.forEach((projectile) => projectile.draw(this.ctx));
         this.character.draw(this.ctx);
         this.ctx.restore();

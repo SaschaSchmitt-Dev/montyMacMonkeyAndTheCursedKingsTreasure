@@ -7,6 +7,8 @@ class BossChamber {
     layerOffsetY = { back: 12, ground: 0, front: 12 };
     entrance;
     background;
+    roomGround;
+    boss;
     layers;
     seam;
     grass;
@@ -23,8 +25,25 @@ class BossChamber {
         this.loadLayers(onLoad);
         this.createGrass(onLoad);
         this.createSeam(level.groundY + 112, onLoad);
+        this.loadRoom(level, onLoad);
+    }
+
+
+    /** @param {Level} level - Level with the shared floor height.
+     * @param {Function} onLoad - Requests a redraw after loading.
+     */
+    loadRoom(level, onLoad) {
         this.background = new DrawableObject();
         this.background.loadImage('assets/images/backgrounds/boss-chamber/background.png', onLoad);
+        this.roomGround = new Ground(onLoad, 'assets/images/objects/platforms/boss-chamber-ground.png');
+        this.boss = new Boss(this.background.width, level.groundY + 122, onLoad);
+    }
+
+
+    /** @returns {boolean} Whether the chamber's required images loaded successfully. */
+    isRoomReady() {
+        const images = [this.background.img, this.roomGround.img, ...Object.values(this.boss.imageCache)];
+        return images.every((image) => image.complete && image.naturalWidth > 0);
     }
 
 
@@ -79,6 +98,7 @@ class BossChamber {
 
     /** @param {World} world - Scene whose level changes at full darkness. */
     finishFade(world) {
+        if (this.phase === 'out' && !this.isRoomReady()) return;
         this.fadeTime = 0;
         if (this.phase === 'out') {
             this.inside = true;
