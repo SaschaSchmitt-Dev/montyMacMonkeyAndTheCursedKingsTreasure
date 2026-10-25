@@ -54,7 +54,7 @@ class ThrowController {
 
     /** @param {Character} character - Player interrupted before or after release. */
     cancel(character) {
-        if (!this.released) character.ammo++;
+        if (!this.released) character.ammo = Math.min(character.maxAmmo, character.ammo + 1);
         character.throwTime = 0;
         this.active = false;
     }

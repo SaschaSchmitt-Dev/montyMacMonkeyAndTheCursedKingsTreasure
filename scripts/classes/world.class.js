@@ -18,6 +18,7 @@ class World {
     bossChamber;
     boss = null;
     healthBar;
+    ammoBar;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
@@ -37,6 +38,7 @@ class World {
         this.throwController = new ThrowController(this.character);
         this.bossChamber = new BossChamber(this.level, () => this.draw());
         this.healthBar = new HealthBar(() => this.draw());
+        this.ammoBar = new AmmoBar(this.character.maxAmmo, () => this.draw());
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
     }
 
@@ -159,9 +161,11 @@ class World {
     collectAmmo() {
         if (this.character.health === 0) return;
         this.level.ammoPickups = this.level.ammoPickups.filter((pickup) => {
-            if (!pickup.touches(this.character)) return true;
-            this.character.ammo += pickup.amount;
-            return false;
+            if (!pickup.touches(this.character) || this.character.ammo >= this.character.maxAmmo) return true;
+            const amount = Math.min(pickup.amount, this.character.maxAmmo - this.character.ammo);
+            this.character.ammo += amount;
+            pickup.amount -= amount;
+            return pickup.amount > 0;
         });
         const counter = document.getElementById('ammo-counter');
         const text = `Bananen: ${this.character.ammo}`;
@@ -270,6 +274,7 @@ class World {
         this.drawFigures();
         this.drawSceneForeground();
         this.healthBar.draw(this.ctx, this.character.health, this.character.maxHealth);
+        this.ammoBar.draw(this.ctx, this.character.ammo);
         this.bossChamber.drawFade(this.ctx);
     }
 }

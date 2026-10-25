@@ -5,6 +5,7 @@ class Character extends MovableObject {
     width = 128;
     height = 128;
     floorGroundY = 320;
+    maxAmmo = 30;
     ammo = 0;
     score = 0;
     throwTime = 0;
