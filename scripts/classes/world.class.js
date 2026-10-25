@@ -141,6 +141,9 @@ class World {
     /** @param {number} previousFeet - Foot height before this frame's movement. */
     checkEnemyContact(previousFeet) {
         EnemyCollisions.check(this.character, this.level.enemies, previousFeet);
+        if (this.boss) {
+            this.boss.projectiles = ProjectileCollisions.checkCharacter(this.boss.projectiles, this.character);
+        }
         this.level.enemies = this.level.enemies.filter((enemy) => !enemy.defeated || enemy.deathTime < 0.6);
         const counter = document.getElementById('health-counter');
         const text = this.character.health > 0 ? `Leben: ${this.character.health}` : 'Game Over';

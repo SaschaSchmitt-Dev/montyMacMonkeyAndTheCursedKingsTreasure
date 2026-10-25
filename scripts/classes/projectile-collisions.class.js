@@ -1,4 +1,4 @@
-/** Resolves one enemy hit for each flying banana. */
+/** Resolves projectile hits against opponents and the player. */
 class ProjectileCollisions {
     /** @param {BananaProjectile[]} projectiles - Active bananas and impact effects.
      * @param {Enemy[]} enemies - Enemies in the current level.
@@ -25,6 +25,32 @@ class ProjectileCollisions {
             projectile.impact();
             if (boss.defeated) break;
         }
+    }
+
+
+    /** @param {BossProjectile[]} projectiles - Active curse orbs.
+     * @param {Character} character - Player with damage protection.
+     * @returns {BossProjectile[]} Projectiles that did not touch the player.
+     */
+    static checkCharacter(projectiles, character) {
+        if (character.health === 0) return projectiles;
+        return projectiles.filter((projectile) => {
+            if (!this.touchesCharacter(projectile, character)) return true;
+            character.takeHit();
+            return false;
+        });
+    }
+
+
+    /** @param {BossProjectile} projectile - Curse orb with transparent outer areas.
+     * @param {Character} character - Player body.
+     * @returns {boolean} Whether the narrowed visible bodies overlap.
+     */
+    static touchesCharacter(projectile, character) {
+        return projectile.x + projectile.width * 0.72 > character.x + character.width * 0.25
+            && projectile.x + projectile.width * 0.12 < character.x + character.width * 0.75
+            && projectile.y + projectile.height * 0.8 > character.y + 20
+            && projectile.y + projectile.height * 0.2 < character.y + character.height * 244 / 256;
     }
 
 
