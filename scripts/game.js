@@ -20,5 +20,6 @@ function resetStatus() {
     document.getElementById('ammo-counter').textContent = 'Bananen: ' + world.character.ammo;
     document.getElementById('score-counter').textContent = 'Punkte: ' + world.character.score;
     document.getElementById('health-counter').textContent = 'Leben: ' + world.character.health;
+    document.getElementById('health-counter').hidden = true;
     document.getElementById('restart-button').hidden = true;
 }

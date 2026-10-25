@@ -17,6 +17,7 @@ class World {
     enemiesStarted = false;
     bossChamber;
     boss = null;
+    healthBar;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
@@ -35,6 +36,7 @@ class World {
         this.createCharacter();
         this.throwController = new ThrowController(this.character);
         this.bossChamber = new BossChamber(this.level, () => this.draw());
+        this.healthBar = new HealthBar(() => this.draw());
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
     }
 
@@ -148,6 +150,7 @@ class World {
         const counter = document.getElementById('health-counter');
         const text = this.character.health > 0 ? `Leben: ${this.character.health}` : 'Game Over';
         if (counter.textContent !== text) counter.textContent = text;
+        counter.hidden = this.character.health > 0;
         document.getElementById('restart-button').hidden = this.character.health > 0;
     }
 
@@ -266,6 +269,7 @@ class World {
         this.drawSceneGround();
         this.drawFigures();
         this.drawSceneForeground();
+        this.healthBar.draw(this.ctx, this.character.health, this.character.maxHealth);
         this.bossChamber.drawFade(this.ctx);
     }
 }

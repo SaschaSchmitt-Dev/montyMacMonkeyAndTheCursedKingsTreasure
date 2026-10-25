@@ -10,7 +10,8 @@ class Character extends MovableObject {
     throwTime = 0;
     throwImages = [];
     ridingEnemy = null;
-    health = 3;
+    maxHealth = 5;
+    health = this.maxHealth;
     invulnerableTime = 0;
     hitTime = 0;
     hitImages = [];
