@@ -19,6 +19,7 @@ class World {
     boss = null;
     healthBar;
     ammoBar;
+    scoreBar;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
@@ -39,6 +40,8 @@ class World {
         this.bossChamber = new BossChamber(this.level, () => this.draw());
         this.healthBar = new HealthBar(() => this.draw());
         this.ammoBar = new AmmoBar(this.character.maxAmmo, () => this.draw());
+        const totalScore = level.scoreItems.reduce((sum, item) => sum + item.points, 0);
+        this.scoreBar = new ScoreBar(totalScore, () => this.draw());
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
     }
 
@@ -275,6 +278,7 @@ class World {
         this.drawSceneForeground();
         this.healthBar.draw(this.ctx, this.character.health, this.character.maxHealth);
         this.ammoBar.draw(this.ctx, this.character.ammo);
+        this.scoreBar.draw(this.ctx, this.character.score);
         this.bossChamber.drawFade(this.ctx);
     }
 }
