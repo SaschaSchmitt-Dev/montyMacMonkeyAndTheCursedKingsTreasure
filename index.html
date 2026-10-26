@@ -29,6 +29,7 @@
     <script src="./scripts/classes/health-bar.class.js" defer></script>
     <script src="./scripts/classes/ammo-bar.class.js" defer></script>
     <script src="./scripts/classes/score-bar.class.js" defer></script>
+    <script src="./scripts/classes/boss-health-bar.class.js" defer></script>
     <script src="./scripts/classes/world.class.js" defer></script>
     <script src="./scripts/classes/keyboard.class.js" defer></script>
     <script src="./scripts/game.js" defer></script>
@@ -42,9 +43,7 @@
     <canvas id="canvas" width="960" height="540" tabindex="0" aria-label="Spielfeld von Indiana Monkey">
         Dein Browser unterstützt das Canvas-Spielfeld nicht.
     </canvas>
-    <p id="ammo-counter" role="status" hidden>Bananen: 0</p>
-    <p id="score-counter" role="status" hidden>Punkte: 0</p>
-    <p id="health-counter" role="status" hidden>Leben: 5</p>
+    <p id="game-status" role="status" hidden>Game Over</p>
     <button id="restart-button" type="button" hidden>Noch einmal spielen</button>
 
 </body>

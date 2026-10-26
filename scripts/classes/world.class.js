@@ -20,6 +20,7 @@ class World {
     healthBar;
     ammoBar;
     scoreBar;
+    bossHealthBar;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
@@ -42,6 +43,7 @@ class World {
         this.ammoBar = new AmmoBar(this.character.maxAmmo, () => this.draw());
         const totalScore = level.scoreItems.reduce((sum, item) => sum + item.points, 0);
         this.scoreBar = new ScoreBar(totalScore, () => this.draw());
+        this.bossHealthBar = new BossHealthBar(() => this.draw());
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
     }
 
@@ -152,15 +154,12 @@ class World {
             this.boss.projectiles = ProjectileCollisions.checkCharacter(this.boss.projectiles, this.character);
         }
         this.level.enemies = this.level.enemies.filter((enemy) => !enemy.defeated || enemy.deathTime < 0.6);
-        const counter = document.getElementById('health-counter');
-        const text = this.character.health > 0 ? `Leben: ${this.character.health}` : 'Game Over';
-        if (counter.textContent !== text) counter.textContent = text;
-        counter.hidden = this.character.health > 0;
+        document.getElementById('game-status').hidden = this.character.health > 0;
         document.getElementById('restart-button').hidden = this.character.health > 0;
     }
 
 
-    /** Removes touched bunches and updates the visible ammunition count. */
+    /** Collects ammunition up to the limit and leaves any remainder in the level. */
     collectAmmo() {
         if (this.character.health === 0) return;
         this.level.ammoPickups = this.level.ammoPickups.filter((pickup) => {
@@ -170,9 +169,6 @@ class World {
             pickup.amount -= amount;
             return pickup.amount > 0;
         });
-        const counter = document.getElementById('ammo-counter');
-        const text = `Bananen: ${this.character.ammo}`;
-        if (counter.textContent !== text) counter.textContent = text;
     }
 
 
@@ -185,9 +181,6 @@ class World {
             this.character.score += item.points;
             return false;
         });
-        const counter = document.getElementById('score-counter');
-        const text = `Punkte: ${this.character.score}`;
-        if (counter.textContent !== text) counter.textContent = text;
     }
 
 
@@ -279,6 +272,7 @@ class World {
         this.healthBar.draw(this.ctx, this.character.health, this.character.maxHealth);
         this.ammoBar.draw(this.ctx, this.character.ammo);
         this.scoreBar.draw(this.ctx, this.character.score);
+        this.bossHealthBar.draw(this.ctx, this.boss);
         this.bossChamber.drawFade(this.ctx);
     }
 }

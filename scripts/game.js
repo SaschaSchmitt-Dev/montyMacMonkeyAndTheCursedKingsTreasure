@@ -10,16 +10,13 @@ function restartGame() {
     world.stop();
     keyboard.reset();
     world = new World(canvas, keyboard, createLevel1(canvas.width));
-    resetStatus();
+    resetGameOver();
     canvas.focus({ preventScroll: true });
 }
 
 
-/** Restores the counters and hides the restart action for a fresh game. */
-function resetStatus() {
-    document.getElementById('ammo-counter').textContent = 'Bananen: ' + world.character.ammo;
-    document.getElementById('score-counter').textContent = 'Punkte: ' + world.character.score;
-    document.getElementById('health-counter').textContent = 'Leben: ' + world.character.health;
-    document.getElementById('health-counter').hidden = true;
+/** Hides the game-over message and restart button for a fresh game. */
+function resetGameOver() {
+    document.getElementById('game-status').hidden = true;
     document.getElementById('restart-button').hidden = true;
 }
