@@ -1,4 +1,4 @@
-﻿/** An animated treasure that awards points when collected. */
+/** An animated treasure that awards points when collected. */
 class ScoreItem extends DrawableObject {
     static types = {
         coin: { folder: 'gold-coin', prefix: 'coin', points: 10, rotationDuration: 1 },
@@ -8,6 +8,7 @@ class ScoreItem extends DrawableObject {
     width = 40;
     height = 40;
     points;
+    supportY;
     frames;
     animationTime = 0;
     frameCount = 24;
@@ -15,13 +16,15 @@ class ScoreItem extends DrawableObject {
 
     /** @param {string} type - Treasure type from ScoreItem.types.
      * @param {number} x - Left edge in world pixels.
-     * @param {number} surfaceY - Supporting surface in world pixels.
+     * @param {number} surfaceY - Bottom edge of the treasure in world pixels.
+     * @param {number} supportY - Supporting floor or platform surface.
      */
-    constructor(type, x, surfaceY) {
+    constructor(type, x, surfaceY, supportY = surfaceY) {
         super();
         const settings = ScoreItem.types[type];
         this.x = x;
         this.y = surfaceY - this.height;
+        this.supportY = supportY;
         this.points = settings.points;
         this.framesPerSecond = this.frameCount / settings.rotationDuration;
         this.frames = Array.from({ length: this.frameCount }, (_, index) =>
@@ -45,7 +48,8 @@ class ScoreItem extends DrawableObject {
      * @returns {boolean} Whether the player's body touches this treasure.
      */
     touches(character) {
-        return character.x + character.width * 0.75 > this.x + 6
+        return character.y + character.height * 244 / 256 <= this.supportY + 4
+            && character.x + character.width * 0.75 > this.x + 6
             && character.x + character.width * 0.25 < this.x + this.width - 6
             && character.y + character.height * 244 / 256 > this.y + 6
             && character.y + 20 < this.y + this.height - 4;

@@ -29,32 +29,53 @@ class Level {
     }
 
 
-    /** @param {number} heightAboveGround - Lower ledge height above the floor in pixels. */
-    createPlatforms(heightAboveGround = 115) {
+    /** @returns {Array[]} Ledge positions, height offsets, types and rewards. */
+    getPlatformLayout() {
+        return [
+            [600, 0, 'short', 'coins', 'column'],
+            [870, 50, 'short', 'ammo', 'row'],
+            [1450, 0, 'long', 'ingot', 'pyramid'],
+            [1960, 45, 'short', 'relic', 'diamond'],
+            [2550, 0, 'short', 'ammo', 'row'],
+            [2860, 50, 'long', 'ingot', 'row'],
+            [3650, 0, 'long', 'relic', 'pyramid'],
+            [4180, 45, 'short', 'ammo', 'row'],
+            [4820, 0, 'short', 'coins', 'arc'],
+            [5100, 50, 'long', 'relic', 'row']
+        ];
+    }
+
+
+    /** @param {number} heightAboveGround - Minimum ledge height above the floor. */
+    createPlatforms(heightAboveGround = 140) {
         this.platforms = [];
         const surfaceY = this.groundY + 122 - heightAboveGround;
-        for (let x = 600; x + 490 <= this.width - 400; x += 1500) {
-            this.platforms.push(new Platform(x, surfaceY));
-            this.platforms.push(new Platform(x + 270, surfaceY - 100));
+        for (let offset = 0; offset < this.width; offset += 5400) {
+            for (const [x, height, type, reward, pattern] of this.getPlatformLayout()) {
+                const platform = new Platform(x + offset, surfaceY - Math.max(0, height), type);
+                if (platform.x + platform.width > this.width - 200) continue;
+                platform.reward = reward;
+                platform.pattern = pattern;
+                this.platforms.push(platform);
+            }
         }
     }
 
 
-    /** Places banana bunches on the floor and on every upper ledge. */
+    /** Places ammunition on the floor and on ledges reserved for ammunition. */
     createAmmo() {
         this.ammoPickups = [];
         for (let x = 400; x + 48 <= this.width - 200; x += 1500) {
             this.ammoPickups.push(new BananaAmmo(x, this.groundY + 122));
         }
-        this.platforms.forEach((platform, index) => {
-            if (index % 2 === 1) {
-                this.ammoPickups.push(new BananaAmmo(platform.x + 86, platform.surfaceY));
-            }
-        });
+        for (const platform of this.platforms) {
+            if (platform.reward !== 'ammo') continue;
+            this.ammoPickups.push(new BananaAmmo(platform.x + platform.width / 2 - 24, platform.surfaceY));
+        }
     }
 
 
-    /** Places coins on the floor and more valuable treasures on ledges. */
+    /** Places floor coins and each ledge's chosen treasure formation. */
     createScoreItems() {
         this.scoreItems = [];
         for (let x = 1150; x + 200 <= this.width - 200; x += 1500) {
@@ -62,12 +83,37 @@ class Level {
                 this.scoreItems.push(new ScoreItem('coin', x + index * 80, this.groundY + 122));
             }
         }
-        this.platforms.forEach((platform, index) => {
-            const type = index % 2 === 0 ? 'ingot' : 'relic';
-            this.scoreItems.push(new ScoreItem(type, platform.x + 35, platform.surfaceY));
+        this.platforms.filter((platform) => platform.reward !== 'ammo')
+            .forEach((platform) => this.addPlatformTreasures(platform));
+    }
+
+
+    /** @param {Platform} platform - Ledge and its chosen treasure layout. */
+    addPlatformTreasures(platform) {
+        const positions = this.getTreasurePattern(platform.pattern);
+        const center = platform.pattern === 'pyramid' ? 6 : Math.floor(positions.length / 2);
+        positions.forEach(([x, y], index) => {
+            const type = index === center && platform.reward !== 'coins' ? platform.reward : 'coin';
+            this.scoreItems.push(new ScoreItem(type, platform.x + platform.width / 2 + x - 20,
+                platform.surfaceY + y, platform.surfaceY));
         });
     }
 
+
+    /** @param {string} pattern - Name of a treasure formation.
+     * @returns {number[][]} Horizontal and vertical offsets from the ledge center.
+     */
+    getTreasurePattern(pattern) {
+        const patterns = {
+            row: [[-96, 0], [-48, 0], [0, 0], [48, 0], [96, 0]],
+            column: [[0, 0], [0, -40], [0, -80]],
+            arc: [[-80, 0], [-40, -25], [0, -45], [40, -25], [80, 0]],
+            diamond: [[0, 0], [-48, -40], [0, -40], [48, -40], [0, -80]],
+            pyramid: [[-96, 0], [-48, 0], [0, 0], [48, 0], [96, 0],
+                [-48, -44], [0, -44], [48, -44], [0, -88]]
+        };
+        return patterns[pattern];
+    }
 
     /** @param {number} patrolRadius - Maximum walking distance on either side of each spawn. */
     createEnemies(patrolRadius = 240) {
