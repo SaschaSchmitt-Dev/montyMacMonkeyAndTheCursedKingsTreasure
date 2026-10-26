@@ -1,8 +1,8 @@
-﻿/** A curse orb travelling straight across the chamber. */
+/** A curse orb travelling straight across the chamber. */
 class BossProjectile extends MovableObject {
     width = 72;
     height = 72;
-    speed = 260;
+    speed = 320;
 
     /** @param {number} x - Left edge of the projectile.
      * @param {number} y - Upper edge of the projectile.

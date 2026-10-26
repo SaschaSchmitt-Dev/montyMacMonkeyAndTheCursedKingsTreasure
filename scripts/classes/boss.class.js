@@ -22,6 +22,12 @@ class Boss extends DrawableObject {
     attacking = false;
     attackTime = 0;
     shotReleased = false;
+    followUpReleased = false;
+    followUpDelay = 0.6;
+    highShotOffset = 96;
+    attackPatterns = ['low', 'pair', 'high', 'low'];
+    patternIndex = 0;
+    attackPattern = 'low';
 
     /** @param {number} roomWidth - Chamber width in pixels.
      * @param {number} floorY - Player foot position on the floor.
@@ -111,11 +117,14 @@ class Boss extends DrawableObject {
     }
 
 
-    /** Starts the attack animation and resets its single-shot release. */
+    /** Selects the next pattern and resets the timed projectile releases. */
     startAttack() {
         this.attacking = true;
         this.attackTime = 0;
         this.shotReleased = false;
+        this.followUpReleased = false;
+        this.attackPattern = this.attackPatterns[this.patternIndex % this.attackPatterns.length];
+        this.patternIndex++;
     }
 
 
@@ -123,14 +132,31 @@ class Boss extends DrawableObject {
     advanceAttack(deltaTime) {
         this.attackTime += deltaTime;
         if (!this.shotReleased && this.attackTime >= 2 / 7) {
-            this.projectiles.push(new BossProjectile(this.x - 20, this.y + this.height - 80,
-                this.imageCache[this.projectilePath]));
+            this.releaseShot(this.attackPattern === 'high');
             this.shotReleased = true;
         }
-        if (this.attackTime >= 4 / 7) {
+        this.releaseFollowUp();
+        const duration = 4 / 7 + (this.attackPattern === 'pair' ? this.followUpDelay : 0);
+        if (this.attackTime >= duration) {
             this.attacking = false;
             this.cooldown = this.attackInterval;
         }
+    }
+
+
+    /** Releases the delayed high orb once during a paired attack. */
+    releaseFollowUp() {
+        if (this.attackPattern !== 'pair' || this.followUpReleased) return;
+        if (this.attackTime < 2 / 7 + this.followUpDelay) return;
+        this.releaseShot(true);
+        this.followUpReleased = true;
+    }
+
+
+    /** @param {boolean} high - Whether the orb travels above the standing player. */
+    releaseShot(high) {
+        const y = this.y + this.height - 80 - (high ? this.highShotOffset : 0);
+        this.projectiles.push(new BossProjectile(this.x - 20, y, this.imageCache[this.projectilePath]));
     }
 
 
@@ -138,7 +164,9 @@ class Boss extends DrawableObject {
     updateAnimation(deltaTime) {
         this.animationTime += deltaTime;
         const paths = this.attacking ? this.attackFrames : this.frames;
-        const time = this.attacking ? this.attackTime * 7 : this.animationTime * 3;
+        const repeatTime = this.attackPattern === 'pair' && this.attackTime >= this.followUpDelay
+            ? this.attackTime - this.followUpDelay : this.attackTime;
+        const time = this.attacking ? repeatTime * 7 : this.animationTime * 3;
         const frame = this.attacking ? Math.min(3, Math.floor(time)) : Math.floor(time) % paths.length;
         const image = this.imageCache[paths[frame]];
         if (image.complete && image.naturalWidth > 0) this.img = image;
