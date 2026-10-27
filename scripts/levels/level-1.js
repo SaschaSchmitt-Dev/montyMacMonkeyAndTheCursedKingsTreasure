@@ -10,6 +10,7 @@ function createLevel1(viewWidth = 960) {
     const level = new Level(levelSections * sectionWidth, 120, 330 + groundOffsetY);
     level.createEnemies(enemyPatrolRadius);
     level.createPlatforms(platformHeight);
+    level.createEnemyZone();
     level.createAmmo();
     level.createScoreItems();
     level.addTransition();

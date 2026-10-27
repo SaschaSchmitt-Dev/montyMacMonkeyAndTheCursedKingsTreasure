@@ -97,7 +97,7 @@ class World {
         this.updateEnemies();
         if (this.boss) this.boss.update(this.deltaTime, this.character.health > 0);
         const previousFeet = this.character.y + this.character.height * 244 / 256;
-        this.character.update(this.deltaTime, this.keyboard, this.level.width, this.level.platforms);
+        this.character.update(this.deltaTime, this.keyboard, this.level.width, [...this.level.platforms, ...this.level.blocks]);
         this.updateThrowing();
         this.collectAmmo();
         this.updateScoreItems();
@@ -139,7 +139,7 @@ class World {
         if (this.character.moving && this.character.health > 0) this.enemiesStarted = true;
         const carrier = this.character.ridingEnemy;
         const previousX = carrier ? carrier.x : 0;
-        this.level.enemies.forEach((enemy) => enemy.update(this.deltaTime, this.level.width, this.enemiesStarted));
+        this.level.enemies.forEach((enemy) => enemy.update(this.deltaTime, this.level.width, this.enemiesStarted, this.level.blocks));
         if (carrier && !carrier.defeated && this.character.isGrounded()) {
             this.character.x += carrier.x - previousX;
             this.character.x = Math.max(0, Math.min(this.character.x, this.level.width - this.character.width));
@@ -196,6 +196,7 @@ class World {
     drawFigures() {
         this.ctx.save();
         this.ctx.translate(-Math.round(this.cameraX), 0);
+        this.level.blocks.forEach((block) => block.draw(this.ctx));
         this.level.platforms.forEach((platform) => platform.draw(this.ctx));
         this.level.ammoPickups.forEach((pickup) => pickup.draw(this.ctx));
         this.level.scoreItems.forEach((item) => item.draw(this.ctx));

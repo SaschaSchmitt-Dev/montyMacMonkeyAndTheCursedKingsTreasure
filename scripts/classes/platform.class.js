@@ -1,17 +1,19 @@
-﻿/** A floating ledge that can be landed on from above. */
+/** A landing surface or solid floor block with matching jungle artwork. */
 class Platform extends DrawableObject {
     static types = {
         short: { width: 416, height: 175, walkY: 38, file: 'platform-02-floating-short.png' },
-        long: { width: 800, height: 241, walkY: 42, file: 'platform-03-floating-long.png' }
+        long: { width: 800, height: 241, walkY: 42, file: 'platform-03-floating-long.png' },
+        block: { width: 288, height: 163, walkY: 31, file: 'platform-04-step-block.png' }
     };
     surfaceY;
     imageOffsetY = 12;
     reward = 'coins';
     pattern = 'row';
+    solid = false;
 
     /** @param {number} x - Left image edge in world pixels.
      * @param {number} surfaceY - Walkable surface height in world pixels.
-     * @param {string} type - Short or long ledge graphic.
+     * @param {string} type - Short, long or block graphic.
      */
     constructor(x, surfaceY, type = 'short') {
         super();
@@ -19,6 +21,7 @@ class Platform extends DrawableObject {
         const scale = 220 / 416;
         this.x = x;
         this.surfaceY = surfaceY;
+        this.solid = type === 'block';
         this.width = settings.width * scale;
         this.height = settings.height * scale;
         this.y = surfaceY - settings.walkY * scale - this.imageOffsetY;

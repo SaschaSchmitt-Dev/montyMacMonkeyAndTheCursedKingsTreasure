@@ -136,6 +136,7 @@ class Character extends MovableObject {
         if (this.health === 0) return this.updateDeath(deltaTime, platforms);
         const previousX = this.x;
         this.move(deltaTime, keyboard.getDirection(), levelWidth);
+        this.checkBlocks(platforms, previousX);
         this.moving = this.x !== previousX;
         this.updateSupport(platforms);
         this.readJumpInput(keyboard.jump);
@@ -152,6 +153,21 @@ class Character extends MovableObject {
         this.updateSupport(platforms);
         this.applyGravity(deltaTime);
         this.updateAnimation(deltaTime);
+    }
+
+
+    /** @param {Platform[]} platforms - Landing surfaces, including solid blocks.
+     * @param {number} previousX - Horizontal position before movement.
+     */
+    checkBlocks(platforms, previousX) {
+        for (const block of platforms.filter((platform) => platform.solid)) {
+            if (this.y + this.height * 244 / 256 <= block.surfaceY + 0.01) continue;
+            const left = block.x + block.width * 0.06;
+            const right = block.x + block.width * 0.94;
+            if (this.x + this.width * 0.7 <= left || this.x + this.width * 0.3 >= right) continue;
+            this.x = previousX + this.width / 2 < block.x + block.width / 2
+                ? left - this.width * 0.7 : right - this.width * 0.3;
+        }
     }
 
 

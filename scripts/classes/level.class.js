@@ -5,6 +5,7 @@ class Level {
     groundY;
     enemies = [];
     platforms = [];
+    blocks = [];
     ammoPickups = [];
     scoreItems = [];
     transitionX;
@@ -38,8 +39,8 @@ class Level {
             [1960, 45, 'short', 'relic', 'diamond'],
             [2550, 0, 'short', 'ammo', 'row'],
             [2860, 50, 'long', 'ingot', 'row'],
-            [3650, 0, 'long', 'relic', 'pyramid'],
-            [4180, 45, 'short', 'ammo', 'row'],
+            [3650, 0, 'long', 'relic', 'row'],
+            [3850, 100, 'short', 'ammo', 'row'],
             [4820, 0, 'short', 'coins', 'arc'],
             [5100, 50, 'long', 'relic', 'row']
         ];
@@ -59,6 +60,31 @@ class Level {
                 this.platforms.push(platform);
             }
         }
+    }
+
+
+    /** Adds a guarded treasure area with two solid ground blocks. */
+    createEnemyZone() {
+        this.blocks = [];
+        if (this.width < 4500) return;
+        const floorY = this.groundY + 122;
+        this.blocks = [3500, 4240].map((x) => new Platform(x, floorY - 58, 'block'));
+        this.enemies = this.enemies.filter((enemy) => enemy.x + enemy.width < 3500 || enemy.x > 4400);
+        ['vine-lizard', 'thorn-beetle', 'armored-armadillo'].forEach((type, index) => {
+            this.enemies.push(new Enemy(type, 3710 + index * 160, floorY));
+        });
+    }
+
+
+    /** Adds floor treasures between the two blocks. */
+    addGuardedTreasures() {
+        if (this.blocks.length === 0) return;
+        const floorY = this.groundY + 122;
+        for (let index = 0; index < 9; index++) {
+            this.scoreItems.push(new ScoreItem('coin', 3690 + index * 54, floorY));
+        }
+        this.scoreItems.push(new ScoreItem('ingot', 3830, floorY - 50, floorY));
+        this.scoreItems.push(new ScoreItem('relic', 3990, floorY - 50, floorY));
     }
 
 
@@ -85,6 +111,11 @@ class Level {
         }
         this.platforms.filter((platform) => platform.reward !== 'ammo')
             .forEach((platform) => this.addPlatformTreasures(platform));
+        if (this.blocks.length > 0) {
+            this.scoreItems = this.scoreItems.filter((item) => item.supportY !== this.groundY + 122
+                || item.x < 3500 || item.x > 4400);
+        }
+        this.addGuardedTreasures();
     }
 
 

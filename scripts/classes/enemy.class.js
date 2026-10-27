@@ -74,11 +74,12 @@ class Enemy extends MovableObject {
     /** @param {number} deltaTime - Frame duration in seconds.
      * @param {number} levelWidth - Horizontal level boundary.
      * @param {boolean} canMove - Whether walking and its animation are enabled.
+     * @param {Platform[]} blocks - Solid floor obstacles.
      */
-    update(deltaTime, levelWidth, canMove = true) {
+    update(deltaTime, levelWidth, canMove = true, blocks = []) {
         if (this.defeated) return this.updateDeath(deltaTime);
         if (!canMove) return;
-        this.moveOnPatrol(deltaTime, levelWidth);
+        this.moveOnPatrol(deltaTime, levelWidth, blocks);
         this.animationTime += deltaTime;
         const path = this.frames[Math.floor(this.animationTime / 0.12) % this.frames.length];
         const image = this.imageCache[path];
@@ -88,15 +89,29 @@ class Enemy extends MovableObject {
 
     /** @param {number} deltaTime - Frame duration in seconds.
      * @param {number} levelWidth - Horizontal level boundary.
+     * @param {Platform[]} blocks - Solid floor obstacles.
      */
-    moveOnPatrol(deltaTime, levelWidth) {
+    moveOnPatrol(deltaTime, levelWidth, blocks = []) {
         const right = Math.max(0, Math.min(levelWidth - this.width, this.spawnX + this.patrolRadius));
         const left = Math.min(right, Math.max(0, this.spawnX - this.patrolRadius));
         this.move(deltaTime, this.direction, levelWidth);
         this.x = Math.max(left, Math.min(this.x, right));
         if (this.x <= left) this.direction = 1;
         if (this.x >= right) this.direction = -1;
+        this.checkBlocks(blocks);
         this.facingLeft = this.direction < 0;
+    }
+
+
+    /** @param {Platform[]} blocks - Solid obstacles along the floor. */
+    checkBlocks(blocks) {
+        for (const block of blocks) {
+            const left = block.x + block.width * 0.06;
+            const right = block.x + block.width * 0.94;
+            if (this.x + this.width <= left || this.x >= right) continue;
+            this.x = this.direction > 0 ? left - this.width : right;
+            this.direction *= -1;
+        }
     }
 
 
