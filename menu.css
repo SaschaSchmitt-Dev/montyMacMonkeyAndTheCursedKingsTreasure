@@ -1,0 +1,77 @@
+@font-face {
+    font-family: 'Luckiest Guy';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/luckiest-guy/luckiest-guy-latin-latin-ext-regular.woff2') format('woff2');
+}
+
+/* V3 daylight artwork and landing surfaces share 960 x 540 coordinates. */
+.start-screen { outline: none; }
+.menu-title { top: 0; left: 30%; width: 34%; z-index: 1; }
+.menu-home { position: absolute; left: 2.083333%; top: 60.481481%; width: 19.270833%; height: 21.296296%; }
+.menu-home > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.menu-bridges { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.menu-island { position: absolute; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.menu-island > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.menu-island:focus { outline: none; }
+.menu-island:hover, .menu-island:focus-visible, .menu-island.menu-near { filter: brightness(1.2) drop-shadow(0 0 6px #efb34d); }
+.menu-character { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; background: transparent; }
+.menu-foreground { pointer-events: none; }
+.menu-label {
+    display: flex;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    text-align: center;
+    color: #35200d;
+    background: none;
+    white-space: nowrap;
+    font-family: 'Luckiest Guy', sans-serif;
+    font-weight: 400;
+    font-size: clamp(9px, 1.85cqw, 18px);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 0 rgb(255 241 195 / 45%);
+    pointer-events: none;
+}
+
+.start-island { left: 18.665562%; top: 32.439333%; width: 28.293876%; height: 33.133333%; }
+.start-island .menu-label { left: 26.395939%; top: 58.752515%; width: 47.860769%; height: 10.060362%; }
+
+.options-island { left: 47.382028%; top: 36.676296%; width: 25.027610%; height: 26.000000%; }
+.options-island .menu-label { left: 22.685789%; top: 41.666667%; width: 54.106910%; height: 12.820513%; }
+
+.highscores-island { left: 71.558442%; top: 39.682287%; width: 27.716450%; height: 27.043478%; }
+.highscores-island .menu-label { left: 24.809645%; top: 48.874598%; width: 48.857868%; height: 12.325831%; }
+
+.guide-island { left: 42.726914%; top: 65.130833%; width: 23.921171%; height: 25.305556%; }
+.guide-island .menu-label { left: 21.542228%; top: 42.371021%; width: 56.609547%; height: 13.172338%; }
+
+.quit-island { left: 68.871783%; top: 65.000000%; width: 31.006434%; height: 34.814815%; }
+.quit-island .menu-label { left: 28.965960%; top: 54.468085%; width: 43.673732%; height: 9.574468%; }
+
+.menu-dialog { width: min(650px, 90vw); max-height: 84vh; padding: 0; border: 2px solid #b8944b; border-radius: 12px; background: #ebd6a2; color: #31220f; box-shadow: 0 15px 60px #000b; }
+.menu-dialog::backdrop { background: #000b; }
+.dialog-card { padding: clamp(14px, 3vw, 28px); }
+.dialog-card header { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #9c783b; padding-bottom: 10px; }
+.dialog-card h2 { margin: 0; font-size: 25px; }
+.dialog-card h3 { margin-bottom: 6px; }
+.dialog-card p { line-height: 1.5; }
+.dialog-card button, .dialog-card select { padding: 8px 12px; border: 1px solid #7c592d; border-radius: 5px; background: #fff1cb; color: #31220f; font: inherit; cursor: pointer; }
+.dialog-card button:focus-visible, .dialog-card select:focus-visible { outline: 3px solid #286b69; outline-offset: 2px; }
+.option-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 22px 0; }
+#highscore-list { padding-left: 28px; }
+#highscore-list li { padding: 6px; font-variant-numeric: tabular-nums; }
+kbd { border: 1px solid #9c783b; border-radius: 3px; padding: 1px 5px; background: #fff1cb; }
+.intro-screen { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; container-type: inline-size; }
+.intro-screen[hidden] { display: none; }
+.intro-screen > img { width: 55%; max-height: 65%; object-fit: contain; }
+
+.language-flags { display: flex; gap: 12px; }
+.dialog-card .language-flags button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 5px; border: 2px solid transparent; background: transparent; }
+.language-flags img { display: block; width: clamp(60px, 13vw, 90px); height: auto; }
+.dialog-card .language-flags button[aria-pressed="true"] { border-color: #286b69; background: #fff1cb; box-shadow: 0 0 0 1px #286b69; }
+.language-flags span { font-size: 13px; }

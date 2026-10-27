@@ -136,3 +136,154 @@ canvas {
 .end-panel.victory p {
     font-size: clamp(9px, 1.8cqw, 17px);
 }
+
+
+.page-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+.start-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    background: #10434a;
+    container-type: inline-size;
+}
+
+.start-screen[hidden] {
+    display: none;
+}
+
+.menu-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.menu-title {
+    position: absolute;
+    top: 2%;
+    left: 7%;
+    width: 50%;
+    height: auto;
+    filter: drop-shadow(0 5px 7px #13251d);
+}
+
+.menu-monty {
+    position: absolute;
+    left: 18%;
+    bottom: 10%;
+    width: 23%;
+    filter: drop-shadow(0 6px 5px #11231e);
+}
+
+.start-button {
+    position: absolute;
+    right: 4%;
+    bottom: 3%;
+    width: 35%;
+    aspect-ratio: 1352 / 1131;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.menu-gate {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.menu-portal {
+    position: absolute;
+    left: 36%;
+    top: 16%;
+    width: 29%;
+    height: 51%;
+    object-fit: fill;
+}
+
+.start-button:focus {
+    outline: none;
+}
+
+.start-button:hover,
+.start-button:focus-visible {
+    filter: brightness(1.25) drop-shadow(0 0 8px #51e5e0);
+}
+
+.end-actions {
+    display: flex;
+    width: 82%;
+    justify-content: center;
+    gap: 3%;
+}
+
+.end-actions .retry-button {
+    width: 48%;
+    padding: 0 3%;
+    font-size: clamp(11px, 2.1cqw, 20px);
+}
+
+
+.menu-stand {
+    position: absolute;
+    left: 12%;
+    bottom: -7%;
+    width: 36%;
+}
+
+
+.loading-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: #000;
+    color: #f4e7c5;
+    outline: none;
+    container-type: inline-size;
+}
+
+.loading-screen[hidden],
+.loading-spinner[hidden],
+#loading-menu-button[hidden] {
+    display: none;
+}
+
+.loading-screen p {
+    margin: 0;
+    font-size: clamp(12px, 2.2cqw, 21px);
+}
+
+.loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #3b3326;
+    border-top-color: #e8c46e;
+    border-radius: 50%;
+    animation: loading-spin 0.9s linear infinite;
+}
+
+@keyframes loading-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading-spinner { animation: none; }
+}

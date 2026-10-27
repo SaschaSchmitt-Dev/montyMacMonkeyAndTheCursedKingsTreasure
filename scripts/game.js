@@ -1,17 +1,27 @@
 const canvas = document.getElementById('canvas');
 const keyboard = new Keyboard(canvas);
-let world = new World(canvas, keyboard, createLevel1(canvas.width));
+let world = null;
 
 document.getElementById('restart-button').addEventListener('click', restartGame);
+document.getElementById('start-button').addEventListener('click', restartGame);
+document.getElementById('menu-button').addEventListener('click', showMainMenu);
+document.getElementById('loading-menu-button').addEventListener('click', showMainMenu);
 
 
 /** Replaces the stopped game world and clears held input without reloading the page. */
-function restartGame() {
-    world.stop();
+async function restartGame() {
+    if (world) world.stop();
     keyboard.reset();
-    world = new World(canvas, keyboard, createLevel1(canvas.width));
-    resetEndScreen();
-    canvas.focus({ preventScroll: true });
+    menuWalker.stop();
+    showLoadingScreen();
+    const nextWorld = new World(canvas, keyboard, createLevel1(canvas.width), false);
+    world = nextWorld;
+    try {
+        await nextWorld.waitForImages();
+        if (world === nextWorld) finishLoading(nextWorld);
+    } catch {
+        if (world === nextWorld) showLoadingError();
+    }
 }
 
 
@@ -26,9 +36,10 @@ function resetEndScreen() {
  */
 function showEndScreen(result, score) {
     const victory = result === 'victory';
-    document.getElementById('end-title').textContent = victory ? 'Level geschafft!' : 'Game Over';
+    saveRunScore(world, result);
+    document.getElementById('end-title').textContent = victory ? t('won') : t('lost');
     document.getElementById('end-message').textContent = victory
-        ? 'Der verfluchte König ist besiegt.' : 'Dein Abenteuer ist noch nicht vorbei.';
+        ? t('winMessage') : t('loseMessage');
     document.getElementById('end-panel').classList.toggle('victory', victory);
     showVictoryScore(score);
     document.getElementById('end-screen').hidden = false;
@@ -41,9 +52,58 @@ function showVictoryScore(score) {
     document.getElementById('victory-score').hidden = !score;
     if (!score) return;
     document.getElementById('collected-score').textContent = score.collected;
-    document.getElementById('life-bonus-label').textContent = `Leben (${score.lives} × 50)`;
+    document.getElementById('life-bonus-label').textContent = `${t('lives')} (${score.lives} × 50)`;
     document.getElementById('life-bonus').textContent = `+${score.lifeBonus}`;
-    document.getElementById('ammo-bonus-label').textContent = `Munition (${score.ammo} × 10)`;
+    document.getElementById('ammo-bonus-label').textContent = `${t('ammo')} (${score.ammo} × 10)`;
     document.getElementById('ammo-bonus').textContent = `+${score.ammoBonus}`;
     document.getElementById('total-score').textContent = score.total;
+}
+
+
+/** Stops the previous run and restores the start screen without reloading. */
+function showMainMenu() {
+    if (world) world.stop();
+    world = null;
+    keyboard.reset();
+    document.getElementById('loading-screen').hidden = true;
+    resetEndScreen();
+    canvas.inert = true;
+    document.getElementById('intro-screen').hidden = true;
+    document.getElementById('start-screen').hidden = false;
+    menuWalker.start();
+    document.getElementById('start-screen').focus({ preventScroll: true });
+}
+
+
+/** Covers the canvas while the next level loads and disables game input. */
+function showLoadingScreen() {
+    resetEndScreen();
+    canvas.inert = true;
+    document.getElementById('start-screen').hidden = true;
+    document.getElementById('loading-screen').hidden = false;
+    document.getElementById('loading-spinner').hidden = false;
+    document.getElementById('loading-message').textContent = t('loading');
+    document.getElementById('loading-menu-button').hidden = true;
+    document.getElementById('loading-screen').focus({ preventScroll: true });
+}
+
+
+/** @param {World} nextWorld - Fully loaded world to reveal and start. */
+function finishLoading(nextWorld) {
+    nextWorld.draw();
+    keyboard.reset();
+    nextWorld.start();
+    document.getElementById('loading-screen').hidden = true;
+    canvas.inert = false;
+    canvas.focus({ preventScroll: true });
+}
+
+
+/** Offers a way back to the menu if a required game image cannot load. */
+function showLoadingError() {
+    world.stop();
+    document.getElementById('loading-spinner').hidden = true;
+    document.getElementById('loading-message').textContent = t('loadError');
+    document.getElementById('loading-menu-button').hidden = false;
+    document.getElementById('loading-menu-button').focus({ preventScroll: true });
 }

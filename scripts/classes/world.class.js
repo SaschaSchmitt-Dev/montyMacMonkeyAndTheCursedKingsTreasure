@@ -24,13 +24,15 @@ class World {
     result = null;
     endTime = 0;
     endScore = null;
+    scoreSaved = false;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
      * @param {Keyboard} keyboard - Current player input.
      * @param {Level} level - Level dimensions and starting position.
+     * @param {boolean} autoStart - Whether to start immediately instead of waiting for images.
      */
-    constructor(canvas, keyboard, level) {
+    constructor(canvas, keyboard, level, autoStart = true) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.keyboard = keyboard;
@@ -47,7 +49,36 @@ class World {
         const totalScore = level.scoreItems.reduce((sum, item) => sum + item.points, 0);
         this.scoreBar = new ScoreBar(totalScore, () => this.draw());
         this.bossHealthBar = new BossHealthBar(() => this.draw());
+        if (autoStart) this.start();
+    }
+
+
+    /** Starts the prepared world after loading, with a fresh frame timestamp. */
+    start() {
+        if (!this.active) return;
+        this.lastTime = null;
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
+    }
+
+
+    /** @returns {DrawableObject[]} Objects whose graphics are needed for this run. */
+    getLoadingObjects() {
+        const room = this.bossChamber;
+        return [...this.backgrounds.flat(), this.ground, this.character,
+            ...this.level.enemies, ...this.level.platforms, ...this.level.blocks,
+            ...this.level.ammoPickups, ...this.level.scoreItems,
+            this.healthBar, this.ammoBar, this.scoreBar, this.bossHealthBar,
+            ...Object.values(room.layers), room.grass, room.seam,
+            room.background, room.roomGround, room.boss];
+    }
+
+
+    /** @returns {Promise} Resolves when all game images are loaded and decoded. */
+    waitForImages() {
+        const images = this.getLoadingObjects().flatMap((object) =>
+            [object.img, ...Object.values(object.imageCache)]).filter(Boolean);
+        images.push(...Object.values(BananaProjectile.images));
+        return Promise.all([...new Set(images)].map((image) => image.decode()));
     }
 
 
