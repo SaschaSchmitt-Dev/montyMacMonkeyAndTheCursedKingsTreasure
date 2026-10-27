@@ -97,3 +97,42 @@ canvas {
 .retry-button:focus-visible {
     filter: brightness(1.55);
 }
+
+
+.victory-score {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 2cqw;
+    width: 40%;
+    margin: 0.5% 0 0;
+    font-size: clamp(9px, 1.65cqw, 16px);
+    line-height: 1.15;
+    text-align: left;
+}
+
+.victory-score[hidden] {
+    display: none;
+}
+
+.victory-score dd {
+    margin: 0;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.score-total {
+    margin-top: 2px;
+    border-top: 1px solid #ffe7a3;
+    padding-top: 2px;
+    font-weight: bold;
+}
+
+
+.end-panel.victory h2 {
+    margin-bottom: 0.5%;
+    font-size: clamp(17px, 4cqw, 38px);
+}
+
+.end-panel.victory p {
+    font-size: clamp(9px, 1.8cqw, 17px);
+}

@@ -48,6 +48,12 @@
             <div id="end-panel" class="end-panel">
                 <h2 id="end-title">Game Over</h2>
                 <p id="end-message" role="status"></p>
+                <dl id="victory-score" class="victory-score" aria-label="Punkteaufstellung" hidden>
+                    <dt>Sammelpunkte</dt><dd id="collected-score">0</dd>
+                    <dt id="life-bonus-label">Leben</dt><dd id="life-bonus">0</dd>
+                    <dt id="ammo-bonus-label">Munition</dt><dd id="ammo-bonus">0</dd>
+                    <dt class="score-total">Gesamtpunkte</dt><dd id="total-score" class="score-total">0</dd>
+                </dl>
             </div>
             <button id="restart-button" class="retry-button" type="button">Noch einmal spielen</button>
         </section>

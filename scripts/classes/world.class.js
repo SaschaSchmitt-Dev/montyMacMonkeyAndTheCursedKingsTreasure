@@ -23,6 +23,7 @@ class World {
     bossHealthBar;
     result = null;
     endTime = 0;
+    endScore = null;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
@@ -103,7 +104,21 @@ class World {
         else if (this.boss && this.boss.defeated) this.result = 'victory';
         if (!this.result) return;
         if (this.throwController.active) this.throwController.cancel(this.character);
+        if (this.result === 'victory') this.calculateVictoryScore();
         this.keyboard.reset();
+    }
+
+
+    /** Captures collected points and remaining resources once for the victory result. */
+    calculateVictoryScore() {
+        if (this.endScore) return;
+        const collected = this.character.score;
+        const lives = this.character.health;
+        const ammo = this.character.ammo;
+        const lifeBonus = lives * 50;
+        const ammoBonus = ammo * 10;
+        this.endScore = { collected, lives, ammo, lifeBonus, ammoBonus,
+            total: collected + lifeBonus + ammoBonus };
     }
 
 
@@ -117,7 +132,7 @@ class World {
         this.draw();
         this.stop();
         this.keyboard.reset();
-        showEndScreen(this.result);
+        showEndScreen(this.result, this.endScore);
     }
 
 

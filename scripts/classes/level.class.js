@@ -39,8 +39,8 @@ class Level {
             [1960, 45, 'short', 'relic', 'diamond'],
             [2550, 0, 'short', 'ammo', 'row'],
             [2860, 50, 'long', 'ingot', 'row'],
-            [3650, 0, 'long', 'relic', 'row'],
-            [3850, 100, 'short', 'ammo', 'row'],
+            [3735, 50, 'long', 'relic', 'row'],
+            [4240, 150, 'short', 'ammo', 'row'],
             [4820, 0, 'short', 'coins', 'arc'],
             [5100, 50, 'long', 'relic', 'row']
         ];
@@ -63,12 +63,12 @@ class Level {
     }
 
 
-    /** Adds a guarded treasure area with two solid ground blocks. */
-    createEnemyZone() {
+    /** @param {number} blockGroundOffsetY - Downward adjustment for both blocks and their surfaces. */
+    createEnemyZone(blockGroundOffsetY = 6) {
         this.blocks = [];
         if (this.width < 4500) return;
         const floorY = this.groundY + 122;
-        this.blocks = [3500, 4240].map((x) => new Platform(x, floorY - 58, 'block'));
+        this.blocks = [3500, 4240].map((x) => new Platform(x, floorY - 58 + blockGroundOffsetY, 'block'));
         this.enemies = this.enemies.filter((enemy) => enemy.x + enemy.width < 3500 || enemy.x > 4400);
         ['vine-lizard', 'thorn-beetle', 'armored-armadillo'].forEach((type, index) => {
             this.enemies.push(new Enemy(type, 3710 + index * 160, floorY));
