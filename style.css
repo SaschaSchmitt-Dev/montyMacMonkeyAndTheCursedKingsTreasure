@@ -90,8 +90,10 @@ canvas {
     filter: brightness(1.15);
 }
 
+.retry-button:focus {
+    outline: none;
+}
+
 .retry-button:focus-visible {
-    outline: 3px solid #ffe7a3;
-    outline-offset: -8px;
-    border-radius: 20px;
+    filter: brightness(1.55);
 }
