@@ -1,4 +1,4 @@
-/** Indiana Monkey with running and a single animated jump. */
+/** Monty MacMonkey with running and a single animated jump. */
 class Character extends MovableObject {
     x = 120;
     y = 320;

@@ -10,13 +10,24 @@ function restartGame() {
     world.stop();
     keyboard.reset();
     world = new World(canvas, keyboard, createLevel1(canvas.width));
-    resetGameOver();
+    resetEndScreen();
     canvas.focus({ preventScroll: true });
 }
 
 
-/** Hides the game-over message and restart button for a fresh game. */
-function resetGameOver() {
-    document.getElementById('game-status').hidden = true;
-    document.getElementById('restart-button').hidden = true;
+/** Hides the result overlay for a fresh game. */
+function resetEndScreen() {
+    document.getElementById('end-screen').hidden = true;
+}
+
+
+/** @param {string} result - Either victory or defeat. */
+function showEndScreen(result) {
+    const victory = result === 'victory';
+    document.getElementById('end-title').textContent = victory ? 'Level geschafft!' : 'Game Over';
+    document.getElementById('end-message').textContent = victory
+        ? 'Der verfluchte König ist besiegt.' : 'Dein Abenteuer ist noch nicht vorbei.';
+    document.getElementById('end-panel').classList.toggle('victory', victory);
+    document.getElementById('end-screen').hidden = false;
+    document.getElementById('restart-button').focus({ preventScroll: true });
 }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indiana Monkey and the Cave of the Cursed King</title>
+    <title>Monty MacMonkey and the Cursed King’s Treasure</title>
 
     <link rel="stylesheet" href="style.css">
 
@@ -38,13 +38,20 @@
 
 <body>
 
-    <h1>Indiana Monkey and the Cave of the Cursed King</h1>
+    <h1>Monty MacMonkey and the Cursed King’s Treasure</h1>
 
-    <canvas id="canvas" width="960" height="540" tabindex="0" aria-label="Spielfeld von Indiana Monkey">
+    <div class="game-frame">
+    <canvas id="canvas" width="960" height="540" tabindex="0" aria-label="Spielfeld von Monty MacMonkey">
         Dein Browser unterstützt das Canvas-Spielfeld nicht.
     </canvas>
-    <p id="game-status" role="status" hidden>Game Over</p>
-    <button id="restart-button" type="button" hidden>Noch einmal spielen</button>
+        <section id="end-screen" class="end-screen" aria-labelledby="end-title" hidden>
+            <div id="end-panel" class="end-panel">
+                <h2 id="end-title">Game Over</h2>
+                <p id="end-message" role="status"></p>
+            </div>
+            <button id="restart-button" class="retry-button" type="button">Noch einmal spielen</button>
+        </section>
+    </div>
 
 </body>
 

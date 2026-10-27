@@ -21,6 +21,8 @@ class World {
     ammoBar;
     scoreBar;
     bossHealthBar;
+    result = null;
+    endTime = 0;
 
     /**
      * @param {HTMLCanvasElement} canvas - Canvas used for the scene.
@@ -86,9 +88,36 @@ class World {
     gameLoop(time) {
         if (!this.active) return;
         this.deltaTime = this.getDeltaTime(time);
-        if (!this.bossChamber.update(this)) this.updateScene();
+        if (this.result) this.updateEnding();
+        else if (!this.bossChamber.update(this)) this.updateScene();
+        this.checkGameEnd();
         this.draw();
-        this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
+        if (this.active) this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
+    }
+
+
+    /** Locks gameplay when either combatant has been defeated. */
+    checkGameEnd() {
+        if (this.result) return;
+        if (this.character.health === 0) this.result = 'defeat';
+        else if (this.boss && this.boss.defeated) this.result = 'victory';
+        if (!this.result) return;
+        if (this.throwController.active) this.throwController.cancel(this.character);
+        this.keyboard.reset();
+    }
+
+
+    /** Finishes the death animation before stopping the scene and showing its result. */
+    updateEnding() {
+        this.endTime += this.deltaTime;
+        if (this.result === 'defeat') {
+            this.character.updateDeath(this.deltaTime, [...this.level.platforms, ...this.level.blocks]);
+        } else this.boss.update(this.deltaTime, false);
+        if (this.endTime < 0.8 || (this.result === 'defeat' && !this.character.isGrounded())) return;
+        this.draw();
+        this.stop();
+        this.keyboard.reset();
+        showEndScreen(this.result);
     }
 
 
@@ -154,8 +183,6 @@ class World {
             this.boss.projectiles = ProjectileCollisions.checkCharacter(this.boss.projectiles, this.character);
         }
         this.level.enemies = this.level.enemies.filter((enemy) => !enemy.defeated || enemy.deathTime < 0.6);
-        document.getElementById('game-status').hidden = this.character.health > 0;
-        document.getElementById('restart-button').hidden = this.character.health > 0;
     }
 
 
