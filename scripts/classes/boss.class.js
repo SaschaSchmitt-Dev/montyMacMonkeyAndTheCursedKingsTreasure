@@ -12,7 +12,7 @@ class Boss extends DrawableObject {
     health = this.maxHealth;
     hitTime = 0;
     deathTime = 0;
-    deathOffsetY = 26;
+    deathOffsetY = 0;
     defeated = false;
     projectiles = [];
     projectilePath = 'assets/images/projectiles/boss/curse-orb.png';
@@ -25,7 +25,7 @@ class Boss extends DrawableObject {
     followUpReleased = false;
     followUpDelay = 0.6;
     highShotOffset = 96;
-    attackPatterns = ['low', 'pair', 'high', 'low'];
+    attackPatterns = ['low', 'pair', 'high-low', 'low'];
     patternIndex = 0;
     attackPattern = 'low';
 
@@ -37,7 +37,7 @@ class Boss extends DrawableObject {
         super();
         this.x = roomWidth - this.width - 40;
         this.y = floorY - this.height * 0.98;
-        this.frames = this.createFramePaths('idle', 2);
+        this.frames = this.createFramePaths('idle', 4);
         this.attackFrames = this.createFramePaths('attack', 4);
         this.loadImages([...this.frames, ...this.attackFrames, this.projectilePath], onLoad);
         this.loadDamageFrames(onLoad);
@@ -73,7 +73,7 @@ class Boss extends DrawableObject {
         if (this.defeated) this.deathTime += deltaTime;
 
         const paths = this.defeated ? this.deathFrames : this.hitFrames;
-        const time = this.defeated ? this.deathTime * 5 : (0.25 - this.hitTime) * 8;
+        const time = this.defeated ? this.deathTime * 3.5 : (0.25 - this.hitTime) * 8;
         this.img = this.imageCache[paths[Math.min(paths.length - 1, Math.floor(time))]];
     }
 
@@ -131,12 +131,12 @@ class Boss extends DrawableObject {
     /** @param {number} deltaTime - Frame duration in seconds. */
     advanceAttack(deltaTime) {
         this.attackTime += deltaTime;
-        if (!this.shotReleased && this.attackTime >= 2 / 7) {
-            this.releaseShot(this.attackPattern === 'high');
+        if (!this.shotReleased && this.attackTime >= 0.36) {
+            this.releaseShot(this.attackPattern === 'high-low');
             this.shotReleased = true;
         }
         this.releaseFollowUp();
-        const duration = 4 / 7 + (this.attackPattern === 'pair' ? this.followUpDelay : 0);
+        const duration = 0.78 + (this.hasFollowUp() ? this.followUpDelay : 0);
         if (this.attackTime >= duration) {
             this.attacking = false;
             this.cooldown = this.attackInterval;
@@ -144,19 +144,25 @@ class Boss extends DrawableObject {
     }
 
 
-    /** Releases the delayed high orb once during a paired attack. */
+    /** Releases the opposite-height orb once during either two-shot attack. */
     releaseFollowUp() {
-        if (this.attackPattern !== 'pair' || this.followUpReleased) return;
-        if (this.attackTime < 2 / 7 + this.followUpDelay) return;
-        this.releaseShot(true);
+        if (!this.hasFollowUp() || this.followUpReleased) return;
+        if (this.attackTime < 0.36 + this.followUpDelay) return;
+        this.releaseShot(this.attackPattern === 'pair');
         this.followUpReleased = true;
+    }
+
+
+    /** @returns {boolean} Whether this pattern contains a delayed second shot. */
+    hasFollowUp() {
+        return this.attackPattern === 'pair' || this.attackPattern === 'high-low';
     }
 
 
     /** @param {boolean} high - Whether the orb travels above the standing player. */
     releaseShot(high) {
         const y = this.y + this.height - 80 - (high ? this.highShotOffset : 0);
-        this.projectiles.push(new BossProjectile(this.x - 20, y, this.imageCache[this.projectilePath]));
+        this.projectiles.push(new BossProjectile(this.x - 20, y, this.imageCache[this.projectilePath], this.y - 20));
     }
 
 
@@ -164,9 +170,9 @@ class Boss extends DrawableObject {
     updateAnimation(deltaTime) {
         this.animationTime += deltaTime;
         const paths = this.attacking ? this.attackFrames : this.frames;
-        const repeatTime = this.attackPattern === 'pair' && this.attackTime >= this.followUpDelay
+        const repeatTime = this.hasFollowUp() && this.attackTime >= this.followUpDelay
             ? this.attackTime - this.followUpDelay : this.attackTime;
-        const time = this.attacking ? repeatTime * 7 : this.animationTime * 3;
+        const time = this.attacking ? repeatTime / 0.18 : this.animationTime / 0.65;
         const frame = this.attacking ? Math.min(3, Math.floor(time)) : Math.floor(time) % paths.length;
         const image = this.imageCache[paths[frame]];
         if (image.complete && image.naturalWidth > 0) this.img = image;

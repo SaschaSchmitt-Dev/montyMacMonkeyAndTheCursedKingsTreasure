@@ -7,11 +7,15 @@ class BossProjectile extends MovableObject {
     /** @param {number} x - Left edge of the projectile.
      * @param {number} y - Upper edge of the projectile.
      * @param {HTMLImageElement} image - Preloaded curse orb image.
+     * @param {number} launchY - Staff-tip origin before settling into the attack lane.
      */
-    constructor(x, y, image) {
+    constructor(x, y, image, launchY = y) {
         super();
         this.x = x;
-        this.y = y;
+        this.y = launchY;
+        this.launchY = launchY;
+        this.targetY = y;
+        this.flightTime = 0;
         this.img = image;
     }
 
@@ -19,6 +23,9 @@ class BossProjectile extends MovableObject {
     /** @param {number} deltaTime - Frame duration in seconds. */
     update(deltaTime) {
         this.x -= this.speed * deltaTime;
+        this.flightTime += deltaTime;
+        const progress = Math.min(1, this.flightTime / 0.22);
+        this.y = this.launchY + (this.targetY - this.launchY) * progress;
     }
 
 
