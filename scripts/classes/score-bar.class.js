@@ -58,7 +58,7 @@ class ScoreBar extends DrawableObject {
         ctx.font = 'bold 104px Arial';
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'left';
-        ctx.fillText('Punkte', 594, 246);
+        ctx.fillText(t('hudScore'), 594, 246);
         ctx.fillText(`${score}/${this.maxScore}`, 594, 510);
     }
 }

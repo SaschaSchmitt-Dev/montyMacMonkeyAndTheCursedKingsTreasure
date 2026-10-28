@@ -1,5 +1,6 @@
 const menuTexts = {
-    de: { start: 'Spiel starten', options: 'Optionen', highscores: 'Highscores', guide: 'Anleitung',
+    de: {
+        start: 'Spiel starten', options: 'Optionen', highscores: 'Highscores', guide: 'Anleitung',
         quit: 'Beenden', close: 'Schließen', sound: 'Ton', on: 'An', off: 'Aus', language: 'Sprache', optionKeys: '↑ ↓ Auswahl · ← → ändern · Enter/Space aktivieren · Esc zurück',
         hint: '← → Laufen · ↑ Springen · Space: Plattform aktivieren · oder anklicken',
         empty: 'Noch keine abgeschlossenen Abenteuer.', local: 'Die besten 10 Ergebnisse bleiben nur in diesem Browser auf diesem Gerät. Beim Löschen der Browserdaten gehen sie verloren.',
@@ -7,9 +8,11 @@ const menuTexts = {
         victory: 'Sieg', defeat: 'Niederlage', menu: 'Zum Hauptmenü', restart: 'Noch einmal spielen',
         won: 'Level geschafft!', lost: 'Game Over', winMessage: 'Der verfluchte König ist besiegt.',
         loseMessage: 'Dein Abenteuer ist noch nicht vorbei.', collected: 'Sammelpunkte', lives: 'Leben',
-        ammo: 'Munition', total: 'Gesamtpunkte', loading: 'Abenteuer wird geladen …',
-        loadError: 'Laden fehlgeschlagen. Bitte erneut starten.' },
-    en: { start: 'Start game', options: 'Options', highscores: 'High scores', guide: 'How to play',
+        hudScore: 'Punkte', hudAmmo: 'Munition', ammo: 'Munition', total: 'Gesamtpunkte', loading: 'Abenteuer wird geladen …',
+        loadError: 'Laden fehlgeschlagen. Bitte erneut starten.'
+    },
+    en: {
+        start: 'Start game', options: 'Options', highscores: 'High scores', guide: 'How to play',
         quit: 'Exit', close: 'Close', sound: 'Sound', on: 'On', off: 'Off', language: 'Language', optionKeys: '↑ ↓ Select · ← → Change · Enter/Space activate · Esc back',
         hint: '← → Move · ↑ Jump · Space: activate platform · or click',
         empty: 'No completed adventures yet.', local: 'The top 10 results stay only in this browser on this device. Clearing browser data removes them.',
@@ -17,8 +20,9 @@ const menuTexts = {
         victory: 'Victory', defeat: 'Defeat', menu: 'Main menu', restart: 'Play again',
         won: 'Level complete!', lost: 'Game Over', winMessage: 'The cursed king is defeated.',
         loseMessage: 'Your adventure is not over yet.', collected: 'Collected points', lives: 'Lives',
-        ammo: 'Ammunition', total: 'Total points', loading: 'Loading your adventure …',
-        loadError: 'Loading failed. Please try starting again.' }
+        hudScore: 'Score', hudAmmo: 'Ammo', ammo: 'Ammunition', total: 'Total points', loading: 'Loading your adventure …',
+        loadError: 'Loading failed. Please try starting again.'
+    }
 };
 let menuReturnButton = null;
 const menuDialog = document.getElementById('menu-dialog');
@@ -114,7 +118,7 @@ Promise.all([...menuWalker.screen.querySelectorAll('img, svg image')].map((eleme
     return image.decode();
 }))
     .then(() => { if (!menuWalker.screen.hidden) menuWalker.start(); })
-    .catch(() => {});
+    .catch(() => { });
 document.getElementById('start-screen').focus({ preventScroll: true });
 
 

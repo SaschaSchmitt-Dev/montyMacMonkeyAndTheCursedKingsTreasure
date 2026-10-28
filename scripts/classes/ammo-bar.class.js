@@ -58,7 +58,7 @@ class AmmoBar extends DrawableObject {
         ctx.font = 'bold 104px Arial';
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'left';
-        ctx.fillText('Munition', 594, 246);
+        ctx.fillText(t('hudAmmo'), 594, 246);
         ctx.fillText(`${ammo}/${this.maxAmmo}`, 594, 510);
     }
 }
