@@ -2,6 +2,8 @@ const canvas = document.getElementById('canvas');
 const keyboard = new Keyboard(canvas);
 let world = null;
 
+document.getElementById('end-screen').addEventListener('keydown', selectEndAction);
+
 document.getElementById('restart-button').addEventListener('click', restartGame);
 document.getElementById('start-button').addEventListener('click', restartGame);
 document.getElementById('menu-button').addEventListener('click', showMainMenu);
@@ -106,4 +108,16 @@ function showLoadingError() {
     document.getElementById('loading-message').textContent = t('loadError');
     document.getElementById('loading-menu-button').hidden = false;
     document.getElementById('loading-menu-button').focus({ preventScroll: true });
+}
+
+
+/** Moves between the two result actions with the horizontal arrow keys. */
+function selectEndAction(event) {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const buttons = [...document.querySelectorAll('#end-screen .retry-button')];
+    const current = buttons.indexOf(document.activeElement);
+    const direction = event.key === 'ArrowRight' ? 1 : -1;
+    const next = (current + direction + buttons.length) % buttons.length;
+    buttons[next].focus({ preventScroll: true });
 }

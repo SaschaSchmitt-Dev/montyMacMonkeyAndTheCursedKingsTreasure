@@ -86,14 +86,13 @@ canvas {
     cursor: pointer;
 }
 
-.retry-button:hover {
-    filter: brightness(1.15);
-}
+
 
 .retry-button:focus {
     outline: none;
 }
 
+.retry-button:hover,
 .retry-button:focus-visible {
     filter: brightness(1.55);
 }
