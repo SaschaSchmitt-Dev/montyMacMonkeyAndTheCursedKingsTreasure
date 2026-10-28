@@ -55,7 +55,7 @@ class AmmoBar extends DrawableObject {
      */
     drawText(ctx, ammo) {
         ctx.fillStyle = 'rgb(244, 231, 197)';
-        ctx.font = 'bold 104px Arial';
+        ctx.font = '400 104px "Racing Sans One", Arial, sans-serif';
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'left';
         ctx.fillText(t('hudAmmo'), 594, 246);

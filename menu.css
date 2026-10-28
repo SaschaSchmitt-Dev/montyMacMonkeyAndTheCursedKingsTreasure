@@ -1,9 +1,22 @@
 @font-face {
+    font-family: 'Racing Sans One';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/racing-sans-one-v17-latin-regular.woff2') format('woff2');
+}
+
+.menu-dialog {
+    font-family: 'Racing Sans One', Arial, sans-serif;
+    font-weight: 400;
+}
+.menu-dialog h2, .menu-dialog h3 { font-weight: 400; }
+@font-face {
     font-family: 'Luckiest Guy';
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('assets/fonts/luckiest-guy/luckiest-guy-latin-latin-ext-regular.woff2') format('woff2');
+    src: url('assets/fonts/luckiest-guy-latin-latin-ext-regular.woff2') format('woff2');
 }
 
 /* V3 daylight artwork and landing surfaces share 960 x 540 coordinates. */
@@ -75,3 +88,27 @@ kbd { border: 1px solid #9c783b; border-radius: 3px; padding: 1px 5px; backgroun
 .language-flags img { display: block; width: clamp(60px, 13vw, 90px); height: auto; }
 .dialog-card .language-flags button[aria-pressed="true"] { border-color: #286b69; background: #fff1cb; box-shadow: 0 0 0 1px #286b69; }
 .language-flags span { font-size: 13px; }
+
+/* Match the in-game HUD font on the result panel and its actions. */
+.end-screen, .end-screen .retry-button {
+    font-family: 'Racing Sans One', Arial, sans-serif;
+    font-weight: 400;
+}
+.end-screen h2, .end-screen .score-total { font-weight: 400; }
+
+/* One-line stone labels sized against the longest German text in each menu. */
+.pause-dialog, .retry-button {
+    font-family: 'Racing Sans One', Arial, sans-serif;
+    font-weight: 400;
+}
+.pause-dialog h2 { font-weight: 400; }
+
+.retry-button, .end-actions .retry-button, .pause-dialog .retry-button { padding: 0; }
+.retry-button > span {
+    display: block;
+    white-space: nowrap;
+    font-size: inherit;
+    line-height: 1.1;
+}
+.end-actions .retry-button { font-size: 2.99cqw; }
+.pause-dialog .retry-button { font-size: min(39px, 7.8vw); }

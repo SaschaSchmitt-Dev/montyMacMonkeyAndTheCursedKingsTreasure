@@ -60,7 +60,7 @@ class BossHealthBar extends DrawableObject {
      * @param {Boss} boss - Boss with current and maximum health.
      */
     drawCount(ctx, boss) {
-        ctx.font = 'bold 70px Arial';
+        ctx.font = '400 70px "Racing Sans One", Arial, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgb(255, 245, 225)';

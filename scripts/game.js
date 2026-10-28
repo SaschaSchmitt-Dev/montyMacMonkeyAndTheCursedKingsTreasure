@@ -19,7 +19,7 @@ async function restartGame() {
     const nextWorld = new World(canvas, keyboard, createLevel1(canvas.width), false);
     world = nextWorld;
     try {
-        await nextWorld.waitForImages();
+        await Promise.all([nextWorld.waitForImages(), document.fonts.load('104px "Racing Sans One"')]);
         if (world === nextWorld) finishLoading(nextWorld);
     } catch {
         if (world === nextWorld) showLoadingError();

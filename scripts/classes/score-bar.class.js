@@ -55,7 +55,7 @@ class ScoreBar extends DrawableObject {
      */
     drawText(ctx, score) {
         ctx.fillStyle = 'rgb(244, 231, 197)';
-        ctx.font = 'bold 104px Arial';
+        ctx.font = '400 104px "Racing Sans One", Arial, sans-serif';
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'left';
         ctx.fillText(t('hudScore'), 594, 246);
