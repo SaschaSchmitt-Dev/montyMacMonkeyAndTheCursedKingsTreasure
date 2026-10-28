@@ -8,7 +8,7 @@ const menuTexts = {
         victory: 'Sieg', defeat: 'Niederlage', menu: 'Zum Hauptmenü', restart: 'Noch einmal spielen',
         won: 'Level geschafft!', lost: 'Game Over', winMessage: 'Der verfluchte König ist besiegt.',
         loseMessage: 'Dein Abenteuer ist noch nicht vorbei.', collected: 'Sammelpunkte', lives: 'Leben',
-        hudScore: 'Punkte', hudAmmo: 'Munition', ammo: 'Munition', total: 'Gesamtpunkte', loading: 'Abenteuer wird geladen …',
+        paused: 'Pause', resume: 'Fortsetzen', newRun: 'Neustart', openPause: 'Pause öffnen', hudScore: 'Punkte', hudAmmo: 'Munition', ammo: 'Munition', total: 'Gesamtpunkte', loading: 'Abenteuer wird geladen …',
         loadError: 'Laden fehlgeschlagen. Bitte erneut starten.'
     },
     en: {
@@ -20,7 +20,7 @@ const menuTexts = {
         victory: 'Victory', defeat: 'Defeat', menu: 'Main menu', restart: 'Play again',
         won: 'Level complete!', lost: 'Game Over', winMessage: 'The cursed king is defeated.',
         loseMessage: 'Your adventure is not over yet.', collected: 'Collected points', lives: 'Lives',
-        hudScore: 'Score', hudAmmo: 'Ammo', ammo: 'Ammunition', total: 'Total points', loading: 'Loading your adventure …',
+        paused: 'Paused', resume: 'Resume', newRun: 'Restart', openPause: 'Open pause menu', hudScore: 'Score', hudAmmo: 'Ammo', ammo: 'Ammunition', total: 'Total points', loading: 'Loading your adventure …',
         loadError: 'Loading failed. Please try starting again.'
     }
 };
@@ -33,6 +33,7 @@ function t(key) { return menuTexts[gameSettings.language][key] || key; }
 /** Updates static interface labels and the active dialog after a language change. */
 function updateMenuLanguage() {
     document.documentElement.lang = gameSettings.language;
+    document.getElementById('pause-button').setAttribute('aria-label', t('openPause'));
     document.querySelectorAll('[data-i18n]').forEach((element) => element.textContent = t(element.dataset.i18n));
     document.querySelectorAll('[data-menu]').forEach((button) => button.setAttribute('aria-label', t(button.dataset.menu)));
     document.querySelectorAll('[data-language]').forEach((section) => section.hidden = section.dataset.language !== gameSettings.language);

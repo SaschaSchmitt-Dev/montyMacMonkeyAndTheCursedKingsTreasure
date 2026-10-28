@@ -37,6 +37,7 @@ function resetEndScreen() {
  * @param {Object|null} score - Final victory points and resource bonuses.
  */
 function showEndScreen(result, score) {
+    hidePauseMenu();
     const victory = result === 'victory';
     saveRunScore(world, result);
     document.getElementById('end-title').textContent = victory ? t('won') : t('lost');
@@ -64,6 +65,7 @@ function showVictoryScore(score) {
 
 /** Stops the previous run and restores the start screen without reloading. */
 function showMainMenu() {
+    hidePauseMenu();
     if (world) world.stop();
     world = null;
     keyboard.reset();
@@ -79,6 +81,7 @@ function showMainMenu() {
 
 /** Covers the canvas while the next level loads and disables game input. */
 function showLoadingScreen() {
+    hidePauseMenu();
     resetEndScreen();
     canvas.inert = true;
     document.getElementById('start-screen').hidden = true;
@@ -96,6 +99,7 @@ function finishLoading(nextWorld) {
     keyboard.reset();
     nextWorld.start();
     document.getElementById('loading-screen').hidden = true;
+    document.getElementById('pause-button').hidden = false;
     canvas.inert = false;
     canvas.focus({ preventScroll: true });
 }

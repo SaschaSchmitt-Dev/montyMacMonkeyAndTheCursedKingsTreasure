@@ -1,11 +1,12 @@
-﻿/** Five heart slots centered on a fixed canvas panel. */
+﻿/** Five heart slots within the second panel of the HUD row. */
 class HealthBar extends DrawableObject {
+    x = 301.333333;
     y = 0;
-    width = 48;
-    height = 48;
-    spacing = 44;
-    panelWidth = 280;
-    panelHeight = 105;
+    width = 44.571429;
+    height = 44.571429;
+    spacing = 40.857143;
+    panelWidth = 260;
+    panelHeight = 97.5;
     fullPath = 'assets/images/ui/hud/heart-full.svg';
     emptyPath = 'assets/images/ui/hud/heart-empty.svg';
     panelPath = 'assets/images/ui/hud/heart-panel.png';
@@ -25,7 +26,7 @@ class HealthBar extends DrawableObject {
         const panel = this.imageCache[this.panelPath];
         if (!panel.complete || panel.naturalWidth === 0) return;
         ctx.save();
-        ctx.translate((ctx.canvas.width - this.panelWidth) / 2, this.y);
+        ctx.translate(this.x, this.y);
         ctx.drawImage(panel, 0, 0, this.panelWidth, this.panelHeight);
         this.drawHearts(ctx, health, maxHealth);
         ctx.restore();

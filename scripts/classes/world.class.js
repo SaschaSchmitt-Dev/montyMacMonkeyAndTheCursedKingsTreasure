@@ -12,6 +12,7 @@ class World {
     deltaTime = 0;
     animationFrame;
     active = true;
+    paused = false;
     projectiles = [];
     throwController;
     enemiesStarted = false;
@@ -55,7 +56,7 @@ class World {
 
     /** Starts the prepared world after loading, with a fresh frame timestamp. */
     start() {
-        if (!this.active) return;
+        if (!this.active || this.paused) return;
         this.lastTime = null;
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
     }
@@ -118,7 +119,7 @@ class World {
 
     /** @param {number} time - Browser timestamp in milliseconds. */
     gameLoop(time) {
-        if (!this.active) return;
+        if (!this.active || this.paused) return;
         this.deltaTime = this.getDeltaTime(time);
         if (this.result) this.updateEnding();
         else if (!this.bossChamber.update(this)) this.updateScene();
@@ -336,7 +337,7 @@ class World {
 
     /** Redraws loaded objects in a fixed order, independent of loading order. */
     draw() {
-        if (!this.active) return;
+        if (!this.active || this.paused) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawSceneBackground();
         if (!this.bossChamber.inside) this.bossChamber.drawEntrance(this.ctx, Math.round(this.cameraX));

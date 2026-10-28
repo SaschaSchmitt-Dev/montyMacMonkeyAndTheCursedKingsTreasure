@@ -2,8 +2,8 @@
 class ScoreBar extends DrawableObject {
     x = 12;
     y = 0;
-    width = 280;
-    height = 105;
+    width = 260;
+    height = 97.5;
     maxScore;
     framePath = 'assets/images/ui/hud/statusbar-frame.png';
     iconPath = 'assets/images/ui/hud/score-icon.png';

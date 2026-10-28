@@ -286,3 +286,40 @@ canvas {
 @media (prefers-reduced-motion: reduce) {
     .loading-spinner { animation: none; }
 }
+
+/* Four HUD elements: 260px panels, 68px pause control, equal gaps in 960px coordinates. */
+.pause-button {
+    position: absolute;
+    top: 2.47%;
+    right: 1.25%;
+    width: 7.083333%;
+    min-width: 44px;
+    min-height: 44px;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+.pause-button[hidden] { display: none; }
+.pause-button img { display: block; width: 100%; height: auto; }
+.pause-button:hover, .pause-button:focus-visible { filter: brightness(1.55); }
+.pause-button:focus-visible { outline: 2px solid #fff0bf; border-radius: 6px; }
+.pause-dialog {
+    width: min(420px, 85vw);
+    padding: 20px;
+    border: 2px solid #b8944b;
+    border-radius: 12px;
+    background: #171f19;
+    color: #fff0bf;
+    text-align: center;
+}
+.pause-dialog::backdrop { background: #000b; }
+.pause-dialog h2 { margin: 0 0 12px; }
+.pause-dialog .retry-button {
+    display: block;
+    width: 100%;
+    margin: 4px 0;
+    font-size: clamp(16px, 3vw, 22px);
+}

@@ -35,6 +35,7 @@
     <script src="./scripts/classes/keyboard.class.js" defer></script>
     <script src="./scripts/menu-storage.js" defer></script>
     <script src="./scripts/game.js" defer></script>
+    <script src="./scripts/pause-menu.js" defer></script>
     <script src="./scripts/menu-character.js" defer></script>
     <script src="./scripts/menu.js" defer></script>
 
@@ -116,6 +117,15 @@
         <canvas id="canvas" width="960" height="540" tabindex="0" aria-label="Spielfeld von Monty MacMonkey" inert>
             Dein Browser unterstützt das Canvas-Spielfeld nicht.
         </canvas>
+        <button id="pause-button" class="pause-button" type="button" aria-label="Pause öffnen" hidden>
+            <img src="assets/images/ui/hud/pause-taste.png" alt="" draggable="false">
+        </button>
+        <dialog id="pause-dialog" class="pause-dialog" aria-labelledby="pause-title">
+            <h2 id="pause-title" data-i18n="paused">Pause</h2>
+            <button id="resume-button" class="retry-button" type="button" data-i18n="resume">Fortsetzen</button>
+            <button id="pause-restart-button" class="retry-button" type="button" data-i18n="newRun">Neustart</button>
+            <button id="pause-menu-button" class="retry-button" type="button" data-i18n="menu">Zum Hauptmenü</button>
+        </dialog>
         <section id="loading-screen" class="loading-screen" tabindex="-1" aria-label="Spiel wird geladen" hidden>
             <span id="loading-spinner" class="loading-spinner" aria-hidden="true"></span>
             <p id="loading-message" role="status">Abenteuer wird geladen …</p>
@@ -175,7 +185,7 @@
             <section data-panel="guide" hidden>
                 <div data-language="de" lang="de">
                     <h3>Steuerung</h3>
-                    <p><kbd>←</kbd> <kbd>→</kbd> Laufen · <kbd>↑</kbd> Springen · <kbd>Space</kbd> Banane werfen.</p>
+                    <p><kbd>←</kbd> <kbd>→</kbd> Laufen · <kbd>↑</kbd> Springen · <kbd>Space</kbd> Banane werfen. <kbd>Esc</kbd> oder Pause-Button: Pausenmenü.</p>
                     <p>Im Hauptmenü läufst und springst du zu den Plattformen. Drücke dort <kbd>Space</kbd>, um ihre
                         Funktion zu öffnen. Du kannst jede Plattform auch anklicken.</p>
                     <h3>Dein Abenteuer</h3>
@@ -193,7 +203,7 @@
                 </div>
                 <div data-language="en" lang="en" hidden>
                     <h3>Controls</h3>
-                    <p><kbd>←</kbd> <kbd>→</kbd> Move · <kbd>↑</kbd> Jump · <kbd>Space</kbd> Throw a banana.</p>
+                    <p><kbd>←</kbd> <kbd>→</kbd> Move · <kbd>↑</kbd> Jump · <kbd>Space</kbd> Throw a banana. <kbd>Esc</kbd> or pause button: pause menu.</p>
                     <p>Walk and jump between the menu platforms. Press <kbd>Space</kbd> while standing on one to
                         activate it, or click the platform.</p>
                     <h3>Your adventure</h3>
