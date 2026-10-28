@@ -3,7 +3,7 @@ class Platform extends DrawableObject {
     static types = {
         short: { width: 416, height: 175, walkY: 38, file: 'platform-02-floating-short.png' },
         long: { width: 800, height: 241, walkY: 42, file: 'platform-03-floating-long.png' },
-        block: { width: 288, height: 163, walkY: 31, file: 'platform-04-step-block.png' }
+        block: { width: 288, height: 163, walkY: 31, file: 'platform_04_step_block_high.png' }
     };
     surfaceY;
     imageOffsetY = 12;
