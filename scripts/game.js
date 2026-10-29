@@ -65,6 +65,7 @@ function showVictoryScore(score) {
 
 /** Stops the previous run and restores the start screen without reloading. */
 function showMainMenu() {
+    stopIntro();
     hidePauseMenu();
     if (world) world.stop();
     world = null;

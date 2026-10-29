@@ -37,6 +37,7 @@
     <script src="./scripts/game.js" defer></script>
     <script src="./scripts/pause-menu.js" defer></script>
     <script src="./scripts/menu-character.js" defer></script>
+    <script src="./scripts/intro.js" defer></script>
     <script src="./scripts/menu.js" defer></script>
 
 </head>
@@ -46,7 +47,7 @@
     <h1 class="page-title">Monty MacMonkey and the Cursed King’s Treasure</h1>
 
     <div class="game-frame">
-        <section id="start-screen" class="start-screen" tabindex="0" aria-label="Hauptmenü">
+        <section id="start-screen" class="start-screen" tabindex="0" hidden aria-label="Hauptmenü">
             <img class="menu-layer" src="assets/images/ui/startscreen/background-far.png" alt="" draggable="false">
             <img class="menu-layer" src="assets/images/ui/startscreen/layer-mid.png" alt="" draggable="false">
             <img class="menu-title" src="assets/images/ui/title/monty-macmonkey-title.png"
@@ -109,10 +110,16 @@
             <img class="menu-layer menu-foreground" src="assets/images/ui/startscreen/layer-foreground.png" alt=""
                 draggable="false">
         </section>
-        <section id="intro-screen" class="intro-screen" aria-label="Monty MacMonkey" hidden>
+        <section id="intro-screen" class="intro-screen" aria-label="Monty MacMonkey">
             <img src="assets/images/ui/title/monty-macmonkey-title.png"
                 alt="Monty MacMonkey and the Cursed King’s Treasure">
-            <button id="intro-menu-button" class="retry-button" type="button"><span data-i18n="menu">Zum Hauptmenü</span></button>
+            <video id="intro-video" playsinline preload="none" aria-label="Monty MacMonkey Intro"
+                src="assets/videos/monty-macmonkey-intro.mp4" hidden></video>
+            <p id="intro-status" role="status" hidden></p>
+            <div class="intro-actions">
+                <button id="intro-play-button" class="retry-button" type="button"><span data-i18n="playIntro">Intro starten</span></button>
+                <button id="intro-menu-button" class="retry-button" type="button"><span data-i18n="menu">Zum Hauptmenü</span></button>
+            </div>
         </section>
         <canvas id="canvas" width="960" height="540" tabindex="0" aria-label="Spielfeld von Monty MacMonkey" inert>
             Dein Browser unterstützt das Canvas-Spielfeld nicht.

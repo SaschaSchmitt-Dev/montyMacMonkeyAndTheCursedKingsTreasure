@@ -19,7 +19,6 @@
     src: url('assets/fonts/luckiest-guy-latin-latin-ext-regular.woff2') format('woff2');
 }
 
-/* V3 daylight artwork and landing surfaces share 960 x 540 coordinates. */
 .start-screen { outline: none; }
 .menu-title { top: 0; left: 30%; width: 34%; z-index: 1; }
 .menu-home { position: absolute; left: 2.083333%; top: 60.481481%; width: 19.270833%; height: 21.296296%; }
@@ -89,14 +88,12 @@ kbd { border: 1px solid #9c783b; border-radius: 3px; padding: 1px 5px; backgroun
 .dialog-card .language-flags button[aria-pressed="true"] { border-color: #286b69; background: #fff1cb; box-shadow: 0 0 0 1px #286b69; }
 .language-flags span { font-size: 13px; }
 
-/* Match the in-game HUD font on the result panel and its actions. */
 .end-screen, .end-screen .retry-button {
     font-family: 'Racing Sans One', Arial, sans-serif;
     font-weight: 400;
 }
 .end-screen h2, .end-screen .score-total { font-weight: 400; }
 
-/* One-line stone labels sized against the longest German text in each menu. */
 .pause-dialog, .retry-button {
     font-family: 'Racing Sans One', Arial, sans-serif;
     font-weight: 400;
@@ -112,3 +109,13 @@ kbd { border: 1px solid #9c783b; border-radius: 3px; padding: 1px 5px; backgroun
 }
 .end-actions .retry-button { font-size: 2.99cqw; }
 .pause-dialog .retry-button { font-size: min(39px, 7.8vw); }
+
+.intro-screen { font-family: 'Racing Sans One', Arial, sans-serif; }
+.intro-actions { display: flex; justify-content: center; gap: 3%; width: 90%; }
+.intro-actions .retry-button { width: 48%; font-size: 2.9cqw; }
+.intro-screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.intro-screen video[hidden], .intro-actions button[hidden] { display: none; }
+.intro-playing > img { visibility: hidden; }
+.intro-playing .intro-actions { position: absolute; bottom: 2%; justify-content: flex-end; }
+.intro-playing #intro-menu-button { width: 28%; font-size: 2.3cqw; }
+#intro-status { max-width: 80%; text-align: center; font-size: clamp(12px, 2cqw, 18px); }

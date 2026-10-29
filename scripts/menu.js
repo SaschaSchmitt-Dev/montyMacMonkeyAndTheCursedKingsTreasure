@@ -8,7 +8,7 @@ const menuTexts = {
         victory: 'Sieg', defeat: 'Niederlage', menu: 'Zum Hauptmenü', restart: 'Noch einmal spielen',
         won: 'Level geschafft!', lost: 'Game Over', winMessage: 'Der verfluchte König ist besiegt.',
         loseMessage: 'Dein Abenteuer ist noch nicht vorbei.', collected: 'Sammelpunkte', lives: 'Leben',
-        paused: 'Pause', resume: 'Fortsetzen', newRun: 'Neustart', openPause: 'Pause öffnen', hudScore: 'Punkte', hudAmmo: 'Munition', ammo: 'Munition', total: 'Gesamtpunkte', loading: 'Abenteuer wird geladen …',
+        playIntro: 'Intro starten', skipIntro: 'Überspringen', introError: 'Das Intro konnte nicht abgespielt werden. Du kannst direkt zum Hauptmenü wechseln.', paused: 'Pause', resume: 'Fortsetzen', newRun: 'Neustart', openPause: 'Pause öffnen', hudScore: 'Punkte', hudAmmo: 'Munition', ammo: 'Munition', total: 'Gesamtpunkte', loading: 'Abenteuer wird geladen …',
         loadError: 'Laden fehlgeschlagen. Bitte erneut starten.'
     },
     en: {
@@ -20,7 +20,7 @@ const menuTexts = {
         victory: 'Victory', defeat: 'Defeat', menu: 'Main menu', restart: 'Play again',
         won: 'Level complete!', lost: 'Game Over', winMessage: 'The cursed king is defeated.',
         loseMessage: 'Your adventure is not over yet.', collected: 'Collected points', lives: 'Lives',
-        paused: 'Paused', resume: 'Resume', newRun: 'Restart', openPause: 'Open pause menu', hudScore: 'Score', hudAmmo: 'Ammo', ammo: 'Ammunition', total: 'Total points', loading: 'Loading your adventure …',
+        playIntro: 'Play intro', skipIntro: 'Skip intro', introError: 'The intro could not be played. You can go straight to the main menu.', paused: 'Paused', resume: 'Resume', newRun: 'Restart', openPause: 'Open pause menu', hudScore: 'Score', hudAmmo: 'Ammo', ammo: 'Ammunition', total: 'Total points', loading: 'Loading your adventure …',
         loadError: 'Loading failed. Please try starting again.'
     }
 };
@@ -71,13 +71,13 @@ function renderHighScores() {
     }
 }
 
-/** Returns to the entry screen that will later host the trailer. */
+/** Returns to the intro entry without automatically starting playback. */
 function showIntroEntry() {
     showMainMenu();
     menuWalker.stop();
     document.getElementById('start-screen').hidden = true;
     document.getElementById('intro-screen').hidden = false;
-    document.getElementById('intro-menu-button').focus({ preventScroll: true });
+    prepareIntro();
 }
 
 /** Connects each island to its click and keyboard action. */
@@ -112,6 +112,7 @@ function connectOptions() {
 
 connectMenuButtons();
 connectOptions();
+prepareIntro();
 Promise.all([...menuWalker.screen.querySelectorAll('img, svg image')].map((element) => {
     if (element instanceof HTMLImageElement) return element.decode();
     const image = new Image();
@@ -120,7 +121,7 @@ Promise.all([...menuWalker.screen.querySelectorAll('img, svg image')].map((eleme
 }))
     .then(() => { if (!menuWalker.screen.hidden) menuWalker.start(); })
     .catch(() => { });
-document.getElementById('start-screen').focus({ preventScroll: true });
+document.getElementById('intro-play-button').focus({ preventScroll: true });
 
 
 /** @param {KeyboardEvent} event - Arrow navigation inside the options panel. */
