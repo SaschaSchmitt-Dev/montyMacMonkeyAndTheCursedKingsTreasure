@@ -5,6 +5,7 @@ class Level {
     groundY;
     enemies = [];
     platforms = [];
+    platformRepeatWidth = 5400;
     blocks = [];
     ammoPickups = [];
     scoreItems = [];
@@ -51,7 +52,7 @@ class Level {
     createPlatforms(heightAboveGround = 140) {
         this.platforms = [];
         const surfaceY = this.groundY + 122 - heightAboveGround;
-        for (let offset = 0; offset < this.width; offset += 5400) {
+        for (let offset = 0; offset < this.width; offset += this.platformRepeatWidth) {
             for (const [x, height, type, reward, pattern] of this.getPlatformLayout()) {
                 const platform = new Platform(x + offset, surfaceY - Math.max(0, height), type);
                 if (platform.x + platform.width > this.width - 200) continue;
@@ -66,9 +67,14 @@ class Level {
     /** @param {number} blockGroundOffsetY - Downward adjustment for both blocks and their surfaces. */
     createEnemyZone(blockGroundOffsetY = 6) {
         this.blocks = [];
-        if (this.width < 4500) return;
         const floorY = this.groundY + 122;
-        this.blocks = [3500, 4240].map((x) => new Platform(x, floorY - 58 + blockGroundOffsetY, 'block'));
+        for (let offset = 0; offset < this.width; offset += this.platformRepeatWidth) {
+            for (const x of [3500, 4240]) {
+                const block = new Platform(x + offset, floorY - 58 + blockGroundOffsetY, 'block');
+                if (block.x + block.width <= this.width - 200) this.blocks.push(block);
+            }
+        }
+        if (this.width < 4500) return;
         this.enemies = this.enemies.filter((enemy) => enemy.x + enemy.width < 3500 || enemy.x > 4400);
         ['vine-lizard', 'thorn-beetle', 'armored-armadillo'].forEach((type, index) => {
             this.enemies.push(new Enemy(type, 3710 + index * 160, floorY));
@@ -78,7 +84,7 @@ class Level {
 
     /** Adds floor treasures between the two blocks. */
     addGuardedTreasures() {
-        if (this.blocks.length === 0) return;
+        if (this.blocks.length === 0 || this.width < 4500) return;
         const floorY = this.groundY + 122;
         for (let index = 0; index < 9; index++) {
             this.scoreItems.push(new ScoreItem('coin', 3690 + index * 54, floorY));
@@ -98,6 +104,7 @@ class Level {
             if (platform.reward !== 'ammo') continue;
             this.ammoPickups.push(new BananaAmmo(platform.x + platform.width / 2 - 24, platform.surfaceY));
         }
+        this.ammoPickups = this.ammoPickups.filter((pickup) => !this.isInsideFloorBlock(pickup));
     }
 
 
@@ -116,6 +123,17 @@ class Level {
                 || item.x < 3500 || item.x > 4400);
         }
         this.addGuardedTreasures();
+        this.scoreItems = this.scoreItems.filter((item) => !this.isInsideFloorBlock(item));
+    }
+
+
+    /** @param {BananaAmmo|ScoreItem} item - Pickup whose support may be blocked.
+     * @returns {boolean} Whether a floor pickup would be hidden inside a solid block.
+     */
+    isInsideFloorBlock(item) {
+        if (item.supportY !== this.groundY + 122) return false;
+        return this.blocks.some((block) => item.x + item.width > block.x + block.width * 0.06
+            && item.x < block.x + block.width * 0.94);
     }
 
 

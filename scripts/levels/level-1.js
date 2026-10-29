@@ -2,7 +2,7 @@
  * @returns {Level} A new jungle level.
  */
 function createLevel1(viewWidth = 960) {
-    const levelSections = 6;
+    const levelSections = 20;
     const sectionWidth = 960;
     const platformHeight = 140;
     const groundOffsetY = 20;

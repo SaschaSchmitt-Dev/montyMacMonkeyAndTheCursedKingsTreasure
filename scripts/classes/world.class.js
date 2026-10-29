@@ -46,7 +46,7 @@ class World {
         this.throwController = new ThrowController(this.character);
         this.bossChamber = new BossChamber(this.level, () => this.draw());
         this.healthBar = new HealthBar(() => this.draw());
-        this.ammoBar = new AmmoBar(this.character.maxAmmo, () => this.draw());
+        this.ammoBar = new AmmoBar(() => this.draw());
         const totalScore = level.scoreItems.reduce((sum, item) => sum + item.points, 0);
         this.scoreBar = new ScoreBar(totalScore, () => this.draw());
         this.bossHealthBar = new BossHealthBar(() => this.draw());
@@ -233,15 +233,13 @@ class World {
     }
 
 
-    /** Collects ammunition up to the limit and leaves any remainder in the level. */
+    /** Collects the complete ammunition pickup without a carrying limit. */
     collectAmmo() {
         if (this.character.health === 0) return;
         this.level.ammoPickups = this.level.ammoPickups.filter((pickup) => {
-            if (!pickup.touches(this.character) || this.character.ammo >= this.character.maxAmmo) return true;
-            const amount = Math.min(pickup.amount, this.character.maxAmmo - this.character.ammo);
-            this.character.ammo += amount;
-            pickup.amount -= amount;
-            return pickup.amount > 0;
+            if (!pickup.touches(this.character)) return true;
+            this.character.ammo += pickup.amount;
+            return false;
         });
     }
 
