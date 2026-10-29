@@ -21,9 +21,6 @@ class Character extends MovableObject {
     jumpImages = [];
     restImages = [];
     inactiveTime = 0;
-    sleepScale = 0.8;
-    sleepOffsetY = 16;
-    sleepAngle = -8;
     animation = 'idle';
     animationTime = 0;
     moving = false;
@@ -43,7 +40,7 @@ class Character extends MovableObject {
         this.imageCache[this.idlePath] = this.img;
         this.runImages = this.createFramePaths('run-right/run', 8);
         this.jumpImages = this.createFramePaths('jump/jump', 6);
-        this.restImages = this.createFramePaths('rest/rest', 6);
+        this.restImages = this.createFramePaths('rest-v2/rest', 8);
         this.loadImages([...this.runImages, ...this.jumpImages, ...this.restImages], onLoad);
         this.setupIdleAnimations(onLoad);
         this.setupDamageAnimations(onLoad);
@@ -255,11 +252,8 @@ class Character extends MovableObject {
      */
     hasSleepingSpace(platforms) {
         if (this.groundY === this.floorGroundY) return true;
-        const image = this.imageCache[this.restImages[5]];
-        if (!image.complete || image.naturalHeight === 0) return false;
-        const imageWidth = image.naturalWidth * this.height / image.naturalHeight;
-        const tiltMargin = this.height * Math.abs(Math.sin(this.sleepAngle * Math.PI / 180));
-        const halfWidth = (imageWidth / 2 + tiltMargin) * this.sleepScale;
+        // All new poses share a 384x256 canvas; visible bodies fit within 100px of the anchor.
+        const halfWidth = this.height * 100 / 256;
         const centerX = this.x + this.width / 2;
         return platforms.some((platform) => Math.abs(platform.surfaceY - this.y - this.height * 244 / 256) < 0.1
             && centerX - halfWidth >= platform.x + platform.width * 0.06
@@ -299,8 +293,20 @@ class Character extends MovableObject {
         if (this.animation === 'throw') return this.throwImages[Math.min(5, Math.floor((0.48 - this.throwTime) / 0.08))];
         if (this.animation === 'run') return this.runImages[Math.floor(this.animationTime / 0.08) % 8];
         if (this.animation === 'jump') return this.jumpImages[this.getJumpFrame()];
-        if (this.animation === 'sleep') return this.restImages[Math.min(5, Math.floor(this.animationTime / 0.18))];
+        if (this.animation === 'sleep') return this.getSleepPath();
         return this.getIdlePath(deltaTime);
+    }
+
+
+    /** @returns {string} Lie-down transition followed by the supplied breathing loop. */
+    getSleepPath() {
+        const transitionDuration = 5 / 6;
+        if (this.animationTime < transitionDuration) {
+            return this.restImages[Math.floor(this.animationTime * 6)];
+        }
+        const loop = [4, 5, 6, 7, 6, 5];
+        const frame = Math.floor((this.animationTime - transitionDuration) * 2) % loop.length;
+        return this.restImages[loop[frame]];
     }
 
 
@@ -322,17 +328,7 @@ class Character extends MovableObject {
         if (this.health > 0 && this.invulnerableTime > 0 && Math.floor(this.invulnerableTime * 12) % 2) ctx.globalAlpha = 0.45;
         ctx.translate(this.x + this.width / 2, this.y + this.height * 244 / 256);
         ctx.scale(this.facingLeft ? -1 : 1, 1);
-        this.rotateSleepPose(ctx);
         ctx.drawImage(this.img, -drawWidth / 2, -this.height * 244 / 256, drawWidth, this.height);
         ctx.restore();
-    }
-
-
-    /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context. */
-    rotateSleepPose(ctx) {
-        if (this.animation !== 'sleep') return;
-        ctx.translate(0, this.sleepOffsetY);
-        ctx.rotate(this.sleepAngle * Math.PI / 180);
-        ctx.scale(this.sleepScale, this.sleepScale);
     }
 }
