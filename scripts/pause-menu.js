@@ -20,6 +20,7 @@ pauseDialog.addEventListener('keydown', selectPauseAction);
 function openPauseMenu() {
     if (!world || !world.active || world.result || world.paused) return;
     world.paused = true;
+    gameAudio.setPaused(true);
     cancelAnimationFrame(world.animationFrame);
     keyboard.reset();
     canvas.inert = true;
@@ -33,6 +34,7 @@ function resumeGame() {
     if (!world || !world.paused) return;
     pauseDialog.close();
     world.paused = false;
+    gameAudio.setPaused(false);
     keyboard.reset();
     canvas.inert = false;
     world.start();

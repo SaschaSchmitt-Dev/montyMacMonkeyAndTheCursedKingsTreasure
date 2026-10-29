@@ -38,6 +38,8 @@ function resetEndScreen() {
  */
 function showEndScreen(result, score) {
     hidePauseMenu();
+    gameAudio.setScene('result', false);
+    gameAudio.playResult(result);
     const victory = result === 'victory';
     saveRunScore(world, result);
     document.getElementById('end-title').textContent = victory ? t('won') : t('lost');
@@ -65,6 +67,7 @@ function showVictoryScore(score) {
 
 /** Stops the previous run and restores the start screen without reloading. */
 function showMainMenu() {
+    gameAudio.setScene('menu');
     stopIntro();
     hidePauseMenu();
     if (world) world.stop();
@@ -82,6 +85,7 @@ function showMainMenu() {
 
 /** Covers the canvas while the next level loads and disables game input. */
 function showLoadingScreen() {
+    gameAudio.setScene('none');
     hidePauseMenu();
     resetEndScreen();
     canvas.inert = true;
@@ -99,6 +103,7 @@ function finishLoading(nextWorld) {
     nextWorld.draw();
     keyboard.reset();
     nextWorld.start();
+    gameAudio.setScene('jungle');
     document.getElementById('loading-screen').hidden = true;
     document.getElementById('pause-button').hidden = false;
     canvas.inert = false;

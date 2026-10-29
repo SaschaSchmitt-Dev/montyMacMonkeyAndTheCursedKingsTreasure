@@ -92,6 +92,7 @@ class MenuWalker {
         this.character.update(delta, this.keyboard, 960, this.surfaces);
         if (walking && this.character.velocityY >= 0) this.followBridge();
         if (this.character.y > 580) this.respawn();
+        gameAudio.updateCharacter(this.character, delta);
         this.updateNearby();
     }
 

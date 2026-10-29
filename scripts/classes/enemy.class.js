@@ -48,6 +48,7 @@ class Enemy extends MovableObject {
     defeat() {
         if (this.defeated) return;
         this.defeated = true;
+        gameAudio.effect(this.type, this.x);
         this.deathTime = 0;
         this.img = this.imageCache[this.deathFrames[0]];
     }

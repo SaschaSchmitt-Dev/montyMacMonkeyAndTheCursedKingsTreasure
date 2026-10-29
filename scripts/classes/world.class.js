@@ -124,6 +124,7 @@ class World {
         if (this.result) this.updateEnding();
         else if (!this.bossChamber.update(this)) this.updateScene();
         this.checkGameEnd();
+        if (!this.result) gameAudio.updateCharacter(this.character, this.deltaTime);
         this.draw();
         if (this.active) this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
     }
@@ -136,6 +137,8 @@ class World {
         else if (this.boss && this.boss.defeated) this.result = 'victory';
         if (!this.result) return;
         if (this.throwController.active) this.throwController.cancel(this.character);
+        gameAudio.setScene('ending');
+        gameAudio.effect(this.result === 'victory' ? 'bossDefeat' : 'death');
         if (this.result === 'victory') this.calculateVictoryScore();
         this.keyboard.reset();
     }
@@ -195,6 +198,9 @@ class World {
         this.createCharacter();
         Object.assign(this.character, { health: previous.health, ammo: previous.ammo, score: previous.score });
         this.boss = this.bossChamber.boss;
+        gameAudio.setScene('boss');
+        gameAudio.effect('cave');
+        gameAudio.effect('awaken');
         this.throwController = new ThrowController(this.character);
     }
 
@@ -239,6 +245,7 @@ class World {
         this.level.ammoPickups = this.level.ammoPickups.filter((pickup) => {
             if (!pickup.touches(this.character)) return true;
             this.character.ammo += pickup.amount;
+            gameAudio.effect('banana');
             return false;
         });
     }
@@ -251,6 +258,7 @@ class World {
         this.level.scoreItems = this.level.scoreItems.filter((item) => {
             if (!item.touches(this.character)) return true;
             this.character.score += item.points;
+            gameAudio.effect(item.points >= 100 ? 'relic' : 'treasure');
             return false;
         });
     }

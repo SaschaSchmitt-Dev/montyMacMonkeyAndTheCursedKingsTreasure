@@ -59,6 +59,7 @@ class Character extends MovableObject {
     takeHit() {
         if (this.health === 0 || this.invulnerableTime > 0) return;
         this.health--;
+        if (this.health > 0) gameAudio.effect('hurt');
         this.invulnerableTime = 1.2;
         this.hitTime = 0.4;
         this.inactiveTime = 0;

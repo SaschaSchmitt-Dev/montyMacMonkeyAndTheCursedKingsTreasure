@@ -19,7 +19,8 @@ function writeLocal(key, value) {
 
 const savedSettings = readLocal(settingsKey, {});
 const gameSettings = {
-    muted: savedSettings?.muted === true,
+    musicMuted: typeof savedSettings?.musicMuted === 'boolean' ? savedSettings.musicMuted : savedSettings?.muted === true,
+    sfxMuted: typeof savedSettings?.sfxMuted === 'boolean' ? savedSettings.sfxMuted : savedSettings?.muted === true,
     language: savedSettings?.language === 'en' ? 'en' : 'de'
 };
 const savedScores = readLocal(scoresKey, []);
@@ -44,7 +45,8 @@ function saveRunScore(run, result) {
 
 /** Applies the sound preference to media and saves both options. */
 function applyOptions() {
-    document.querySelectorAll('audio, video').forEach((media) => media.muted = gameSettings.muted);
+    gameAudio.setPreferences();
+    document.querySelectorAll('audio, video').forEach((media) => media.muted = gameSettings.sfxMuted);
     writeLocal(settingsKey, gameSettings);
     updateMenuLanguage();
 }

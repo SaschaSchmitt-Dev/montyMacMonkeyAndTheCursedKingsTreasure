@@ -77,6 +77,7 @@ class BananaProjectile extends MovableObject {
     impact() {
         if (this.impacted) return;
         this.impacted = true;
+        gameAudio.effect('impact', this.x);
         this.animationTime = 0;
         this.velocityY = 0;
         const image = this.imageCache[this.impactFrames[0]];

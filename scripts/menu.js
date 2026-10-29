@@ -1,7 +1,7 @@
 const menuTexts = {
     de: {
         start: 'Spiel starten', options: 'Optionen', highscores: 'Highscores', guide: 'Anleitung',
-        quit: 'Beenden', close: 'Schließen', sound: 'Ton', on: 'An', off: 'Aus', language: 'Sprache', optionKeys: '↑ ↓ Auswahl · ← → ändern · Enter/Space aktivieren · Esc zurück',
+        quit: 'Beenden', close: 'Schließen', sound: 'Ton', music: 'Musik', sfx: 'Geräusche (SFX)', on: 'An', off: 'Aus', language: 'Sprache', optionKeys: '↑ ↓ Auswahl · ← → ändern · Enter/Space aktivieren · Esc zurück',
         hint: '← → Laufen · ↑ Springen · Space: Plattform aktivieren · oder anklicken',
         empty: 'Noch keine abgeschlossenen Abenteuer.', local: 'Die besten 10 Ergebnisse bleiben nur in diesem Browser auf diesem Gerät. Beim Löschen der Browserdaten gehen sie verloren.',
         session: 'Der Browser erlaubt keine Speicherung. Ergebnisse und Einstellungen gelten nur für diese Sitzung.',
@@ -13,7 +13,7 @@ const menuTexts = {
     },
     en: {
         start: 'Start game', options: 'Options', highscores: 'High scores', guide: 'How to play',
-        quit: 'Exit', close: 'Close', sound: 'Sound', on: 'On', off: 'Off', language: 'Language', optionKeys: '↑ ↓ Select · ← → Change · Enter/Space activate · Esc back',
+        quit: 'Exit', close: 'Close', sound: 'Sound', music: 'Music', sfx: 'Sound effects (SFX)', on: 'On', off: 'Off', language: 'Language', optionKeys: '↑ ↓ Select · ← → Change · Enter/Space activate · Esc back',
         hint: '← → Move · ↑ Jump · Space: activate platform · or click',
         empty: 'No completed adventures yet.', local: 'The top 10 results stay only in this browser on this device. Clearing browser data removes them.',
         session: 'This browser does not allow storage. Results and settings last only for this session.',
@@ -37,8 +37,12 @@ function updateMenuLanguage() {
     document.querySelectorAll('[data-i18n]').forEach((element) => element.textContent = t(element.dataset.i18n));
     document.querySelectorAll('[data-menu]').forEach((button) => button.setAttribute('aria-label', t(button.dataset.menu)));
     document.querySelectorAll('[data-language]').forEach((section) => section.hidden = section.dataset.language !== gameSettings.language);
-    document.getElementById('sound-toggle').textContent = t(gameSettings.muted ? 'off' : 'on');
-    document.getElementById('sound-toggle').setAttribute('aria-pressed', String(!gameSettings.muted));
+    for (const key of ['music', 'sfx']) {
+        const button = document.getElementById(key + '-toggle');
+        button.textContent = t(gameSettings[key + 'Muted'] ? 'off' : 'on');
+        button.setAttribute('aria-pressed', String(!gameSettings[key + 'Muted']));
+        button.setAttribute('aria-label', t(key) + ': ' + button.textContent);
+    }
     document.querySelectorAll('[data-language-option]').forEach((button) =>
         button.setAttribute('aria-pressed', String(button.dataset.languageOption === gameSettings.language)));
     document.getElementById('storage-note').textContent = t(storageAvailable ? 'local' : 'session');
@@ -50,6 +54,7 @@ function updateMenuLanguage() {
 /** @param {string} panel - Dialog content. @param {HTMLElement} button - Invoking platform. */
 function openMenuPanel(panel, button) {
     menuReturnButton = button;
+    gameAudio.clearCharacter();
     menuWalker.keyboard.reset();
     menuDialog.dataset.panel = panel;
     document.querySelectorAll('[data-panel]').forEach((section) => section.hidden = section.dataset.panel !== panel);
@@ -96,10 +101,12 @@ function connectMenuButtons() {
 
 /** Connects and restores the two deliberately small menu options. */
 function connectOptions() {
-    document.getElementById('sound-toggle').addEventListener('click', () => {
-        gameSettings.muted = !gameSettings.muted;
-        applyOptions();
-    });
+    for (const key of ['music', 'sfx']) {
+        document.getElementById(key + '-toggle').addEventListener('click', () => {
+            gameSettings[key + 'Muted'] = !gameSettings[key + 'Muted'];
+            applyOptions();
+        });
+    }
     document.querySelectorAll('[data-language-option]').forEach((button) => {
         button.addEventListener('click', () => {
             gameSettings.language = button.dataset.languageOption;
@@ -107,7 +114,7 @@ function connectOptions() {
         });
     });
     updateMenuLanguage();
-    document.querySelectorAll('audio, video').forEach((media) => media.muted = gameSettings.muted);
+    document.querySelectorAll('audio, video').forEach((media) => media.muted = gameSettings.sfxMuted);
 }
 
 connectMenuButtons();
@@ -128,9 +135,9 @@ document.getElementById('intro-play-button').focus({ preventScroll: true });
 function handleOptionsKeys(event) {
     if (menuDialog.dataset.panel !== 'options' || !event.key.startsWith('Arrow')) return;
     event.preventDefault();
-    const fields = ['sound-toggle', 'language-' + gameSettings.language, 'close-menu-dialog'];
+    const fields = ['music-toggle', 'sfx-toggle', 'language-' + gameSettings.language, 'close-menu-dialog'];
     const active = document.activeElement.id;
-    const index = active.startsWith('language-') ? 1 : fields.indexOf(active);
+    const index = active.startsWith('language-') ? 2 : fields.indexOf(active);
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         const step = event.key === 'ArrowDown' ? 1 : -1;
         document.getElementById(fields[(index + step + fields.length) % fields.length]).focus();
@@ -140,7 +147,7 @@ function handleOptionsKeys(event) {
 
 /** @param {string} key - Left or right arrow. @param {string} field - Active option. */
 function changeOptionWithArrow(key, field) {
-    if (field === 'sound-toggle') gameSettings.muted = key === 'ArrowLeft';
+    if (field === 'music-toggle' || field === 'sfx-toggle') gameSettings[field.split('-')[0] + 'Muted'] = key === 'ArrowLeft';
     else if (field.startsWith('language-')) {
         gameSettings.language = key === 'ArrowLeft' ? 'de' : 'en';
         document.getElementById('language-' + gameSettings.language).focus();

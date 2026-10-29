@@ -34,6 +34,7 @@
     <script src="./scripts/classes/world.class.js" defer></script>
     <script src="./scripts/classes/keyboard.class.js" defer></script>
     <script src="./scripts/menu-storage.js" defer></script>
+    <script src="./scripts/game-audio.js" defer></script>
     <script src="./scripts/game.js" defer></script>
     <script src="./scripts/pause-menu.js" defer></script>
     <script src="./scripts/menu-character.js" defer></script>
@@ -167,7 +168,9 @@
                     data-i18n="close">Schließen</button>
             </header>
             <section data-panel="options" hidden>
-                <div class="option-row"><span data-i18n="sound">Ton</span><button id="sound-toggle" type="button"
+                <div class="option-row"><span data-i18n="music">Musik</span><button id="music-toggle" type="button"
+                        aria-pressed="true">An</button></div>
+                <div class="option-row"><span data-i18n="sfx">Geräusche (SFX)</span><button id="sfx-toggle" type="button"
                         aria-pressed="true">An</button></div>
                 <div class="option-row language-option"><span id="language-label" data-i18n="language">Sprache</span>
                     <div class="language-flags" role="group" aria-labelledby="language-label">
@@ -204,7 +207,7 @@
                         ohne Online-Rangliste. Gelöschte Browserdaten löschen auch die Highscores; im privaten Modus
                         können sie nach dem Schließen verschwinden. Ist Speicherung gesperrt, bleiben Ergebnisse nur für
                         diese Sitzung erhalten.</p>
-                    <p>Ton und Sprache stellst du unter Optionen ein. Beenden führt zur Einstiegsansicht zurück.</p>
+                    <p>Musik und Geräusche kannst du unter Optionen getrennt schalten. Der Introton gehört zu den Geräuschen. Dort stellst du auch die Sprache ein. Beenden führt zur Einstiegsansicht zurück.</p>
                 </div>
                 <div data-language="en" lang="en" hidden>
                     <h3>Controls</h3>
@@ -220,7 +223,7 @@
                     <p>The top 10 completed runs are saved only in this browser on this device, with no online
                         leaderboard. Clearing browser data removes them; private browsing may discard them when closed.
                         If storage is blocked, results last only for this session.</p>
-                    <p>Set sound and language in Options. Exit returns to the entry screen.</p>
+                    <p>Switch music and sound effects separately in Options. Intro audio belongs to sound effects. You can also set the language there. Exit returns to the entry screen.</p>
                 </div>
             </section>
         </div>

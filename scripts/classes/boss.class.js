@@ -59,6 +59,7 @@ class Boss extends DrawableObject {
         this.health = Math.max(0, this.health - 1);
         this.invulnerableTime = this.invulnerableDuration;
         this.hitTime = 0.25;
+        if (this.health > 0) gameAudio.effect('bossHurt');
         if (this.health === 0) {
             this.defeated = true;
             this.attacking = false;
@@ -120,6 +121,7 @@ class Boss extends DrawableObject {
     /** Selects the next pattern and resets the timed projectile releases. */
     startAttack() {
         this.attacking = true;
+        gameAudio.effect('charge');
         this.attackTime = 0;
         this.shotReleased = false;
         this.followUpReleased = false;
@@ -161,6 +163,7 @@ class Boss extends DrawableObject {
 
     /** @param {boolean} high - Whether the orb travels above the standing player. */
     releaseShot(high) {
+        gameAudio.effect('cast');
         const y = this.y + this.height - 80 - (high ? this.highShotOffset : 0);
         this.projectiles.push(new BossProjectile(this.x - 20, y, this.imageCache[this.projectilePath], this.y - 20));
     }

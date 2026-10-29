@@ -18,6 +18,7 @@ function stopIntro() {
 
 /** Restores a user-initiated entry with a direct route to the menu. */
 function prepareIntro() {
+    gameAudio.setScene('none');
     stopIntro();
     introVideo.currentTime = 0;
     introVideo.hidden = true;
@@ -30,7 +31,7 @@ function prepareIntro() {
 
 /** Starts with the saved sound setting after a real click, tap or keyboard action. */
 async function playIntro() {
-    introVideo.muted = gameSettings.muted;
+    introVideo.muted = gameSettings.sfxMuted;
     introVideo.hidden = false;
     introScreen.classList.add('intro-playing');
     document.getElementById('intro-status').hidden = true;

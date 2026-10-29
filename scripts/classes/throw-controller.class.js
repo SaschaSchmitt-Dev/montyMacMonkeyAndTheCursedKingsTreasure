@@ -47,6 +47,7 @@ class ThrowController {
         if (!this.released && this.elapsed >= 0.16) {
             world.projectiles.push(new BananaProjectile(character, this.facingLeft, world.level.groundY + 122));
             this.released = true;
+            gameAudio.effect('throw');
         }
         if (character.throwTime === 0) this.active = false;
     }
