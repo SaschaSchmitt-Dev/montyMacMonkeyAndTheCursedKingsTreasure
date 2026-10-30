@@ -17,6 +17,9 @@ class Enemy extends MovableObject {
     deathFrames = [];
     spawnX;
     patrolRadius = 240;
+    preferredPatrolBodyLengths = 5;
+    patrolLeft = null;
+    patrolRight = null;
 
     /**
      * @param {string} type - Enemy type from Enemy.types.
@@ -93,26 +96,51 @@ class Enemy extends MovableObject {
      * @param {Platform[]} blocks - Solid floor obstacles.
      */
     moveOnPatrol(deltaTime, levelWidth, blocks = []) {
-        const right = Math.max(0, Math.min(levelWidth - this.width, this.spawnX + this.patrolRadius));
-        const left = Math.min(right, Math.max(0, this.spawnX - this.patrolRadius));
+        if (this.patrolLeft === null && !this.setPatrolBounds(levelWidth, blocks)) return;
         this.move(deltaTime, this.direction, levelWidth);
-        this.x = Math.max(left, Math.min(this.x, right));
-        if (this.x <= left) this.direction = 1;
-        if (this.x >= right) this.direction = -1;
-        this.checkBlocks(blocks);
+        this.x = Math.max(this.patrolLeft, Math.min(this.x, this.patrolRight));
+        if (this.x <= this.patrolLeft) this.direction = 1;
+        if (this.x >= this.patrolRight) this.direction = -1;
         this.facingLeft = this.direction < 0;
     }
 
 
-    /** @param {Platform[]} blocks - Solid obstacles along the floor. */
-    checkBlocks(blocks) {
-        for (const block of blocks) {
-            const left = block.x + block.width * 0.06;
-            const right = block.x + block.width * 0.94;
-            if (this.x + this.width <= left || this.x >= right) continue;
-            this.x = this.direction > 0 ? left - this.width : right;
-            this.direction *= -1;
+    /** @param {number} levelWidth - Playable width before the exit transition.
+     * @param {Platform[]} blocks - Fixed solid floor obstacles.
+     * @returns {boolean} Whether the enemy fits in a free corridor, even when its preferred route is longer.
+     */
+    setPatrolBounds(levelWidth, blocks = []) {
+        const areas = this.getPatrolAreas(levelWidth, blocks);
+        if (areas.length === 0) return false;
+        const distance = (area) => Math.abs(this.spawnX - Math.max(area.left, Math.min(this.spawnX, area.right)));
+        areas.sort((a, b) => distance(a) - distance(b));
+        const area = areas[0];
+        const span = Math.min(Math.max(this.patrolRadius * 2, this.width * this.preferredPatrolBodyLengths), area.right - area.left);
+        this.patrolLeft = Math.max(area.left, Math.min(this.spawnX - span / 2, area.right - span));
+        this.patrolRight = this.patrolLeft + span;
+        this.x = Math.max(this.patrolLeft, Math.min(this.spawnX, this.patrolRight));
+        this.spawnX = this.x;
+        this.direction = this.x <= this.patrolLeft ? 1 : -1;
+        this.facingLeft = this.direction < 0;
+        return true;
+    }
+
+
+    /** @param {number} levelWidth - Playable width.
+     * @param {Platform[]} blocks - Obstacles dividing the floor into open corridors.
+     * @returns {Object[]} Valid left-edge ranges, including the enemy's full width.
+     */
+    getPatrolAreas(levelWidth, blocks) {
+        const areas = [];
+        let left = 0;
+        for (const block of [...blocks].sort((a, b) => a.x - b.x)) {
+            const right = block.x + block.width * 0.06 - this.width;
+            if (right >= left) areas.push({ left, right });
+            left = Math.max(left, block.x + block.width * 0.94);
         }
+        const right = levelWidth - this.width;
+        if (right >= left) areas.push({ left, right });
+        return areas;
     }
 
 

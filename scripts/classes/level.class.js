@@ -82,6 +82,12 @@ class Level {
     }
 
 
+    /** Fits every patrol into an open corridor before the first game frame. */
+    configureEnemyPatrols() {
+        this.enemies = this.enemies.filter((enemy) => enemy.setPatrolBounds(this.width, this.blocks));
+    }
+
+
     /** Adds floor treasures between the two blocks. */
     addGuardedTreasures() {
         if (this.blocks.length === 0 || this.width < 4500) return;

@@ -12,6 +12,7 @@ function createLevel1(viewWidth = 960) {
     level.createEnemies(enemyPatrolRadius);
     level.createPlatforms(platformHeight);
     level.createEnemyZone(blockGroundOffsetY);
+    level.configureEnemyPatrols();
     level.createAmmo();
     level.createScoreItems();
     level.addTransition();
