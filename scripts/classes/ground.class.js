@@ -47,7 +47,24 @@ class Ground extends DrawableObject {
         const currentSection = Math.floor(cameraX / this.width);
         for (let section = currentSection - 1; section <= currentSection + Math.ceil(ctx.canvas.width / this.width); section++) {
             const x = Math.round(this.x + section * this.width - cameraX);
-            super.draw(ctx, x);
+            this.drawTile(ctx, x);
         }
     }
+
+    /** Keeps the walkable upper edge unchanged while extending rock down to the frame bottom.
+     * @param {CanvasRenderingContext2D} ctx - Scene context.
+     * @param {number} x - Tile position in view coordinates.
+     */
+    drawTile(ctx, x) {
+        if (!this.img.complete || this.img.naturalWidth === 0) return;
+        const extra = Math.max(0, ctx.canvas.height - this.y - this.height);
+        if (extra === 0) return super.draw(ctx, x);
+        const sourceTop = this.img.naturalHeight * 0.4;
+        const targetTop = this.height * 0.4;
+        ctx.drawImage(this.img, 0, 0, this.img.naturalWidth, sourceTop,
+            x, this.y, this.width, targetTop);
+        ctx.drawImage(this.img, 0, sourceTop, this.img.naturalWidth, this.img.naturalHeight - sourceTop,
+            x, this.y + targetTop, this.width, this.height - targetTop + extra);
+    }
+
 }

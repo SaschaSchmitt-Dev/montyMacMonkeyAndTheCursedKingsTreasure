@@ -45,7 +45,10 @@ class ScoreBar extends DrawableObject {
         ctx.beginPath();
         ctx.rect(578, 326, 1239 * ratio, 100);
         ctx.clip();
-        ctx.drawImage(this.imageCache[this.fillPath], 0, 295, 2172, 132, 578, 326, 1239, 100);
+        const fill = this.imageCache[this.fillPath];
+        const scaleX = fill.naturalWidth / 2172;
+        const scaleY = fill.naturalHeight / 724;
+        ctx.drawImage(fill, 0, 295 * scaleY, 2172 * scaleX, 132 * scaleY, 578, 326, 1239, 100);
         ctx.restore();
     }
 

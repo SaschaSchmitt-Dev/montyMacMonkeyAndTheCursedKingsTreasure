@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="menu.css">
 
+    <script src="./scripts/image-paths.js" defer></script>
     <script src="./scripts/classes/drawable-object.class.js" defer></script>
     <script src="./scripts/classes/movable-object.class.js" defer></script>
     <script src="./scripts/classes/background.class.js" defer></script>
@@ -34,8 +35,10 @@
     <script src="./scripts/classes/world.class.js" defer></script>
     <script src="./scripts/classes/keyboard.class.js" defer></script>
     <script src="./scripts/menu-storage.js" defer></script>
+    <script src="./scripts/sound-effect.js" defer></script>
     <script src="./scripts/game-audio.js" defer></script>
     <script src="./scripts/game.js" defer></script>
+    <script src="./scripts/touch-controls.js" defer></script>
     <script src="./scripts/pause-menu.js" defer></script>
     <script src="./scripts/menu-character.js" defer></script>
     <script src="./scripts/intro.js" defer></script>
@@ -49,70 +52,70 @@
 
     <div class="game-frame">
         <section id="start-screen" class="start-screen" tabindex="0" hidden aria-label="Hauptmenü">
-            <img class="menu-layer" src="assets/images/ui/startscreen/background-far.png" alt="" draggable="false">
-            <img class="menu-layer" src="assets/images/ui/startscreen/layer-mid.png" alt="" draggable="false">
-            <img class="menu-title" src="assets/images/ui/title/monty-macmonkey-title.png"
+            <img class="menu-layer" src="assets/images/optimized/ui/startscreen/background-far.webp" alt="" draggable="false">
+            <img class="menu-layer" src="assets/images/optimized/ui/startscreen/layer-mid.webp" alt="" draggable="false">
+            <img class="menu-title" src="assets/images/optimized/ui/title/monty-macmonkey-title.webp"
                 alt="Monty MacMonkey and the Cursed King’s Treasure" draggable="false">
             <div class="menu-home" data-surface="0.16">
                 <svg viewBox="126 270 1294 596" preserveAspectRatio="none" aria-hidden="true">
-                    <image href="assets/images/ui/startscreen/platform-landing.png" width="1536" height="1024" />
+                    <image href="assets/images/optimized/ui/startscreen/platform-landing.webp" width="1536" height="1024" />
                 </svg>
             </div>
             <svg id="menu-bridges" class="menu-bridges" viewBox="0 0 960 540" aria-hidden="true">
                 <image data-bridge="193.89999999999998,345,420.51232432432437,405"
-                    href="assets/images/ui/startscreen/bridge-long.png" width="2159" height="728"
+                    href="assets/images/optimized/ui/startscreen/bridge-long.webp" width="2159" height="728"
                     transform="matrix(0.11990326 0.03092784 0 0.0725 177.71064 303.53544)" />
                 <image data-bridge="433.1552272727273,270,465.6793975903614,250"
-                    href="assets/images/ui/startscreen/bridge-short.png" width="2172" height="724"
+                    href="assets/images/optimized/ui/startscreen/bridge-short.webp" width="2172" height="724"
                     transform="matrix(0.02054622 -0.01066667 0 0.0725 427.07329 234.26250)" />
                 <image data-bridge="684.3206024096385,250,698.9345454545455,280"
-                    href="assets/images/ui/startscreen/bridge-rise.png" width="1959" height="803"
+                    href="assets/images/optimized/ui/startscreen/bridge-rise.webp" width="1959" height="803"
                     transform="matrix(0.01184709 0.03432471 0 0.0725 680.01742 195.47428)" />
                 <image data-bridge="629.4876756756757,405,674.5638970588235,445"
-                    href="assets/images/ui/startscreen/bridge-long.png" width="2159" height="728"
+                    href="assets/images/optimized/ui/startscreen/bridge-long.webp" width="2159" height="728"
                     transform="matrix(0.02632795 0.02061856 0 0.0725 623.59160 364.66946)" />
             </svg>
             <button id="start-button" class="menu-island start-island" data-menu="start" data-surface="0.53"
                 type="button" aria-label="Spiel starten">
                 <svg viewBox="76 16 1379 994" preserveAspectRatio="none" aria-hidden="true">
-                    <image href="assets/images/ui/startscreen/platform-start.png" width="1536" height="1024" />
+                    <image href="assets/images/optimized/ui/startscreen/platform-start.webp" width="1536" height="1024" />
                 </svg>
                 <span class="menu-label" data-i18n="start">Spiel starten</span>
             </button>
             <button id="options-button" class="menu-island options-island" data-menu="options" data-surface="0.37"
                 type="button" aria-label="Optionen">
                 <svg viewBox="57 10 1534 936" preserveAspectRatio="none" aria-hidden="true">
-                    <image href="assets/images/ui/startscreen/platform-options.png" width="1650" height="953" />
+                    <image href="assets/images/optimized/ui/startscreen/platform-options.webp" width="1650" height="953" />
                 </svg>
                 <span class="menu-label" data-i18n="options">Optionen</span>
             </button>
             <button id="highscores-button" class="menu-island highscores-island" data-menu="highscores"
                 data-surface="0.45" type="button" aria-label="Highscores">
                 <svg viewBox="39 9 1576 933" preserveAspectRatio="none" aria-hidden="true">
-                    <image href="assets/images/ui/startscreen/platform-highscores.png" width="1650" height="953" />
+                    <image href="assets/images/optimized/ui/startscreen/platform-highscores.webp" width="1650" height="953" />
                 </svg>
                 <span class="menu-label" data-i18n="highscores">Highscores</span>
             </button>
             <button id="guide-button" class="menu-island guide-island" data-menu="guide" data-surface="0.39"
                 type="button" aria-label="Anleitung">
                 <svg viewBox="13 24 1634 911" preserveAspectRatio="none" aria-hidden="true">
-                    <image href="assets/images/ui/startscreen/platform-guide.png" width="1649" height="954" />
+                    <image href="assets/images/optimized/ui/startscreen/platform-guide.webp" width="1649" height="954" />
                 </svg>
                 <span class="menu-label" data-i18n="guide">Anleitung</span>
             </button>
             <button id="quit-button" class="menu-island quit-island" data-menu="quit" data-surface="0.5" type="button"
                 aria-label="Beenden">
                 <svg viewBox="44 3 1557 940" preserveAspectRatio="none" aria-hidden="true">
-                    <image href="assets/images/ui/startscreen/platform-exit.png" width="1649" height="954" />
+                    <image href="assets/images/optimized/ui/startscreen/platform-exit.webp" width="1649" height="954" />
                 </svg>
                 <span class="menu-label" data-i18n="quit">Beenden</span>
             </button>
             <canvas id="menu-character" class="menu-character" width="960" height="540" aria-hidden="true"></canvas>
-            <img class="menu-layer menu-foreground" src="assets/images/ui/startscreen/layer-foreground.png" alt=""
+            <img class="menu-layer menu-foreground" src="assets/images/optimized/ui/startscreen/layer-foreground.webp" alt=""
                 draggable="false">
         </section>
         <section id="intro-screen" class="intro-screen" aria-label="Monty MacMonkey">
-            <img src="assets/images/ui/title/monty-macmonkey-title.png"
+            <img src="assets/images/optimized/ui/title/monty-macmonkey-title.webp"
                 alt="Monty MacMonkey and the Cursed King’s Treasure">
             <video id="intro-video" playsinline preload="none" aria-label="Monty MacMonkey Intro"
                 src="assets/videos/monty-macmonkey-intro.mp4" hidden></video>
@@ -125,8 +128,18 @@
         <canvas id="canvas" width="960" height="540" tabindex="0" aria-label="Spielfeld von Monty MacMonkey" inert>
             Dein Browser unterstützt das Canvas-Spielfeld nicht.
         </canvas>
+        <div id="touch-controls" class="touch-controls" role="group" data-i18n-aria="touchControls" aria-label="Touchsteuerung" hidden>
+            <div class="touch-group">
+                <button type="button" data-touch="ArrowLeft" data-i18n-aria="moveLeft" aria-label="Nach links" tabindex="-1"><img src="assets/images/ui/controls/button-left.webp" alt="" draggable="false"></button>
+                <button type="button" data-touch="ArrowRight" data-i18n-aria="moveRight" aria-label="Nach rechts" tabindex="-1"><img src="assets/images/ui/controls/button-right.webp" alt="" draggable="false"></button>
+            </div>
+            <div class="touch-group">
+                <button type="button" data-touch="ArrowUp" data-i18n-aria="jumpAction" aria-label="Springen" tabindex="-1"><img src="assets/images/ui/controls/button-up.webp" alt="" draggable="false"></button>
+                <button type="button" data-touch="Space" data-i18n-aria="throwAction" aria-label="Banane werfen" tabindex="-1"><img src="assets/images/ui/controls/button-throw.webp" alt="" draggable="false"></button>
+            </div>
+        </div>
         <button id="pause-button" class="pause-button" type="button" aria-label="Pause öffnen" hidden>
-            <img src="assets/images/ui/hud/pause-taste.png" alt="" draggable="false">
+            <img src="assets/images/optimized/ui/hud/pause-taste.webp" alt="" draggable="false">
         </button>
         <dialog id="pause-dialog" class="pause-dialog" aria-labelledby="pause-title">
             <h2 id="pause-title" data-i18n="paused">Pause</h2>
@@ -175,10 +188,10 @@
                 <div class="option-row language-option"><span id="language-label" data-i18n="language">Sprache</span>
                     <div class="language-flags" role="group" aria-labelledby="language-label">
                         <button id="language-de" data-language-option="de" type="button" aria-pressed="true">
-                            <img src="assets/images/ui/flags/german.png" alt=""><span>Deutsch</span>
+                            <img src="assets/images/optimized/ui/flags/german.webp" alt=""><span>Deutsch</span>
                         </button>
                         <button id="language-en" data-language-option="en" type="button" aria-pressed="false">
-                            <img src="assets/images/ui/flags/usa.png" alt=""><span>English</span>
+                            <img src="assets/images/optimized/ui/flags/usa.webp" alt=""><span>English</span>
                         </button>
                     </div>
                 </div>
@@ -196,6 +209,7 @@
                     <p><kbd>←</kbd> <kbd>→</kbd> Laufen · <kbd>↑</kbd> Springen · <kbd>Space</kbd> Banane werfen. <kbd>Esc</kbd> oder Pause-Button: Pausenmenü.</p>
                     <p>Im Hauptmenü läufst und springst du zu den Plattformen. Drücke dort <kbd>Space</kbd>, um ihre
                         Funktion zu öffnen. Du kannst jede Plattform auch anklicken.</p>
+                    <p>Auf Touchgeräten: unten links laufen, unten rechts springen und werfen. Du kannst mehrere Tasten gleichzeitig halten. Pause öffnet der Button oben rechts.</p>
                     <h3>Dein Abenteuer</h3>
                     <p>Sammle Schätze und Bananenmunition, überwinde die Gegner und besiege den verfluchten König.
                         Eidechse und Käfer kannst du von oben treffen. Der gepanzerte Armadillo ist nur mit Bananen
@@ -214,6 +228,7 @@
                     <p><kbd>←</kbd> <kbd>→</kbd> Move · <kbd>↑</kbd> Jump · <kbd>Space</kbd> Throw a banana. <kbd>Esc</kbd> or pause button: pause menu.</p>
                     <p>Walk and jump between the menu platforms. Press <kbd>Space</kbd> while standing on one to
                         activate it, or click the platform.</p>
+                    <p>On touch devices: move using the bottom-left buttons; jump and throw at the bottom right. You can hold multiple buttons at once. Use the top-right button to pause.</p>
                     <h3>Your adventure</h3>
                     <p>Collect treasures and banana ammunition, overcome enemies and defeat the cursed king. Stomp the
                         lizard and beetle from above. The armored armadillo can only be defeated with bananas.</p>

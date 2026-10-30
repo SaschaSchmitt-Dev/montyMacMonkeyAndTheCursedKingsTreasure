@@ -12,6 +12,7 @@ class World {
     deltaTime = 0;
     animationFrame;
     active = true;
+    ready = false;
     paused = false;
     projectiles = [];
     throwController;
@@ -57,6 +58,7 @@ class World {
     /** Starts the prepared world after loading, with a fresh frame timestamp. */
     start() {
         if (!this.active || this.paused) return;
+        this.ready = true;
         this.lastTime = null;
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
     }
@@ -276,15 +278,25 @@ class World {
     drawFigures() {
         this.ctx.save();
         this.ctx.translate(-Math.round(this.cameraX), 0);
-        this.level.blocks.forEach((block) => block.draw(this.ctx));
-        this.level.platforms.forEach((platform) => platform.draw(this.ctx));
-        this.level.ammoPickups.forEach((pickup) => pickup.draw(this.ctx));
-        this.level.scoreItems.forEach((item) => item.draw(this.ctx));
-        this.level.enemies.forEach((enemy) => enemy.draw(this.ctx));
+        this.drawVisible(this.level.blocks);
+        this.drawVisible(this.level.platforms);
+        this.drawVisible(this.level.ammoPickups);
+        this.drawVisible(this.level.scoreItems);
+        this.drawVisible(this.level.enemies);
         if (this.boss) this.boss.draw(this.ctx);
-        this.projectiles.forEach((projectile) => projectile.draw(this.ctx));
+        this.drawVisible(this.projectiles);
         this.character.draw(this.ctx);
         this.ctx.restore();
+    }
+
+
+    /** @param {DrawableObject[]} objects - Draw only objects near the visible camera section. */
+    drawVisible(objects) {
+        const left = this.cameraX - 64;
+        const right = this.cameraX + this.canvas.width + 64;
+        for (const object of objects) {
+            if (object.x + object.width >= left && object.x <= right) object.draw(this.ctx);
+        }
     }
 
 
@@ -343,7 +355,7 @@ class World {
 
     /** Redraws loaded objects in a fixed order, independent of loading order. */
     draw() {
-        if (!this.active || this.paused) return;
+        if (!this.active || this.paused || !this.ready) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawSceneBackground();
         if (!this.bossChamber.inside) this.bossChamber.drawEntrance(this.ctx, Math.round(this.cameraX));

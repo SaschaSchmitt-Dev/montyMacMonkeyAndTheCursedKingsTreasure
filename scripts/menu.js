@@ -1,7 +1,7 @@
 const menuTexts = {
     de: {
         start: 'Spiel starten', options: 'Optionen', highscores: 'Highscores', guide: 'Anleitung',
-        quit: 'Beenden', close: 'Schließen', sound: 'Ton', music: 'Musik', sfx: 'Geräusche (SFX)', on: 'An', off: 'Aus', language: 'Sprache', optionKeys: '↑ ↓ Auswahl · ← → ändern · Enter/Space aktivieren · Esc zurück',
+        quit: 'Beenden', close: 'Schließen', touchControls: 'Touchsteuerung', moveLeft: 'Nach links', moveRight: 'Nach rechts', jumpAction: 'Springen', throwAction: 'Banane werfen', sound: 'Ton', music: 'Musik', sfx: 'Geräusche (SFX)', on: 'An', off: 'Aus', language: 'Sprache', optionKeys: '↑ ↓ Auswahl · ← → ändern · Enter/Space aktivieren · Esc zurück',
         hint: '← → Laufen · ↑ Springen · Space: Plattform aktivieren · oder anklicken',
         empty: 'Noch keine abgeschlossenen Abenteuer.', local: 'Die besten 10 Ergebnisse bleiben nur in diesem Browser auf diesem Gerät. Beim Löschen der Browserdaten gehen sie verloren.',
         session: 'Der Browser erlaubt keine Speicherung. Ergebnisse und Einstellungen gelten nur für diese Sitzung.',
@@ -13,7 +13,7 @@ const menuTexts = {
     },
     en: {
         start: 'Start game', options: 'Options', highscores: 'High scores', guide: 'How to play',
-        quit: 'Exit', close: 'Close', sound: 'Sound', music: 'Music', sfx: 'Sound effects (SFX)', on: 'On', off: 'Off', language: 'Language', optionKeys: '↑ ↓ Select · ← → Change · Enter/Space activate · Esc back',
+        quit: 'Exit', close: 'Close', touchControls: 'Touch controls', moveLeft: 'Move left', moveRight: 'Move right', jumpAction: 'Jump', throwAction: 'Throw banana', sound: 'Sound', music: 'Music', sfx: 'Sound effects (SFX)', on: 'On', off: 'Off', language: 'Language', optionKeys: '↑ ↓ Select · ← → Change · Enter/Space activate · Esc back',
         hint: '← → Move · ↑ Jump · Space: activate platform · or click',
         empty: 'No completed adventures yet.', local: 'The top 10 results stay only in this browser on this device. Clearing browser data removes them.',
         session: 'This browser does not allow storage. Results and settings last only for this session.',
@@ -33,6 +33,8 @@ function t(key) { return menuTexts[gameSettings.language][key] || key; }
 /** Updates static interface labels and the active dialog after a language change. */
 function updateMenuLanguage() {
     document.documentElement.lang = gameSettings.language;
+    document.querySelectorAll('[data-i18n-aria]').forEach((element) =>
+        element.setAttribute('aria-label', t(element.dataset.i18nAria)));
     document.getElementById('pause-button').setAttribute('aria-label', t('openPause'));
     document.querySelectorAll('[data-i18n]').forEach((element) => element.textContent = t(element.dataset.i18n));
     document.querySelectorAll('[data-menu]').forEach((button) => button.setAttribute('aria-label', t(button.dataset.menu)));

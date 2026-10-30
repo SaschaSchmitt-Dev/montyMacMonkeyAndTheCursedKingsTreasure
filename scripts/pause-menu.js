@@ -19,6 +19,7 @@ pauseDialog.addEventListener('keydown', selectPauseAction);
 /** Freezes the simulation and opens the modal keyboard/touch controls. */
 function openPauseMenu() {
     if (!world || !world.active || world.result || world.paused) return;
+    touchControls.hide();
     world.paused = true;
     gameAudio.setPaused(true);
     cancelAnimationFrame(world.animationFrame);
@@ -38,6 +39,7 @@ function resumeGame() {
     keyboard.reset();
     canvas.inert = false;
     world.start();
+    touchControls.show();
     canvas.focus({ preventScroll: true });
 }
 

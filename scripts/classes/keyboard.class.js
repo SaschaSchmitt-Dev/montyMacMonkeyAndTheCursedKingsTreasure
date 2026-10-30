@@ -5,6 +5,8 @@ class Keyboard {
     jump = false;
     throw = false;
     lastDirection = null;
+    sources = new Map();
+    resetListeners = new Set();
     bindings = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', Space: 'throw' };
 
     /** @param {HTMLCanvasElement} canvas - Focusable game canvas. */
@@ -33,15 +35,19 @@ class Keyboard {
      * Updates the action associated with a known key.
      * @param {string} code - Physical keyboard key code.
      * @param {boolean} pressed - Whether the key is held down.
+     * @param {string} source - Independent keyboard or touch pointer identifier.
      */
-    setKey(code, pressed) {
-        if (Object.hasOwn(this.bindings, code)) {
-            const action = this.bindings[code];
-            if (pressed && !this[action] && (action === 'left' || action === 'right')) {
-                this.lastDirection = action;
-            }
-            this[action] = pressed;
-        }
+    setKey(code, pressed, source = 'keyboard') {
+        if (!Object.hasOwn(this.bindings, code)) return;
+        if (!this.sources.has(source)) this.sources.set(source, new Set());
+        const keys = this.sources.get(source);
+        if (pressed) keys.add(code);
+        else keys.delete(code);
+        if (keys.size === 0) this.sources.delete(source);
+        const action = this.bindings[code];
+        const held = [...this.sources.values()].some((input) => input.has(code));
+        if (held && !this[action] && (action === 'left' || action === 'right')) this.lastDirection = action;
+        this[action] = held;
     }
 
 
@@ -58,10 +64,12 @@ class Keyboard {
 
     /** Releases all actions after focus loss or a tab change. */
     reset() {
+        this.sources.clear();
         this.left = false;
         this.right = false;
         this.jump = false;
         this.throw = false;
         this.lastDirection = null;
+        this.resetListeners.forEach((listener) => listener());
     }
 }

@@ -8,6 +8,8 @@ class GameAudio {
     sfxMuted = gameSettings.sfxMuted;
     loops = new Map();
     effects = new Map();
+    effectBuffers = new Map();
+    context = null;
     previous = null;
     stepTime = 0;
     variantIndexes = new Map();
@@ -68,6 +70,11 @@ class GameAudio {
 
     /** Unlocks only after input; rejected playback never interrupts the game. */
     unlock() {
+        if (!this.context) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) this.context = new AudioContextClass();
+        }
+        if (this.context?.state === 'suspended') this.context.resume().catch(() => {});
         if (this.unlocked) return;
         this.unlocked = true;
         this.syncLoops();
@@ -150,10 +157,29 @@ class GameAudio {
         if (!this.effects.has(key)) this.effects.set(key, []);
         const pool = this.effects.get(key);
         let clip = pool.find((audio) => audio.paused || audio.ended);
-        if (!clip && pool.length < 2) { clip = this.createClip(key); pool.push(clip); }
+        if (!clip && pool.length < 2 && this.context) {
+            const [path, volume] = this.sounds[key];
+            clip = new SoundEffect(this, path, volume);
+            pool.push(clip);
+        }
         if (!clip) return;
         clip.currentTime = 0;
         clip.play().catch(() => {});
+    }
+
+    /** @param {string} path - Effect URL.
+     * @returns {Promise<AudioBuffer>} One decoded buffer shared by every voice and replay.
+     */
+    getEffectBuffer(path) {
+        if (!this.effectBuffers.has(path)) {
+            const loaded = fetch(path).then((response) => {
+                if (!response.ok) throw new Error('Audio unavailable');
+                return response.arrayBuffer();
+            }).then((data) => this.context.decodeAudioData(data));
+            this.effectBuffers.set(path, loaded);
+            loaded.catch(() => this.effectBuffers.delete(path));
+        }
+        return this.effectBuffers.get(path);
     }
 
     /** @param {string} key - Effect group. @returns {string} Variant without immediate repeats. */

@@ -37,6 +37,7 @@ function resetEndScreen() {
  * @param {Object|null} score - Final victory points and resource bonuses.
  */
 function showEndScreen(result, score) {
+    touchControls.hide();
     hidePauseMenu();
     gameAudio.setScene('result', false);
     gameAudio.playResult(result);
@@ -67,6 +68,7 @@ function showVictoryScore(score) {
 
 /** Stops the previous run and restores the start screen without reloading. */
 function showMainMenu() {
+    touchControls.hide();
     gameAudio.setScene('menu');
     stopIntro();
     hidePauseMenu();
@@ -85,6 +87,7 @@ function showMainMenu() {
 
 /** Covers the canvas while the next level loads and disables game input. */
 function showLoadingScreen() {
+    touchControls.hide();
     gameAudio.setScene('none');
     hidePauseMenu();
     resetEndScreen();
@@ -100,12 +103,14 @@ function showLoadingScreen() {
 
 /** @param {World} nextWorld - Fully loaded world to reveal and start. */
 function finishLoading(nextWorld) {
+    nextWorld.ready = true;
     nextWorld.draw();
     keyboard.reset();
     nextWorld.start();
     gameAudio.setScene('jungle');
     document.getElementById('loading-screen').hidden = true;
     document.getElementById('pause-button').hidden = false;
+    touchControls.show();
     canvas.inert = false;
     canvas.focus({ preventScroll: true });
 }

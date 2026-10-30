@@ -51,7 +51,10 @@ class BossHealthBar extends DrawableObject {
         ctx.beginPath();
         ctx.rect(528, 300, 1392 * ratio, 100);
         ctx.clip();
-        ctx.drawImage(this.imageCache[this.fillPath], 76, 452, 1384, 118, 528, 300, 1392, 100);
+        const fill = this.imageCache[this.fillPath];
+        const scaleX = fill.naturalWidth / 1536;
+        const scaleY = fill.naturalHeight / 1024;
+        ctx.drawImage(fill, 76 * scaleX, 452 * scaleY, 1384 * scaleX, 118 * scaleY, 528, 300, 1392, 100);
         ctx.restore();
     }
 
