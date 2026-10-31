@@ -21,10 +21,10 @@ class AmmoBar extends DrawableObject {
         const images = Object.values(this.imageCache);
         if (!images.every((image) => image.complete && image.naturalWidth > 0)) return;
         ctx.save();
-        ctx.translate(ctx.canvas.width - this.width - this.rightOffset, this.y);
+        ctx.translate(CanvasResolution.width - this.width - this.rightOffset, this.y);
         ctx.scale(this.width / 2048, this.height / 768);
-        ctx.drawImage(this.imageCache[this.framePath], 0, 0, 2048, 768);
-        ctx.drawImage(this.imageCache[this.iconPath], 225, 248, 285, 208);
+        ImageQuality.draw(ctx, this.imageCache[this.framePath], 0, 0, 2048, 768);
+        ImageQuality.draw(ctx, this.imageCache[this.iconPath], 225, 248, 285, 208);
         this.drawText(ctx, ammo);
         ctx.restore();
     }

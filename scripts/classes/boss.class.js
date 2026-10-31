@@ -192,7 +192,7 @@ class Boss extends DrawableObject {
         const y = this.y + (this.defeated ? this.deathOffsetY : 0);
         ctx.translate(this.x + this.width, y);
         ctx.scale(-1, 1);
-        ctx.drawImage(this.img, 0, 0, this.width, this.height);
+        ImageQuality.draw(ctx, this.img, 0, 0, this.width, this.height);
         ctx.restore();
         this.projectiles.forEach((projectile) => projectile.draw(ctx));
     }

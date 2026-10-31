@@ -108,7 +108,7 @@ class World {
 
     /** @param {number} layer - Zero-based layer index. */
     drawBackgroundLayer(layer) {
-        const width = this.canvas.width;
+        const width = CanvasResolution.width;
         const viewX = this.cameraX * this.level.parallaxFactors[layer];
         const currentSection = Math.floor(viewX / width);
         for (let section = currentSection - 1; section <= currentSection + 1; section++) {
@@ -122,13 +122,24 @@ class World {
     /** @param {number} time - Browser timestamp in milliseconds. */
     gameLoop(time) {
         if (!this.active || this.paused) return;
+        PerformanceOverlay.beginFrame(this.getPerformanceArea());
         this.deltaTime = this.getDeltaTime(time);
         if (this.result) this.updateEnding();
         else if (!this.bossChamber.update(this)) this.updateScene();
         this.checkGameEnd();
         if (!this.result) gameAudio.updateCharacter(this.character, this.deltaTime);
+        PerformanceOverlay.mark('Logik');
         this.draw();
+        PerformanceOverlay.record(time, this.canvas);
         if (this.active) this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
+    }
+
+
+    /** @returns {string} Location label for the temporary performance measurement. */
+    getPerformanceArea() {
+        if (this.bossChamber.inside) return 'Bossraum';
+        if (this.cameraX + CanvasResolution.width >= this.level.transitionX) return 'Höhleneingang';
+        return 'Dschungel ' + (Math.floor(this.character.x / 960) + 1);
     }
 
 
@@ -191,9 +202,9 @@ class World {
     enterBossChamber() {
         if (this.throwController.active) this.throwController.cancel(this.character);
         const previous = this.character;
-        this.level = new Level(this.canvas.width, 120, previous.floorGroundY);
+        this.level = new Level(CanvasResolution.width, 120, previous.floorGroundY);
         this.ground = this.bossChamber.roomGround;
-        this.ground.alignBossGround(this.canvas.width, previous.floorGroundY + 122);
+        this.ground.alignBossGround(CanvasResolution.width, previous.floorGroundY + 122);
         this.keyboard.reset();
         this.projectiles = [];
         this.cameraX = 0;
@@ -268,8 +279,8 @@ class World {
 
     /** Follows the player after the first third of the screen, within the level. */
     updateCamera() {
-        const maxCameraX = Math.max(0, this.level.width - this.canvas.width);
-        const wantedX = this.character.x - this.canvas.width / 3;
+        const maxCameraX = Math.max(0, this.level.width - CanvasResolution.width);
+        const wantedX = this.character.x - CanvasResolution.width / 3;
         this.cameraX = Math.max(0, Math.min(wantedX, maxCameraX));
     }
 
@@ -293,7 +304,7 @@ class World {
     /** @param {DrawableObject[]} objects - Draw only objects near the visible camera section. */
     drawVisible(objects) {
         const left = this.cameraX - 64;
-        const right = this.cameraX + this.canvas.width + 64;
+        const right = this.cameraX + CanvasResolution.width + 64;
         for (const object of objects) {
             if (object.x + object.width >= left && object.x <= right) object.draw(this.ctx);
         }
@@ -345,7 +356,7 @@ class World {
         const cameraX = Math.round(this.cameraX);
         this.ctx.save();
         this.ctx.beginPath();
-        this.ctx.rect(0, 0, Math.max(0, this.level.transitionX - cameraX), this.canvas.height);
+        this.ctx.rect(0, 0, Math.max(0, this.level.transitionX - cameraX), CanvasResolution.height);
         this.ctx.clip();
         this.ground.draw(this.ctx, cameraX);
         this.ctx.restore();
@@ -353,19 +364,25 @@ class World {
     }
 
 
-    /** Redraws loaded objects in a fixed order, independent of loading order. */
-    draw() {
-        if (!this.active || this.paused || !this.ready) return;
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    /** Redraws loaded objects in order. @param {boolean} force - Refresh a frozen scene after resizing. */
+    draw(force = false) {
+        if ((!force && (!this.active || this.paused)) || !this.ready) return;
+        this.ctx.clearRect(0, 0, CanvasResolution.width, CanvasResolution.height);
         this.drawSceneBackground();
+        PerformanceOverlay.mark('Hintergrund');
         if (!this.bossChamber.inside) this.bossChamber.drawEntrance(this.ctx, Math.round(this.cameraX));
+        PerformanceOverlay.mark('Eingang hinten');
         this.drawSceneGround();
+        PerformanceOverlay.mark('Boden');
         this.drawFigures();
+        PerformanceOverlay.mark('Figuren');
         this.drawSceneForeground();
+        PerformanceOverlay.mark('Vordergrund');
         this.healthBar.draw(this.ctx, this.character.health, this.character.maxHealth);
         this.ammoBar.draw(this.ctx, this.character.ammo);
         this.scoreBar.draw(this.ctx, this.character.score);
         this.bossHealthBar.draw(this.ctx, this.boss);
         this.bossChamber.drawFade(this.ctx);
+        PerformanceOverlay.mark('HUD/Blende');
     }
 }

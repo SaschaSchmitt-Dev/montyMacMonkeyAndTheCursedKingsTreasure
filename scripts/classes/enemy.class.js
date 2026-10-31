@@ -158,7 +158,7 @@ class Enemy extends MovableObject {
         ctx.save();
         ctx.translate(this.x + this.width / 2, this.y);
         ctx.scale(this.facingLeft !== this.spriteFacesLeft ? -1 : 1, 1);
-        ctx.drawImage(this.img, -this.width / 2, 0, this.width, this.height);
+        ImageQuality.draw(ctx, this.img, -this.width / 2, 0, this.width, this.height);
         ctx.restore();
     }
 }

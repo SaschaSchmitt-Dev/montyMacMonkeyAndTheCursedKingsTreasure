@@ -148,7 +148,7 @@ class GameAudio {
     /** @param {string} key - Short effect. @param {number|null} x - Optional world position. */
     effect(key, x = null) {
         if (!this.canPlay() || this.sfxMuted) return;
-        if (x !== null && world && Math.abs(x - world.character.x) > world.canvas.width) return;
+        if (x !== null && world && Math.abs(x - world.character.x) > CanvasResolution.width) return;
         const now = performance.now();
         if (now - (this.lastEffect.get(key) ?? -Infinity) < 65) return;
         this.lastEffect.set(key, now);

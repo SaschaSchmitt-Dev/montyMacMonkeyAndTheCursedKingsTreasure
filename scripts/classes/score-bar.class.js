@@ -28,8 +28,8 @@ class ScoreBar extends DrawableObject {
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.scale(this.width / 2048, this.height / 768);
-        ctx.drawImage(this.imageCache[this.framePath], 0, 0, 2048, 768);
-        ctx.drawImage(this.imageCache[this.iconPath], 230, 215, 275, 275);
+        ImageQuality.draw(ctx, this.imageCache[this.framePath], 0, 0, 2048, 768);
+        ImageQuality.draw(ctx, this.imageCache[this.iconPath], 230, 215, 275, 275);
         this.drawFill(ctx, score);
         this.drawText(ctx, score);
         ctx.restore();
@@ -48,7 +48,7 @@ class ScoreBar extends DrawableObject {
         const fill = this.imageCache[this.fillPath];
         const scaleX = fill.naturalWidth / 2172;
         const scaleY = fill.naturalHeight / 724;
-        ctx.drawImage(fill, 0, 295 * scaleY, 2172 * scaleX, 132 * scaleY, 578, 326, 1239, 100);
+        ImageQuality.draw(ctx, fill, 0, 295 * scaleY, 2172 * scaleX, 132 * scaleY, 578, 326, 1239, 100);
         ctx.restore();
     }
 

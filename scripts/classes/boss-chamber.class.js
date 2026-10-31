@@ -119,7 +119,21 @@ class BossChamber {
         const image = this.layers[layer].img;
         if (!image.complete || image.naturalWidth === 0) return;
         const y = door.y + this.layerOffsetY[layer];
-        ctx.drawImage(image, door.x - cameraX, y, door.width, door.height);
+        ImageQuality.draw(ctx, image, door.x - cameraX, y, door.width, door.height);
+        if (layer === 'ground') this.extendGround(ctx, image, door.x - cameraX, y);
+    }
+
+
+    /** Extends only the lowest rock strip, preserving the entrance and walkable surface.
+     * @param {CanvasRenderingContext2D} ctx - Scene context. @param {HTMLImageElement} image - Ground layer.
+     * @param {number} x - Screen position. @param {number} y - Unchanged layer top.
+     */
+    extendGround(ctx, image, x, y) {
+        const door = this.entrance;
+        if (y + door.height >= CanvasResolution.height) return;
+        const targetY = y + door.height * 0.9;
+        ImageQuality.draw(ctx, image, 0, image.naturalHeight * 0.9, image.naturalWidth, image.naturalHeight * 0.1,
+            x, targetY, door.width, CanvasResolution.height - targetY);
     }
 
 
@@ -139,7 +153,7 @@ class BossChamber {
         ctx.save();
         ctx.globalAlpha = this.phase === 'out' ? progress : 1 - progress;
         ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillRect(0, 0, CanvasResolution.width, CanvasResolution.height);
         ctx.restore();
     }
 }

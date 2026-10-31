@@ -119,3 +119,15 @@ kbd { border: 1px solid #9c783b; border-radius: 3px; padding: 1px 5px; backgroun
 .intro-playing .intro-actions { position: absolute; bottom: 2%; justify-content: flex-end; }
 .intro-playing #intro-menu-button { width: 28%; font-size: 2.3cqw; }
 #intro-status { max-width: 80%; text-align: center; font-size: clamp(12px, 2cqw, 18px); }
+
+/* Compact, native keyboard- and touch-accessible guide sections. */
+.guide-panel { margin-top: 14px; }
+.guide-topic { margin: 8px 0; border: 1px solid #9c783b; border-radius: 7px; background: #f4e4bc; }
+.guide-topic > summary { padding: 12px 14px; min-height: 44px; box-sizing: border-box; cursor: pointer; line-height: 1.35; }
+.guide-topic > summary:hover { background: #fff1cb; border-radius: 7px; }
+.guide-topic > summary:focus-visible { outline: 3px solid #286b69; outline-offset: 2px; border-radius: 7px; }
+.guide-topic[open] > summary { border-bottom: 1px solid #b99b60; }
+.guide-topic-content { padding: 0 14px 4px; }
+.guide-topic-content p, .guide-topic-content li { line-height: 1.5; }
+.guide-topic-content ol { padding-left: 24px; }
+.guide-topic-content li { margin: 8px 0; }

@@ -76,7 +76,7 @@ class DrawableObject {
      */
     draw(ctx, x = this.x) {
         if (this.img.complete && this.img.naturalWidth > 0) {
-            ctx.drawImage(this.img, x, this.y, this.width, this.height);
+            ImageQuality.draw(ctx, this.img, x, this.y, this.width, this.height);
         }
     }
 }

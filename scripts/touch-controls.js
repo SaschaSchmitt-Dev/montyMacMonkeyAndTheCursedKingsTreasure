@@ -68,6 +68,7 @@ class TouchControls {
         this.touchMode = touch;
         if (!touch) this.releaseAll();
         this.element.hidden = !this.enabled || !this.touchMode;
+        window.gameDisplay?.updateLayout();
     }
 
     /** Shows controls only when gameplay and the most recent input are both touch. */

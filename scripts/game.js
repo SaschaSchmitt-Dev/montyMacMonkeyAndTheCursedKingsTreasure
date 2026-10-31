@@ -16,10 +16,11 @@ async function restartGame() {
     keyboard.reset();
     menuWalker.stop();
     showLoadingScreen();
-    const nextWorld = new World(canvas, keyboard, createLevel1(canvas.width), false);
+    const nextWorld = new World(canvas, keyboard, createLevel1(CanvasResolution.width), false);
     world = nextWorld;
     try {
         await Promise.all([nextWorld.waitForImages(), document.fonts.load('104px "Racing Sans One"')]);
+        await ImageQuality.preloadWorld(nextWorld);
         if (world === nextWorld) finishLoading(nextWorld);
     } catch {
         if (world === nextWorld) showLoadingError();
@@ -113,6 +114,7 @@ function finishLoading(nextWorld) {
     touchControls.show();
     canvas.inert = false;
     canvas.focus({ preventScroll: true });
+    window.gameDisplay?.updateLayout();
 }
 
 

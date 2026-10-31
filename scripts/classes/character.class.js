@@ -329,7 +329,7 @@ class Character extends MovableObject {
         if (this.health > 0 && this.invulnerableTime > 0 && Math.floor(this.invulnerableTime * 12) % 2) ctx.globalAlpha = 0.45;
         ctx.translate(this.x + this.width / 2, this.y + this.height * 244 / 256);
         ctx.scale(this.facingLeft ? -1 : 1, 1);
-        ctx.drawImage(this.img, -drawWidth / 2, -this.height * 244 / 256, drawWidth, this.height);
+        ImageQuality.draw(ctx, this.img, -drawWidth / 2, -this.height * 244 / 256, drawWidth, this.height);
         ctx.restore();
     }
 }

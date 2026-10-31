@@ -20,7 +20,7 @@ class BossHealthBar extends DrawableObject {
         if (!boss || boss.defeated) return;
         if (!Object.values(this.imageCache).every((image) => image.complete && image.naturalWidth > 0)) return;
         ctx.save();
-        ctx.translate((ctx.canvas.width - this.width) / 2, this.y);
+        ctx.translate((CanvasResolution.width - this.width) / 2, this.y);
         ctx.scale(this.width / 2172, this.height / 724);
         this.drawFill(ctx, boss);
         this.drawFrame(ctx);
@@ -35,7 +35,7 @@ class BossHealthBar extends DrawableObject {
         ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
         ctx.shadowBlur = 16;
         ctx.shadowOffsetY = 4;
-        ctx.drawImage(this.imageCache[this.framePath], 0, 0, 2172, 724);
+        ImageQuality.draw(ctx, this.imageCache[this.framePath], 0, 0, 2172, 724);
         ctx.restore();
     }
 
@@ -54,7 +54,7 @@ class BossHealthBar extends DrawableObject {
         const fill = this.imageCache[this.fillPath];
         const scaleX = fill.naturalWidth / 1536;
         const scaleY = fill.naturalHeight / 1024;
-        ctx.drawImage(fill, 76 * scaleX, 452 * scaleY, 1384 * scaleX, 118 * scaleY, 528, 300, 1392, 100);
+        ImageQuality.draw(ctx, fill, 76 * scaleX, 452 * scaleY, 1384 * scaleX, 118 * scaleY, 528, 300, 1392, 100);
         ctx.restore();
     }
 

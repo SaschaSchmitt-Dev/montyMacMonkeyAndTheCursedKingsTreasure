@@ -27,7 +27,7 @@ class HealthBar extends DrawableObject {
         if (!panel.complete || panel.naturalWidth === 0) return;
         ctx.save();
         ctx.translate(this.x, this.y);
-        ctx.drawImage(panel, 0, 0, this.panelWidth, this.panelHeight);
+        ImageQuality.draw(ctx, panel, 0, 0, this.panelWidth, this.panelHeight);
         this.drawHearts(ctx, health, maxHealth);
         ctx.restore();
     }
@@ -45,7 +45,7 @@ class HealthBar extends DrawableObject {
             const path = index < health ? this.fullPath : this.emptyPath;
             const image = this.imageCache[path];
             if (!image.complete || image.naturalWidth === 0) continue;
-            ctx.drawImage(image, startX + index * this.spacing, y, this.width, this.height);
+            ImageQuality.draw(ctx, image, startX + index * this.spacing, y, this.width, this.height);
         }
     }
 }

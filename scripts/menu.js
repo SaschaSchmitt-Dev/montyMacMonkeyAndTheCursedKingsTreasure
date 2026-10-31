@@ -1,5 +1,6 @@
 const menuTexts = {
     de: {
+        fullscreen: 'Vollbild', fullscreenUnavailable: 'Dieser Browser unterstützt kein Spiele-Vollbild. Die Ansicht nutzt die verfügbare Fläche.', rotateTitle: 'Bitte Gerät drehen', rotateMessage: 'Montys Abenteuer spielst du im Querformat.',
         start: 'Spiel starten', options: 'Optionen', highscores: 'Highscores', guide: 'Anleitung',
         quit: 'Beenden', close: 'Schließen', touchControls: 'Touchsteuerung', moveLeft: 'Nach links', moveRight: 'Nach rechts', jumpAction: 'Springen', throwAction: 'Banane werfen', sound: 'Ton', music: 'Musik', sfx: 'Geräusche (SFX)', on: 'An', off: 'Aus', language: 'Sprache', optionKeys: '↑ ↓ Auswahl · ← → ändern · Enter/Space aktivieren · Esc zurück',
         hint: '← → Laufen · ↑ Springen · Space: Plattform aktivieren · oder anklicken',
@@ -12,6 +13,7 @@ const menuTexts = {
         loadError: 'Laden fehlgeschlagen. Bitte erneut starten.'
     },
     en: {
+        fullscreen: 'Fullscreen', fullscreenUnavailable: 'This browser does not support game fullscreen. The game uses the available space.', rotateTitle: 'Please rotate your device', rotateMessage: 'Play Monty’s adventure in landscape orientation.',
         start: 'Start game', options: 'Options', highscores: 'High scores', guide: 'How to play',
         quit: 'Exit', close: 'Close', touchControls: 'Touch controls', moveLeft: 'Move left', moveRight: 'Move right', jumpAction: 'Jump', throwAction: 'Throw banana', sound: 'Sound', music: 'Music', sfx: 'Sound effects (SFX)', on: 'On', off: 'Off', language: 'Language', optionKeys: '↑ ↓ Select · ← → Change · Enter/Space activate · Esc back',
         hint: '← → Move · ↑ Jump · Space: activate platform · or click',
@@ -51,6 +53,7 @@ function updateMenuLanguage() {
     document.getElementById('options-storage-note').textContent = storageAvailable ? '' : t('session');
     if (menuDialog.open) document.getElementById('menu-dialog-title').textContent = t(menuDialog.dataset.panel);
     renderHighScores();
+    window.gameDisplay?.updateLabels();
 }
 
 /** @param {string} panel - Dialog content. @param {HTMLElement} button - Invoking platform. */
@@ -137,9 +140,10 @@ document.getElementById('intro-play-button').focus({ preventScroll: true });
 function handleOptionsKeys(event) {
     if (menuDialog.dataset.panel !== 'options' || !event.key.startsWith('Arrow')) return;
     event.preventDefault();
-    const fields = ['music-toggle', 'sfx-toggle', 'language-' + gameSettings.language, 'close-menu-dialog'];
+    const fields = ['music-toggle', 'sfx-toggle', 'fullscreen-toggle', 'language-' + gameSettings.language, 'close-menu-dialog']
+        .filter((id) => !document.getElementById(id).disabled);
     const active = document.activeElement.id;
-    const index = active.startsWith('language-') ? 2 : fields.indexOf(active);
+    const index = fields.indexOf(active.startsWith('language-') ? 'language-' + gameSettings.language : active);
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         const step = event.key === 'ArrowDown' ? 1 : -1;
         document.getElementById(fields[(index + step + fields.length) % fields.length]).focus();
@@ -150,6 +154,10 @@ function handleOptionsKeys(event) {
 /** @param {string} key - Left or right arrow. @param {string} field - Active option. */
 function changeOptionWithArrow(key, field) {
     if (field === 'music-toggle' || field === 'sfx-toggle') gameSettings[field.split('-')[0] + 'Muted'] = key === 'ArrowLeft';
+    else if (field === 'fullscreen-toggle') {
+        window.gameDisplay.toggleFullscreen(key === 'ArrowRight');
+        return;
+    }
     else if (field.startsWith('language-')) {
         gameSettings.language = key === 'ArrowLeft' ? 'de' : 'en';
         document.getElementById('language-' + gameSettings.language).focus();
