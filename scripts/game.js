@@ -38,6 +38,7 @@ function resetEndScreen() {
  * @param {Object|null} score - Final victory points and resource bonuses.
  */
 function showEndScreen(result, score) {
+    gameplayCursor.show();
     touchControls.hide();
     hidePauseMenu();
     gameAudio.setScene('result', false);
@@ -69,6 +70,7 @@ function showVictoryScore(score) {
 
 /** Stops the previous run and restores the start screen without reloading. */
 function showMainMenu() {
+    gameplayCursor.show();
     touchControls.hide();
     gameAudio.setScene('menu');
     stopIntro();
@@ -88,6 +90,7 @@ function showMainMenu() {
 
 /** Covers the canvas while the next level loads and disables game input. */
 function showLoadingScreen() {
+    gameplayCursor.show();
     touchControls.hide();
     gameAudio.setScene('none');
     hidePauseMenu();
@@ -115,6 +118,7 @@ function finishLoading(nextWorld) {
     canvas.inert = false;
     canvas.focus({ preventScroll: true });
     window.gameDisplay?.updateLayout();
+    gameplayCursor.hide();
 }
 
 

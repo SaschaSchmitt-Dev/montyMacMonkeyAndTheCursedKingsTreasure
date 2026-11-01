@@ -16,7 +16,7 @@ body {
 }
 
 .game-frame {
-    width: min(960px, 100%, calc((var(--view-height) - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 16 / 9));
+    width: min(var(--standard-width, 1920px), 100%, calc((var(--view-height) - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 16 / 9));
     aspect-ratio: 16 / 9;
     flex: none;
     touch-action: none;
@@ -25,7 +25,7 @@ body {
     -webkit-touch-callout: none;
 }
 
-.compact-display .game-frame {
+.max-size .game-frame {
     width: min(100%, calc((var(--view-height) - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 16 / 9));
 }
 
@@ -88,22 +88,27 @@ body {
 .high-resolution .end-panel.victory { background-image: url('assets/images/high-resolution/ui/endscreens/level-complete-tafel.webp'); }
 .high-resolution .retry-button { background-image: url('assets/images/high-resolution/ui/endscreens/retry-plattform.webp'); }
 
-/* Temporary diagnostics for the PC fullscreen performance check. */
-#performance-overlay {
-    position: fixed;
-    bottom: 4px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 20;
-    max-width: calc(100% - 16px);
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: #000c;
-    color: #fff;
-    font: 12px/1.4 monospace;
-    text-align: center;
-    pointer-events: none;
+/* Pause actions and shared settings stay side by side in mobile landscape. */
+.pause-dialog { width: min(760px, 94vw); padding: 12px 18px; }
+.pause-dialog h2 { margin: 0 0 10px; }
+.pause-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(230px, 0.9fr); gap: 20px; align-items: center; }
+.pause-actions { display: grid; gap: 4px; min-width: 0; }
+.pause-actions .retry-button { width: min(100%, calc(22dvh * 2048 / 801)); margin: 0 auto; container-type: inline-size; }
+.pause-actions .retry-button > span { font-size: min(32px, 9cqw); }
+.pause-settings { min-width: 0; font-size: 16px; }
+.pause-settings h3 { margin: 0 0 8px; font-size: 20px; font-weight: 400; }
+.pause-settings .option-row { gap: 10px; margin: 8px 0; }
+.pause-settings button { min-height: 44px; min-width: 88px; padding: 6px 10px; border: 1px solid #b8944b; border-radius: 5px; background: #ebd6a2; color: #31220f; font: inherit; cursor: pointer; }
+.pause-settings button:focus-visible { outline: 3px solid #fff1cb; outline-offset: 2px; }
+.pause-settings button:disabled { opacity: 0.55; cursor: default; }
+.pause-settings [data-fullscreen-note] { font-size: 12px; line-height: 1.4; }
+.game-frame.cursor-hidden, .game-frame.cursor-hidden * { cursor: none !important; }
+@media (max-width: 560px) {
+    .pause-layout { grid-template-columns: minmax(0, 1fr); gap: 12px; }
 }
-#performance-overlay[hidden] { display: none; }
 
-#performance-overlay { white-space: pre-line; width: max-content; }
+.pause-settings [data-fullscreen-note] { margin: 6px 0 0; }
+@media (max-height: 400px) and (min-width: 561px) {
+    .pause-settings h3 { display: none; }
+    .pause-settings .option-row { margin: 4px 0; }
+}

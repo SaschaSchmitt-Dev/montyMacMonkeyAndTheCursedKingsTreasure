@@ -21,6 +21,7 @@ const savedSettings = readLocal(settingsKey, {});
 const gameSettings = {
     musicMuted: typeof savedSettings?.musicMuted === 'boolean' ? savedSettings.musicMuted : savedSettings?.muted === true,
     sfxMuted: typeof savedSettings?.sfxMuted === 'boolean' ? savedSettings.sfxMuted : savedSettings?.muted === true,
+    displaySize: savedSettings?.displaySize === 'max' ? 'max' : 'standard',
     language: savedSettings?.language === 'en' ? 'en' : 'de'
 };
 const savedScores = readLocal(scoresKey, []);
@@ -43,10 +44,11 @@ function saveRunScore(run, result) {
     writeLocal(scoresKey, highScores);
 }
 
-/** Applies the sound preference to media and saves both options. */
+/** Applies and saves shared sound, language, and display-size preferences. */
 function applyOptions() {
     gameAudio.setPreferences();
-    document.querySelectorAll('audio, video').forEach((media) => media.muted = gameSettings.sfxMuted);
+    document.querySelectorAll('audio, video:not(#intro-video)').forEach((media) => media.muted = gameSettings.sfxMuted);
     writeLocal(settingsKey, gameSettings);
     updateMenuLanguage();
+    window.gameDisplay?.updateLayout();
 }

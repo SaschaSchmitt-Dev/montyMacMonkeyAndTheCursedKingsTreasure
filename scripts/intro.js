@@ -29,9 +29,10 @@ function prepareIntro() {
 }
 
 
-/** Starts with the saved sound setting after a real click, tap or keyboard action. */
+/** Starts with independent intro audio after a real click, tap or keyboard action. */
 async function playIntro() {
-    introVideo.muted = gameSettings.sfxMuted;
+    introVideo.muted = false;
+    introVideo.volume = 1;
     introVideo.hidden = false;
     introScreen.classList.add('intro-playing');
     document.getElementById('intro-status').hidden = true;

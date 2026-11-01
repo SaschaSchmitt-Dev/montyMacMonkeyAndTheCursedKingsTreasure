@@ -1,7 +1,8 @@
-/** Holds independent pointer inputs so walking, jumping and throwing can overlap. */
+﻿/** Tracks each finger within its original group, allowing sliding between paired actions. */
 class TouchControls {
     element = document.getElementById('touch-controls');
     pointers = new Map();
+    captures = new Map();
     touchMode = false;
     enabled = false;
 
@@ -11,57 +12,76 @@ class TouchControls {
             if (event.pointerType === 'mouse') this.selectInput('mouse');
         }, { capture: true });
         document.addEventListener('keydown', () => this.selectInput('keyboard'), { capture: true });
+        this.connectButtons();
+        keyboard.resetListeners.add(() => this.releaseAll());
+    }
+
+    /** Capture stays on the original button while the current action can move to its neighbour. */
+    connectButtons() {
         for (const button of this.element.querySelectorAll('[data-touch]')) {
             button.addEventListener('pointerdown', (event) => this.press(event, button));
             for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
                 button.addEventListener(name, (event) => this.release(event.pointerId));
             }
-            button.addEventListener('pointermove', (event) => this.checkPosition(event, button));
+            button.addEventListener('pointermove', (event) => this.checkPosition(event));
             button.addEventListener('contextmenu', (event) => event.preventDefault());
             button.addEventListener('click', (event) => { event.preventDefault(); event.stopPropagation(); });
         }
-        keyboard.resetListeners.add(() => this.releaseAll());
     }
 
-    /** @param {PointerEvent} event - One finger or primary mouse pointer.
-     * @param {HTMLButtonElement} button - Held control.
-     */
+    /** @param {PointerEvent} event - Pressing finger. @param {HTMLButtonElement} button - Initial action. */
     press(event, button) {
         if (this.element.hidden || !world?.active || world.paused || world.result || event.button !== 0) return;
         event.preventDefault();
         canvas.focus({ preventScroll: true });
         this.release(event.pointerId);
-        this.pointers.set(event.pointerId, button);
+        this.captures.set(event.pointerId, { button, group: button.closest('.touch-group') });
         button.setPointerCapture(event.pointerId);
-        keyboard.setKey(button.dataset.touch, true, 'touch-' + event.pointerId);
-        button.classList.add('touch-held');
+        this.setAction(event.pointerId, button);
     }
 
-    /** @param {number} pointerId - Pointer ending or leaving its button. */
+    /** @param {number} pointerId - Independent input source. @param {HTMLButtonElement|null} button - Hit or gap. */
+    setAction(pointerId, button) {
+        const previous = this.pointers.get(pointerId);
+        if (previous === button) return;
+        this.pointers.set(pointerId, button);
+        if (previous) keyboard.setKey(previous.dataset.touch, false, 'touch-' + pointerId);
+        if (previous && ![...this.pointers.values()].includes(previous)) previous.classList.remove('touch-held');
+        if (button) {
+            keyboard.setKey(button.dataset.touch, true, 'touch-' + pointerId);
+            button.classList.add('touch-held');
+        }
+    }
+
+    /** @param {number} pointerId - Finger ending, cancelled, or losing capture. */
     release(pointerId) {
-        const button = this.pointers.get(pointerId);
-        if (!button) return;
+        const capture = this.captures.get(pointerId);
+        if (!capture) return;
+        this.setAction(pointerId, null);
         this.pointers.delete(pointerId);
-        keyboard.setKey(button.dataset.touch, false, 'touch-' + pointerId);
-        if (![...this.pointers.values()].includes(button)) button.classList.remove('touch-held');
-        if (button.hasPointerCapture(pointerId)) button.releasePointerCapture(pointerId);
+        this.captures.delete(pointerId);
+        if (capture.button.hasPointerCapture(pointerId)) capture.button.releasePointerCapture(pointerId);
     }
 
-    /** @param {PointerEvent} event - Captured pointer movement.
-     * @param {HTMLButtonElement} button - Original held control.
-     */
-    checkPosition(event, button) {
-        const box = button.getBoundingClientRect();
-        if (event.clientX < box.left || event.clientX > box.right
-            || event.clientY < box.top || event.clientY > box.bottom) this.release(event.pointerId);
+    /** @param {PointerEvent} event - Captured movement, including gaps and positions outside the group. */
+    checkPosition(event) {
+        const capture = this.captures.get(event.pointerId);
+        if (!capture) return;
+        event.preventDefault();
+        const button = [...capture.group.querySelectorAll('[data-touch]')].find((candidate) => {
+            const box = candidate.getBoundingClientRect();
+            return event.clientX >= box.left && event.clientX <= box.right
+                && event.clientY >= box.top && event.clientY <= box.bottom;
+        });
+        this.setAction(event.pointerId, button || null);
     }
 
-    /** Releases fingers after focus loss, cancellation or a screen change. */
+    /** Releases active and temporarily neutral fingers after a screen/input change. */
     releaseAll() {
-        for (const id of [...this.pointers.keys()]) this.release(id);
+        for (const id of [...this.captures.keys()]) this.release(id);
     }
 
-    /** @param {string} type - Use the actual input instead of detected touch hardware. */
+    /** @param {string} type - Actual input rather than detected touch hardware. */
     selectInput(type) {
         const touch = type === 'touch';
         if (this.touchMode === touch) return;
@@ -71,13 +91,13 @@ class TouchControls {
         window.gameDisplay?.updateLayout();
     }
 
-    /** Shows controls only when gameplay and the most recent input are both touch. */
+    /** Shows controls only during touch gameplay. */
     show() {
         this.enabled = true;
         this.element.hidden = !this.touchMode;
     }
 
-    /** Hides controls and clears all touch input without affecting held keyboard keys. */
+    /** Hides controls without clearing independent physical keyboard sources. */
     hide() {
         this.enabled = false;
         this.releaseAll();

@@ -9,12 +9,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Monty MacMonkey and the Cursed King’s Treasure</title>
 
+    <link rel="icon" href="assets/icons/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" sizes="180x180">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="menu.css">
     <link rel="stylesheet" href="responsive.css">
 
     <script src="./scripts/canvas-resolution.js" defer></script>
-    <script src="./scripts/performance-overlay.js" defer></script>
     <script src="./scripts/image-paths.js" defer></script>
     <script src="./scripts/high-resolution-paths.js" defer></script>
     <script src="./scripts/image-quality.js" defer></script>
@@ -46,6 +47,7 @@
     <script src="./scripts/sound-effect.js" defer></script>
     <script src="./scripts/game-audio.js" defer></script>
     <script src="./scripts/game.js" defer></script>
+    <script src="./scripts/gameplay-cursor.js" defer></script>
     <script src="./scripts/touch-controls.js" defer></script>
     <script src="./scripts/pause-menu.js" defer></script>
     <script src="./scripts/menu-character.js" defer></script>
@@ -178,12 +180,24 @@
         </section>
     </div>
 
-        <dialog id="pause-dialog" class="pause-dialog" aria-labelledby="pause-title">
-            <h2 id="pause-title" data-i18n="paused">Pause</h2>
-            <button id="resume-button" class="retry-button" type="button"><span data-i18n="resume">Fortsetzen</span></button>
-            <button id="pause-restart-button" class="retry-button" type="button"><span data-i18n="newRun">Neustart</span></button>
-            <button id="pause-menu-button" class="retry-button" type="button"><span data-i18n="menu">Zum Hauptmenü</span></button>
-        </dialog>
+    <dialog id="pause-dialog" class="pause-dialog" aria-labelledby="pause-title">
+        <h2 id="pause-title" data-i18n="paused">Pause</h2>
+        <div class="pause-layout">
+            <div class="pause-actions">
+                <button id="resume-button" class="retry-button" type="button"><span data-i18n="resume">Fortsetzen</span></button>
+                <button id="pause-restart-button" class="retry-button" type="button"><span data-i18n="newRun">Neustart</span></button>
+                <button id="pause-menu-button" class="retry-button" type="button"><span data-i18n="menu">Zum Hauptmenü</span></button>
+            </div>
+            <section class="pause-settings" aria-labelledby="pause-settings-title">
+                <h3 id="pause-settings-title" data-i18n="options">Optionen</h3>
+                <div class="option-row"><span data-i18n="music">Musik</span><button id="pause-music-toggle" data-setting="music" type="button" aria-pressed="true">An</button></div>
+                <div class="option-row"><span data-i18n="sfx">Geräusche (SFX)</span><button id="pause-sfx-toggle" data-setting="sfx" type="button" aria-pressed="true">An</button></div>
+                <div class="option-row"><span data-i18n="fullscreen">Vollbild</span><button id="pause-fullscreen-toggle" data-setting="fullscreen" type="button" aria-pressed="false">Aus</button></div>
+                <div class="option-row"><span data-i18n="displaySize">Spielgröße</span><button id="pause-size-toggle" data-setting="displaySize" type="button" aria-pressed="false">Standard</button></div>
+                <p data-fullscreen-note hidden></p>
+            </section>
+        </div>
+    </dialog>
 
     <dialog id="orientation-dialog" class="orientation-dialog" aria-labelledby="orientation-title">
         <span aria-hidden="true">↻</span>
@@ -198,12 +212,13 @@
                     data-i18n="close">Schließen</button>
             </header>
             <section data-panel="options" hidden>
-                <div class="option-row"><span data-i18n="music">Musik</span><button id="music-toggle" type="button"
+                <div class="option-row"><span data-i18n="music">Musik</span><button id="music-toggle" data-setting="music" type="button"
                         aria-pressed="true">An</button></div>
-                <div class="option-row"><span data-i18n="sfx">Geräusche (SFX)</span><button id="sfx-toggle" type="button"
+                <div class="option-row"><span data-i18n="sfx">Geräusche (SFX)</span><button id="sfx-toggle" data-setting="sfx" type="button"
                         aria-pressed="true">An</button></div>
-                <div class="option-row"><span data-i18n="fullscreen">Vollbild</span><button id="fullscreen-toggle" type="button" aria-pressed="false">An</button></div>
-                <p id="fullscreen-note" role="status"></p>
+                <div class="option-row"><span data-i18n="fullscreen">Vollbild</span><button id="fullscreen-toggle" data-setting="fullscreen" type="button" aria-pressed="false">An</button></div>
+                <p id="fullscreen-note" data-fullscreen-note role="status"></p>
+                <div class="option-row"><span data-i18n="displaySize">Spielgröße</span><button id="size-toggle" data-setting="displaySize" type="button" aria-pressed="false">Standard</button></div>
                 <div class="option-row language-option"><span id="language-label" data-i18n="language">Sprache</span>
                     <div class="language-flags" role="group" aria-labelledby="language-label">
                         <button id="language-de" data-language-option="de" type="button" aria-pressed="true">
@@ -226,15 +241,15 @@
                 <div data-language="de" lang="de">
                     <details class="guide-topic">
                         <summary>1. Steuerung – Info</summary>
-                        <div class="guide-topic-content"><p><kbd>←</kbd> <kbd>→</kbd> Laufen · <kbd>↑</kbd> Springen · <kbd>Space</kbd> Banane werfen.</p><p><kbd>Esc</kbd> oder der Pause-Button oben rechts öffnet das Pausenmenü.</p><p>Im Hauptmenü kannst du zu den Plattformen laufen und springen. Mit <kbd>Space</kbd> aktivierst du die Plattform vor Ort. Alle Plattformen lassen sich auch anklicken oder antippen.</p><p>Auf Touchgeräten: links unten laufen, rechts unten springen und werfen. Mehrere Buttons können gleichzeitig gehalten werden.</p><p>In den Menüs funktionieren auch Tastatur, Tab und Enter. Die Sprache wechselst du unter Optionen. Beenden führt zurück zur Intro-Auswahl.</p></div>
+                        <div class="guide-topic-content"><p><kbd>←</kbd> <kbd>→</kbd> Laufen · <kbd>↑</kbd> Springen · <kbd>Space</kbd> Banane werfen.</p><p><kbd>Esc</kbd> oder der Pause-Button oben rechts öffnet das Pausenmenü.</p><p>Im Hauptmenü kannst du zu den Plattformen laufen und springen. Mit <kbd>Space</kbd> aktivierst du die Plattform vor Ort. Alle Plattformen lassen sich auch anklicken oder antippen.</p><p>Auf Touchgeräten: links unten laufen, rechts unten springen und werfen. Mehrere Buttons können gleichzeitig gehalten werden. Gleite innerhalb einer Gruppe von Links zu Rechts oder von Sprung zu Wurf, ohne den Finger abzusetzen. Zwischen den Buttons wird die jeweilige Aktion kurz freigegeben.</p><p>In den Menüs funktionieren auch Tastatur, Tab und Enter. Die Sprache wechselst du unter Optionen. Beenden führt zurück zur Intro-Auswahl.</p></div>
                     </details>
                     <details class="guide-topic">
                         <summary>2. Musik & SFX</summary>
-                        <div class="guide-topic-content"><p>Unter Optionen kannst du Musik und Geräusche (SFX) unabhängig voneinander ein- und ausschalten.</p><p>Zu den SFX gehören beispielsweise Schritte, Sprünge, Sammel- und Kampfeffekte sowie der Ton des Intros. Der Ton startet erst nach einer eigenen Eingabe.</p><p>Deine Einstellungen werden gespeichert, sofern der Browser lokale Speicherung erlaubt.</p></div>
+                        <div class="guide-topic-content"><p>Unter Optionen und im Pausenmenü kannst du Musik und Geräusche (SFX) unabhängig voneinander ein- und ausschalten.</p><p>Zu den SFX gehören beispielsweise Schritte, Sprünge, Sammel- und Kampfeffekte. Das Intro spielt unabhängig von diesen Einstellungen immer mit seinem eigenen Ton und startet erst nach deiner Eingabe.</p><p>Deine Einstellungen werden gespeichert, sofern der Browser lokale Speicherung erlaubt.</p></div>
                     </details>
                     <details class="guide-topic">
                         <summary>3. Verhalten bei Mobil und Vollbild</summary>
-                        <div class="guide-topic-content"><p>Spiele auf Smartphones und Tablets im Querformat. Drehst du während eines laufenden Spiels ins Hochformat, wird pausiert. Drehe zurück und wähle Fortsetzen.</p><p>Auf mobilen Geräten und bei kleinen Fenstern wird Vollbild beim Start angefordert, sofern der Browser es unterstützt. Unter Optionen kannst du Vollbild umschalten: An bedeutet aktiv, Aus bedeutet inaktiv.</p><p>Die Darstellung passt sich proportional an. Je nach Bildschirmformat können freie Ränder bleiben, damit nichts vom Spielfeld abgeschnitten wird.</p><p>Falls Browserleisten sichtbar bleiben, helfen die Hinweise für dein Gerät in den folgenden Bereichen.</p></div>
+                        <div class="guide-topic-content"><p>Spiele auf Smartphones und Tablets im Querformat. Drehst du während eines laufenden Spiels ins Hochformat, wird pausiert. Drehe zurück und wähle Fortsetzen.</p><p>Auf mobilen Geräten und bei kleinen Fenstern wird Vollbild beim Start angefordert, sofern der Browser es unterstützt. Unter Optionen und im Pausenmenü kannst du Vollbild umschalten: An bedeutet aktiv, Aus bedeutet inaktiv.</p><p>Standard begrenzt die Spielfläche auf Full HD und zentriert sie auf großen Bildschirmen. Max Size nutzt die verfügbare Fläche; das Bild kann dabei vergrößert werden. Beide Größen findest du unter Optionen und im Pausenmenü. Je nach Bildschirmformat bleiben freie Ränder, damit nichts abgeschnitten wird.</p><p>Falls Browserleisten sichtbar bleiben, helfen die Hinweise für dein Gerät in den folgenden Bereichen.</p></div>
                     </details>
                     <details class="guide-topic">
                         <summary>4. Vollbildfix iPhone & iPad</summary>
@@ -256,15 +271,15 @@
                 <div data-language="en" lang="en" hidden>
                     <details class="guide-topic">
                         <summary>1. Controls – Info</summary>
-                        <div class="guide-topic-content"><p><kbd>←</kbd> <kbd>→</kbd> Move · <kbd>↑</kbd> Jump · <kbd>Space</kbd> Throw a banana.</p><p><kbd>Esc</kbd> or the top-right pause button opens the pause menu.</p><p>Walk and jump between the main-menu platforms. Press <kbd>Space</kbd> while standing on one to activate it. You can also click or tap any platform.</p><p>On touch devices: move at the bottom left; jump and throw at the bottom right. You can hold multiple buttons at once.</p><p>Menus also support the keyboard, Tab and Enter. Change the language in Options. Exit returns to the intro entry screen.</p></div>
+                        <div class="guide-topic-content"><p><kbd>←</kbd> <kbd>→</kbd> Move · <kbd>↑</kbd> Jump · <kbd>Space</kbd> Throw a banana.</p><p><kbd>Esc</kbd> or the top-right pause button opens the pause menu.</p><p>Walk and jump between the main-menu platforms. Press <kbd>Space</kbd> while standing on one to activate it. You can also click or tap any platform.</p><p>On touch devices: move at the bottom left; jump and throw at the bottom right. You can hold multiple buttons at once. Slide within either group between Left and Right or Jump and Throw without lifting your finger. Moving through the gap releases that action until you reach a button.</p><p>Menus also support the keyboard, Tab and Enter. Change the language in Options. Exit returns to the intro entry screen.</p></div>
                     </details>
                     <details class="guide-topic">
                         <summary>2. Music & SFX</summary>
-                        <div class="guide-topic-content"><p>Switch music and sound effects (SFX) on or off independently in Options.</p><p>SFX include footsteps, jumping, collecting and combat effects, as well as intro audio. Sound starts after your own interaction.</p><p>Your settings are saved if your browser allows local storage.</p></div>
+                        <div class="guide-topic-content"><p>Switch music and sound effects (SFX) on or off independently in Options or the pause menu.</p><p>SFX include footsteps, jumping, collecting and combat effects. The intro always plays with its own audio, independently of these settings, and starts after your interaction.</p><p>Your settings are saved if your browser allows local storage.</p></div>
                     </details>
                     <details class="guide-topic">
                         <summary>3. Mobile play and fullscreen</summary>
-                        <div class="guide-topic-content"><p>Play on phones and tablets in landscape orientation. Rotating to portrait during a run pauses your game. Rotate back and choose Resume.</p><p>On mobile devices and in small windows, fullscreen is requested when you start, if supported by your browser. Toggle it in Options: On means active; Off means inactive.</p><p>The game scales proportionally. Depending on your screen shape, empty margins may remain so that the entire play area stays visible.</p><p>If browser bars remain visible, see the device-specific sections below.</p></div>
+                        <div class="guide-topic-content"><p>Play on phones and tablets in landscape orientation. Rotating to portrait during a run pauses your game. Rotate back and choose Resume.</p><p>On mobile devices and in small windows, fullscreen is requested when you start, if supported by your browser. Toggle it in Options or the pause menu: On means active; Off means inactive.</p><p>Standard limits the play area to Full HD and centers it on large screens. Max Size uses the available space and may enlarge the image. Choose either size in Options or the pause menu. Empty margins may remain so the entire play area stays visible.</p><p>If browser bars remain visible, see the device-specific sections below.</p></div>
                     </details>
                     <details class="guide-topic">
                         <summary>4. Fullscreen help: iPhone & iPad</summary>

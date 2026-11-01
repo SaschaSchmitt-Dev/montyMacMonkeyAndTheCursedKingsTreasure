@@ -19,6 +19,7 @@ pauseDialog.addEventListener('keydown', selectPauseAction);
 /** Freezes the simulation and opens the modal keyboard/touch controls. */
 function openPauseMenu() {
     if (!world || !world.active || world.result || world.paused) return;
+    gameplayCursor.show();
     touchControls.hide();
     world.paused = true;
     gameAudio.setPaused(true);
@@ -41,6 +42,7 @@ function resumeGame() {
     world.start();
     touchControls.show();
     canvas.focus({ preventScroll: true });
+    gameplayCursor.hide();
 }
 
 
@@ -56,7 +58,11 @@ function selectPauseAction(event) {
     const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
     if (!keys.includes(event.key) && event.key !== 'Tab') return;
     event.preventDefault();
-    const buttons = [...pauseDialog.querySelectorAll('button')];
+    if (['ArrowLeft', 'ArrowRight'].includes(event.key) && document.activeElement.dataset.setting) {
+        changeOptionWithArrow(event.key, document.activeElement.id);
+        return;
+    }
+    const buttons = [...pauseDialog.querySelectorAll('button')].filter((button) => !button.disabled);
     const backwards = ['ArrowUp', 'ArrowLeft'].includes(event.key) || (event.key === 'Tab' && event.shiftKey);
     const direction = backwards ? -1 : 1;
     const current = buttons.indexOf(document.activeElement);

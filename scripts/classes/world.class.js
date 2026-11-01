@@ -122,24 +122,13 @@ class World {
     /** @param {number} time - Browser timestamp in milliseconds. */
     gameLoop(time) {
         if (!this.active || this.paused) return;
-        PerformanceOverlay.beginFrame(this.getPerformanceArea());
         this.deltaTime = this.getDeltaTime(time);
         if (this.result) this.updateEnding();
         else if (!this.bossChamber.update(this)) this.updateScene();
         this.checkGameEnd();
         if (!this.result) gameAudio.updateCharacter(this.character, this.deltaTime);
-        PerformanceOverlay.mark('Logik');
         this.draw();
-        PerformanceOverlay.record(time, this.canvas);
         if (this.active) this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
-    }
-
-
-    /** @returns {string} Location label for the temporary performance measurement. */
-    getPerformanceArea() {
-        if (this.bossChamber.inside) return 'Bossraum';
-        if (this.cameraX + CanvasResolution.width >= this.level.transitionX) return 'Höhleneingang';
-        return 'Dschungel ' + (Math.floor(this.character.x / 960) + 1);
     }
 
 
@@ -369,20 +358,14 @@ class World {
         if ((!force && (!this.active || this.paused)) || !this.ready) return;
         this.ctx.clearRect(0, 0, CanvasResolution.width, CanvasResolution.height);
         this.drawSceneBackground();
-        PerformanceOverlay.mark('Hintergrund');
         if (!this.bossChamber.inside) this.bossChamber.drawEntrance(this.ctx, Math.round(this.cameraX));
-        PerformanceOverlay.mark('Eingang hinten');
         this.drawSceneGround();
-        PerformanceOverlay.mark('Boden');
         this.drawFigures();
-        PerformanceOverlay.mark('Figuren');
         this.drawSceneForeground();
-        PerformanceOverlay.mark('Vordergrund');
         this.healthBar.draw(this.ctx, this.character.health, this.character.maxHealth);
         this.ammoBar.draw(this.ctx, this.character.ammo);
         this.scoreBar.draw(this.ctx, this.character.score);
         this.bossHealthBar.draw(this.ctx, this.boss);
         this.bossChamber.drawFade(this.ctx);
-        PerformanceOverlay.mark('HUD/Blende');
     }
 }

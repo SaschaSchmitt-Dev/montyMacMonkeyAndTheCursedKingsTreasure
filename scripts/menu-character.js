@@ -72,14 +72,10 @@ class MenuWalker {
 
     /** @param {number} time - Frame timestamp. */
     update(time) {
-        PerformanceOverlay.beginFrame('Hauptmenü');
         const delta = this.lastTime === null ? 0 : Math.min((time - this.lastTime) / 1000, 0.05);
         this.lastTime = time;
         if (!document.getElementById('menu-dialog').open) this.move(delta);
-        PerformanceOverlay.mark('Logik');
         this.draw();
-        PerformanceOverlay.mark('Figuren');
-        PerformanceOverlay.record(time, this.canvas);
         if (!this.screen.hidden) this.frame = requestAnimationFrame((next) => this.update(next));
         else this.frame = null;
     }

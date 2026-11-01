@@ -109,7 +109,7 @@ class GameAudio {
         this.syncLoops();
     }
 
-    /** Applies independent saved switches; ambience and intro audio belong to SFX. */
+    /** Applies independent saved switches; ambience belongs to SFX. Intro audio is separate. */
     setPreferences() {
         this.musicMuted = gameSettings.musicMuted;
         this.sfxMuted = gameSettings.sfxMuted;

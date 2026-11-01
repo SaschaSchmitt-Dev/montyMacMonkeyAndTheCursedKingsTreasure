@@ -15,7 +15,8 @@ class GameDisplay {
             document.addEventListener(name, () => this.updateLayout());
         }
         document.addEventListener('click', (event) => this.startFullscreen(event), { capture: true });
-        this.fullscreenButton.addEventListener('click', () => this.toggleFullscreen(!this.isFullscreen()));
+        document.querySelectorAll('[data-setting="fullscreen"]').forEach((button) =>
+            button.addEventListener('click', () => this.toggleFullscreen(!this.isFullscreen())));
         this.orientationDialog.addEventListener('cancel', (event) => event.preventDefault());
         this.protectGameGestures();
         this.protectMixedTouches();
@@ -74,6 +75,8 @@ class GameDisplay {
         const height = viewport && viewport.scale === 1 ? viewport.height : window.innerHeight;
         document.documentElement.style.setProperty('--view-height', height + 'px');
         document.body.classList.toggle('compact-display', this.isCompact() || this.isFullscreen());
+        document.body.classList.toggle('max-size', gameSettings.displaySize === 'max');
+        document.documentElement.style.setProperty('--standard-width', (1920 / (this.mobileDevice ? 1 : Math.max(1, window.devicePixelRatio || 1))) + 'px');
         ImageQuality.update(this.frame, this.mobileDevice);
         this.updateCanvases();
         this.updateOrientation();
@@ -84,8 +87,6 @@ class GameDisplay {
     updateCanvases() {
         if (CanvasResolution.resize(canvas)) world?.draw(true);
         if (CanvasResolution.resize(menuWalker.canvas)) menuWalker.draw();
-        PerformanceOverlay.element.hidden = this.mobileDevice;
-        PerformanceOverlay.refresh();
     }
 
     /** Blocks portrait play on mobile; a running world remains paused after rotating back. */
@@ -106,13 +107,21 @@ class GameDisplay {
     /** Updates options after language changes, Escape, and native fullscreen transitions. */
     updateLabels() {
         const available = this.supportsFullscreen();
-        this.fullscreenButton.disabled = !available;
-        this.fullscreenButton.textContent = t(this.isFullscreen() ? 'on' : 'off');
-        this.fullscreenButton.setAttribute('aria-pressed', String(this.isFullscreen()));
-        this.fullscreenButton.setAttribute('aria-label', t('fullscreen') + ': ' + this.fullscreenButton.textContent);
-        const note = document.getElementById('fullscreen-note');
-        note.hidden = available;
-        note.textContent = available ? '' : t('fullscreenUnavailable');
+        for (const button of document.querySelectorAll('[data-setting="fullscreen"]')) {
+            button.disabled = !available;
+            button.textContent = t(this.isFullscreen() ? 'on' : 'off');
+            button.setAttribute('aria-pressed', String(this.isFullscreen()));
+            button.setAttribute('aria-label', t('fullscreen') + ': ' + button.textContent);
+        }
+        for (const button of document.querySelectorAll('[data-setting="displaySize"]')) {
+            button.textContent = t(gameSettings.displaySize === 'max' ? 'maxSize' : 'standardSize');
+            button.setAttribute('aria-pressed', String(gameSettings.displaySize === 'max'));
+            button.setAttribute('aria-label', t('displaySize') + ': ' + button.textContent);
+        }
+        document.querySelectorAll('[data-fullscreen-note]').forEach((note) => {
+            note.hidden = available;
+            note.textContent = available ? '' : t(note.closest('#pause-dialog') ? 'fullscreenUnavailableShort' : 'fullscreenUnavailable');
+        });
     }
 
     /** Prevents selection, long-press menus and multi-finger browser gestures only on game artwork. */

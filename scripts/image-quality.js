@@ -45,7 +45,6 @@ class ImageQuality {
             const scaleY = (selected.naturalHeight || selected.height) / image.naturalHeight;
             coordinates = coordinates.map((value, index) => index < 4 ? value * (index % 2 ? scaleY : scaleX) : value);
         }
-        PerformanceOverlay.countDraw();
         ctx.drawImage(selected, ...coordinates);
     }
 

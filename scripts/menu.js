@@ -1,6 +1,6 @@
 const menuTexts = {
     de: {
-        fullscreen: 'Vollbild', fullscreenUnavailable: 'Dieser Browser unterstützt kein Spiele-Vollbild. Die Ansicht nutzt die verfügbare Fläche.', rotateTitle: 'Bitte Gerät drehen', rotateMessage: 'Montys Abenteuer spielst du im Querformat.',
+        fullscreenUnavailableShort: 'Vollbild nicht verfügbar. Siehe Anleitung.', displaySize: 'Spielgröße', standardSize: 'Standard', maxSize: 'Max Size', fullscreen: 'Vollbild', fullscreenUnavailable: 'Dieser Browser unterstützt kein Spiele-Vollbild. Die Ansicht nutzt die verfügbare Fläche.', rotateTitle: 'Bitte Gerät drehen', rotateMessage: 'Montys Abenteuer spielst du im Querformat.',
         start: 'Spiel starten', options: 'Optionen', highscores: 'Highscores', guide: 'Anleitung',
         quit: 'Beenden', close: 'Schließen', touchControls: 'Touchsteuerung', moveLeft: 'Nach links', moveRight: 'Nach rechts', jumpAction: 'Springen', throwAction: 'Banane werfen', sound: 'Ton', music: 'Musik', sfx: 'Geräusche (SFX)', on: 'An', off: 'Aus', language: 'Sprache', optionKeys: '↑ ↓ Auswahl · ← → ändern · Enter/Space aktivieren · Esc zurück',
         hint: '← → Laufen · ↑ Springen · Space: Plattform aktivieren · oder anklicken',
@@ -13,7 +13,7 @@ const menuTexts = {
         loadError: 'Laden fehlgeschlagen. Bitte erneut starten.'
     },
     en: {
-        fullscreen: 'Fullscreen', fullscreenUnavailable: 'This browser does not support game fullscreen. The game uses the available space.', rotateTitle: 'Please rotate your device', rotateMessage: 'Play Monty’s adventure in landscape orientation.',
+        fullscreenUnavailableShort: 'Fullscreen unavailable. See How to play.', displaySize: 'Game size', standardSize: 'Standard', maxSize: 'Max Size', fullscreen: 'Fullscreen', fullscreenUnavailable: 'This browser does not support game fullscreen. The game uses the available space.', rotateTitle: 'Please rotate your device', rotateMessage: 'Play Monty’s adventure in landscape orientation.',
         start: 'Start game', options: 'Options', highscores: 'High scores', guide: 'How to play',
         quit: 'Exit', close: 'Close', touchControls: 'Touch controls', moveLeft: 'Move left', moveRight: 'Move right', jumpAction: 'Jump', throwAction: 'Throw banana', sound: 'Sound', music: 'Music', sfx: 'Sound effects (SFX)', on: 'On', off: 'Off', language: 'Language', optionKeys: '↑ ↓ Select · ← → Change · Enter/Space activate · Esc back',
         hint: '← → Move · ↑ Jump · Space: activate platform · or click',
@@ -42,10 +42,11 @@ function updateMenuLanguage() {
     document.querySelectorAll('[data-menu]').forEach((button) => button.setAttribute('aria-label', t(button.dataset.menu)));
     document.querySelectorAll('[data-language]').forEach((section) => section.hidden = section.dataset.language !== gameSettings.language);
     for (const key of ['music', 'sfx']) {
-        const button = document.getElementById(key + '-toggle');
-        button.textContent = t(gameSettings[key + 'Muted'] ? 'off' : 'on');
-        button.setAttribute('aria-pressed', String(!gameSettings[key + 'Muted']));
-        button.setAttribute('aria-label', t(key) + ': ' + button.textContent);
+        for (const button of document.querySelectorAll('[data-setting="' + key + '"]')) {
+            button.textContent = t(gameSettings[key + 'Muted'] ? 'off' : 'on');
+            button.setAttribute('aria-pressed', String(!gameSettings[key + 'Muted']));
+            button.setAttribute('aria-label', t(key) + ': ' + button.textContent);
+        }
     }
     document.querySelectorAll('[data-language-option]').forEach((button) =>
         button.setAttribute('aria-pressed', String(button.dataset.languageOption === gameSettings.language)));
@@ -104,14 +105,18 @@ function connectMenuButtons() {
     menuDialog.addEventListener('close', () => { menuWalker.keyboard.reset(); menuReturnButton?.focus(); });
 }
 
-/** Connects and restores the two deliberately small menu options. */
+/** Connects shared settings in the main menu and pause menu. */
 function connectOptions() {
     for (const key of ['music', 'sfx']) {
-        document.getElementById(key + '-toggle').addEventListener('click', () => {
+        for (const button of document.querySelectorAll('[data-setting="' + key + '"]')) button.addEventListener('click', () => {
             gameSettings[key + 'Muted'] = !gameSettings[key + 'Muted'];
             applyOptions();
         });
     }
+    document.querySelectorAll('[data-setting="displaySize"]').forEach((button) => button.addEventListener('click', () => {
+        gameSettings.displaySize = gameSettings.displaySize === 'max' ? 'standard' : 'max';
+        applyOptions();
+    }));
     document.querySelectorAll('[data-language-option]').forEach((button) => {
         button.addEventListener('click', () => {
             gameSettings.language = button.dataset.languageOption;
@@ -119,7 +124,7 @@ function connectOptions() {
         });
     });
     updateMenuLanguage();
-    document.querySelectorAll('audio, video').forEach((media) => media.muted = gameSettings.sfxMuted);
+    document.querySelectorAll('audio, video:not(#intro-video)').forEach((media) => media.muted = gameSettings.sfxMuted);
 }
 
 connectMenuButtons();
@@ -140,7 +145,7 @@ document.getElementById('intro-play-button').focus({ preventScroll: true });
 function handleOptionsKeys(event) {
     if (menuDialog.dataset.panel !== 'options' || !event.key.startsWith('Arrow')) return;
     event.preventDefault();
-    const fields = ['music-toggle', 'sfx-toggle', 'fullscreen-toggle', 'language-' + gameSettings.language, 'close-menu-dialog']
+    const fields = ['music-toggle', 'sfx-toggle', 'fullscreen-toggle', 'size-toggle', 'language-' + gameSettings.language, 'close-menu-dialog']
         .filter((id) => !document.getElementById(id).disabled);
     const active = document.activeElement.id;
     const index = fields.indexOf(active.startsWith('language-') ? 'language-' + gameSettings.language : active);
@@ -153,11 +158,13 @@ function handleOptionsKeys(event) {
 
 /** @param {string} key - Left or right arrow. @param {string} field - Active option. */
 function changeOptionWithArrow(key, field) {
-    if (field === 'music-toggle' || field === 'sfx-toggle') gameSettings[field.split('-')[0] + 'Muted'] = key === 'ArrowLeft';
-    else if (field === 'fullscreen-toggle') {
+    const setting = document.getElementById(field)?.dataset.setting;
+    if (setting === 'music' || setting === 'sfx') gameSettings[setting + 'Muted'] = key === 'ArrowLeft';
+    else if (setting === 'fullscreen') {
         window.gameDisplay.toggleFullscreen(key === 'ArrowRight');
         return;
     }
+    else if (setting === 'displaySize') gameSettings.displaySize = key === 'ArrowLeft' ? 'standard' : 'max';
     else if (field.startsWith('language-')) {
         gameSettings.language = key === 'ArrowLeft' ? 'de' : 'en';
         document.getElementById('language-' + gameSettings.language).focus();
