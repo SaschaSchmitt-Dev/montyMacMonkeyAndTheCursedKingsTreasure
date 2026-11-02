@@ -2,10 +2,10 @@
 class GameplayCursor {
     frame = document.querySelector('.game-frame');
 
-    /** Connects input events without starting another animation loop. */
+    /** Ignores stationary pointer events caused by browser layout or cursor changes. */
     constructor() {
         document.addEventListener('pointermove', (event) => {
-            if (event.pointerType === 'mouse') this.show();
+            if (event.pointerType === 'mouse' && (event.movementX !== 0 || event.movementY !== 0)) this.show();
         }, { capture: true });
         window.addEventListener('blur', () => this.show());
     }
