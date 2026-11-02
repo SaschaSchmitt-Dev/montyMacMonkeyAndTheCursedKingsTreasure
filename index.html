@@ -196,9 +196,9 @@
                 <h3 id="pause-settings-title" data-i18n="options">Optionen</h3>
                 <div class="option-row"><span data-i18n="music">Musik</span><button id="pause-music-toggle" data-setting="music" type="button" aria-pressed="true">An</button></div>
                 <div class="option-row"><span data-i18n="sfx">Geräusche (SFX)</span><button id="pause-sfx-toggle" data-setting="sfx" type="button" aria-pressed="true">An</button></div>
-                <div class="option-row"><span data-i18n="fullscreen">Vollbild</span><button id="pause-fullscreen-toggle" data-setting="fullscreen" type="button" aria-pressed="false">Aus</button></div>
-                <div class="option-row"><span data-i18n="displaySize">Spielgröße</span><button id="pause-size-toggle" data-setting="displaySize" type="button" aria-pressed="false">Standard</button></div>
-                <p data-fullscreen-note hidden></p>
+                <div class="option-row" data-display-option><span data-i18n="fullscreen">Vollbild</span><button id="pause-fullscreen-toggle" data-setting="fullscreen" type="button" aria-pressed="false">Aus</button></div>
+                <div class="option-row" data-display-option><span data-i18n="displaySize">Spielgröße</span><button id="pause-size-toggle" data-setting="displaySize" type="button" aria-pressed="false">Standard</button></div>
+                <p data-fullscreen-note data-display-option hidden></p>
             </section>
         </div>
     </dialog>
@@ -220,9 +220,9 @@
                         aria-pressed="true">An</button></div>
                 <div class="option-row"><span data-i18n="sfx">Geräusche (SFX)</span><button id="sfx-toggle" data-setting="sfx" type="button"
                         aria-pressed="true">An</button></div>
-                <div class="option-row"><span data-i18n="fullscreen">Vollbild</span><button id="fullscreen-toggle" data-setting="fullscreen" type="button" aria-pressed="false">An</button></div>
-                <p id="fullscreen-note" data-fullscreen-note role="status"></p>
-                <div class="option-row"><span data-i18n="displaySize">Spielgröße</span><button id="size-toggle" data-setting="displaySize" type="button" aria-pressed="false">Standard</button></div>
+                <div class="option-row" data-display-option><span data-i18n="fullscreen">Vollbild</span><button id="fullscreen-toggle" data-setting="fullscreen" type="button" aria-pressed="false">An</button></div>
+                <p id="fullscreen-note" data-fullscreen-note data-display-option role="status"></p>
+                <div class="option-row" data-display-option><span data-i18n="displaySize">Spielgröße</span><button id="size-toggle" data-setting="displaySize" type="button" aria-pressed="false">Standard</button></div>
                 <div class="option-row language-option"><span id="language-label" data-i18n="language">Sprache</span>
                     <div class="language-flags" role="group" aria-labelledby="language-label">
                         <button id="language-de" data-language-option="de" type="button" aria-pressed="true">
@@ -268,7 +268,7 @@
                     </details>
                     <details class="guide-topic">
                         <summary>4. Verhalten bei Mobil und Vollbild</summary>
-                        <div class="guide-topic-content"><p>Spiele auf Smartphones und Tablets im Querformat. Drehst du während eines laufenden Spiels ins Hochformat, wird pausiert. Drehe zurück und wähle Fortsetzen.</p><p>Auf mobilen Geräten und bei kleinen Fenstern wird Vollbild beim Start angefordert, sofern der Browser es unterstützt. Unter Optionen und im Pausenmenü kannst du Vollbild umschalten: An bedeutet aktiv, Aus bedeutet inaktiv.</p><p>Standard begrenzt die Spielfläche auf Full HD und zentriert sie auf großen Bildschirmen. Max Size nutzt die verfügbare Fläche; das Bild kann dabei vergrößert werden. Beide Größen findest du unter Optionen und im Pausenmenü. Je nach Bildschirmformat bleiben freie Ränder, damit nichts abgeschnitten wird.</p><p>Falls Browserleisten sichtbar bleiben, helfen die Hinweise für dein Gerät in den folgenden Bereichen.</p></div>
+                        <div class="guide-topic-content"><p>Spiele auf Smartphones und Tablets im Querformat. Drehst du während eines laufenden Spiels ins Hochformat, wird pausiert. Drehe zurück und wähle Fortsetzen.</p><p>Auf mobilen Geräten und bei kleinen Fenstern wird Vollbild beim Start angefordert, sofern der Browser es unterstützt. Auf kleinen Bildschirmen passt sich das Spiel automatisch an; Vollbild und Spielgröße werden dort nicht als Einstellungen angezeigt. Auf größeren Bildschirmen kannst du beides in den Optionen oder im Pausenmenü ändern.</p><p>Standard begrenzt die Spielfläche auf Full HD und zentriert sie auf großen Bildschirmen. Max Size nutzt die verfügbare Fläche; das Bild kann dabei vergrößert werden. Auf größeren Bildschirmen findest du beide Größen unter Optionen und im Pausenmenü. Je nach Bildschirmformat bleiben freie Ränder, damit nichts abgeschnitten wird.</p><p>Falls Browserleisten sichtbar bleiben, helfen die Hinweise für dein Gerät in den folgenden Bereichen.</p></div>
                     </details>
                     <details class="guide-topic">
                         <summary>5. Vollbildfix iPhone & iPad</summary>
@@ -298,7 +298,7 @@
                     </details>
                     <details class="guide-topic">
                         <summary>4. Mobile play and fullscreen</summary>
-                        <div class="guide-topic-content"><p>Play on phones and tablets in landscape orientation. Rotating to portrait during a run pauses your game. Rotate back and choose Resume.</p><p>On mobile devices and in small windows, fullscreen is requested when you start, if supported by your browser. Toggle it in Options or the pause menu: On means active; Off means inactive.</p><p>Standard limits the play area to Full HD and centers it on large screens. Max Size uses the available space and may enlarge the image. Choose either size in Options or the pause menu. Empty margins may remain so the entire play area stays visible.</p><p>If browser bars remain visible, see the device-specific sections below.</p></div>
+                        <div class="guide-topic-content"><p>Play on phones and tablets in landscape orientation. Rotating to portrait during a run pauses your game. Rotate back and choose Resume.</p><p>On mobile devices and in small windows, fullscreen is requested when you start, if supported by your browser. Small screens use automatic sizing and do not show fullscreen or game-size settings. On larger screens, you can change both in Options or the pause menu.</p><p>Standard limits the play area to Full HD and centers it on large screens. Max Size uses the available space and may enlarge the image. Choose either size in Options or the pause menu on larger screens. Empty margins may remain so the entire play area stays visible.</p><p>If browser bars remain visible, see the device-specific sections below.</p></div>
                     </details>
                     <details class="guide-topic">
                         <summary>5. Fullscreen help: iPhone & iPad</summary>

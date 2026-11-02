@@ -110,9 +110,20 @@ class GameDisplay {
     /** Updates options after language changes, Escape, and native fullscreen transitions. */
     updateLabels() {
         const available = this.supportsFullscreen();
+        this.updateDisplayOptions();
         this.updateFullscreenButtons(available);
         this.updateSizeButtons();
         this.updateFullscreenNotes(available);
+    }
+
+    /** Hides display settings on small screens and moves focus off controls hidden by a resize. */
+    updateDisplayOptions() {
+        const hidden = window.innerWidth <= 1024;
+        const focused = document.activeElement.closest('.option-row[data-display-option]');
+        document.querySelectorAll('.option-row[data-display-option]').forEach((row) => row.hidden = hidden);
+        if (!hidden || !focused) return;
+        const target = focused.closest('#pause-dialog') ? 'pause-music-toggle' : 'music-toggle';
+        document.getElementById(target).focus({ preventScroll: true });
     }
 
     /** Prevents selection, long-press menus and multi-finger browser gestures only on game artwork. */
@@ -158,7 +169,7 @@ class GameDisplay {
     /** @param {boolean} available - Show the full or compact fallback note when unsupported. */
     updateFullscreenNotes(available) {
         document.querySelectorAll('[data-fullscreen-note]').forEach((note) => {
-            note.hidden = available;
+            note.hidden = available || window.innerWidth <= 1024;
             note.textContent = available ? '' : t(note.closest('#pause-dialog') ? 'fullscreenUnavailableShort' : 'fullscreenUnavailable');
         });
     }

@@ -195,3 +195,7 @@ html {
         margin: 4px 0;
     }
 }
+
+[data-display-option][hidden] {
+    display: none;
+}

@@ -122,13 +122,18 @@ function handleOptionsKeys(event) {
     if (menuDialog.dataset.panel !== 'options' || !event.key.startsWith('Arrow')) return;
     event.preventDefault();
     const fields = ['music-toggle', 'sfx-toggle', 'fullscreen-toggle', 'size-toggle', 'language-' + gameSettings.language, 'close-menu-dialog']
-        .filter((id) => !document.getElementById(id).disabled);
+        .filter((id) => isMenuControlAvailable(document.getElementById(id)));
     const active = document.activeElement.id;
     const index = fields.indexOf(active.startsWith('language-') ? 'language-' + gameSettings.language : active);
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         const step = event.key === 'ArrowDown' ? 1 : -1;
         document.getElementById(fields[(index + step + fields.length) % fields.length]).focus();
     } else changeOptionWithArrow(event.key, document.activeElement.id);
+}
+
+/** @param {HTMLButtonElement} button - Menu control. @returns {boolean} Whether it can receive navigation focus. */
+function isMenuControlAvailable(button) {
+    return !button.disabled && button.getClientRects().length > 0;
 }
 
 /** @param {string} key - Left or right arrow. @param {string} field - Active option. */

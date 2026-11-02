@@ -59,7 +59,7 @@ function selectPauseAction(event) {
         changeOptionWithArrow(event.key, document.activeElement.id);
         return;
     }
-    const buttons = [...pauseDialog.querySelectorAll('button')].filter((button) => !button.disabled);
+    const buttons = [...pauseDialog.querySelectorAll('button')].filter(isMenuControlAvailable);
     const backwards = ['ArrowUp', 'ArrowLeft'].includes(event.key) || (event.key === 'Tab' && event.shiftKey);
     const direction = backwards ? -1 : 1;
     const current = buttons.indexOf(document.activeElement);
