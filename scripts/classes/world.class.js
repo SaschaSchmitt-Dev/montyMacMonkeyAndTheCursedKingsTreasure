@@ -39,21 +39,10 @@ class World {
         this.ctx = canvas.getContext('2d');
         this.keyboard = keyboard;
         this.level = level;
-        this.createBackgrounds();
-        BananaProjectile.preloadImages();
-        this.ground = new Ground(() => this.draw());
-        this.ground.y += this.level.groundY - 330;
-        this.createCharacter();
-        this.throwController = new ThrowController(this.character);
-        this.bossChamber = new BossChamber(this.level, () => this.draw());
-        this.healthBar = new HealthBar(() => this.draw());
-        this.ammoBar = new AmmoBar(() => this.draw());
-        const totalScore = level.scoreItems.reduce((sum, item) => sum + item.points, 0);
-        this.scoreBar = new ScoreBar(totalScore, () => this.draw());
-        this.bossHealthBar = new BossHealthBar(() => this.draw());
+        this.createSceneAssets();
+        this.createHud(level);
         if (autoStart) this.start();
     }
-
 
     /** Starts the prepared world after loading, with a fresh frame timestamp. */
     start() {
@@ -62,7 +51,6 @@ class World {
         this.lastTime = null;
         this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
     }
-
 
     /** @returns {DrawableObject[]} Objects whose graphics are needed for this run. */
     getLoadingObjects() {
@@ -75,7 +63,6 @@ class World {
             room.background, room.roomGround, room.boss];
     }
 
-
     /** @returns {Promise} Resolves when all game images are loaded and decoded. */
     waitForImages() {
         const images = this.getLoadingObjects().flatMap((object) =>
@@ -83,7 +70,6 @@ class World {
         images.push(...Object.values(BananaProjectile.images));
         return Promise.all([...new Set(images)].map((image) => image.decode()));
     }
-
 
     /** Places the player using the current level's starting coordinates. */
     createCharacter() {
@@ -94,7 +80,6 @@ class World {
         this.character.floorGroundY = this.level.groundY;
     }
 
-
     /** Loads all three full-size sections for each of the three cave layers. */
     createBackgrounds() {
         for (let layer = 1; layer <= 3; layer++) {
@@ -104,7 +89,6 @@ class World {
             this.backgrounds.push(sections);
         }
     }
-
 
     /** @param {number} layer - Zero-based layer index. */
     drawBackgroundLayer(layer) {
@@ -118,7 +102,6 @@ class World {
         }
     }
 
-
     /** @param {number} time - Browser timestamp in milliseconds. */
     gameLoop(time) {
         if (!this.active || this.paused) return;
@@ -130,7 +113,6 @@ class World {
         this.draw();
         if (this.active) this.animationFrame = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
     }
-
 
     /** Locks gameplay when either combatant has been defeated. */
     checkGameEnd() {
@@ -145,7 +127,6 @@ class World {
         this.keyboard.reset();
     }
 
-
     /** Captures collected points and remaining resources once for the victory result. */
     calculateVictoryScore() {
         if (this.endScore) return;
@@ -157,7 +138,6 @@ class World {
         this.endScore = { collected, lives, ammo, lifeBonus, ammoBonus,
             total: collected + lifeBonus + ammoBonus };
     }
-
 
     /** Finishes the death animation before stopping the scene and showing its result. */
     updateEnding() {
@@ -172,7 +152,6 @@ class World {
         showEndScreen(this.result, this.endScore);
     }
 
-
     /** Updates the running level while no scene transition is active. */
     updateScene() {
         this.updateEnemies();
@@ -186,26 +165,16 @@ class World {
         this.updateCamera();
     }
 
-
     /** Places the player in a fresh room while preserving the collected resources. */
     enterBossChamber() {
         if (this.throwController.active) this.throwController.cancel(this.character);
-        const previous = this.character;
-        this.level = new Level(CanvasResolution.width, 120, previous.floorGroundY);
-        this.ground = this.bossChamber.roomGround;
-        this.ground.alignBossGround(CanvasResolution.width, previous.floorGroundY + 122);
-        this.keyboard.reset();
-        this.projectiles = [];
-        this.cameraX = 0;
-        this.createCharacter();
-        Object.assign(this.character, { health: previous.health, ammo: previous.ammo, score: previous.score });
+        this.prepareBossRoom(this.character);
         this.boss = this.bossChamber.boss;
         gameAudio.setScene('boss');
         gameAudio.effect('cave');
         gameAudio.effect('awaken');
         this.throwController = new ThrowController(this.character);
     }
-
 
     /** Advances the throw, flying bananas and expired impact effects. */
     updateThrowing() {
@@ -216,7 +185,6 @@ class World {
         this.projectiles = this.projectiles.filter((projectile) => !projectile.finished
             && projectile.x + projectile.width >= 0 && projectile.x <= this.level.width);
     }
-
 
     /** Moves enemies and carries a player resting on an armored back. */
     updateEnemies() {
@@ -230,7 +198,6 @@ class World {
         }
     }
 
-
     /** @param {number} previousFeet - Foot height before this frame's movement. */
     checkEnemyContact(previousFeet) {
         EnemyCollisions.check(this.character, this.level.enemies, previousFeet);
@@ -239,7 +206,6 @@ class World {
         }
         this.level.enemies = this.level.enemies.filter((enemy) => !enemy.defeated || enemy.deathTime < 0.6);
     }
-
 
     /** Collects the complete ammunition pickup without a carrying limit. */
     collectAmmo() {
@@ -251,7 +217,6 @@ class World {
             return false;
         });
     }
-
 
     /** Animates treasures and collects each touched item once while alive. */
     updateScoreItems() {
@@ -265,14 +230,12 @@ class World {
         });
     }
 
-
     /** Follows the player after the first third of the screen, within the level. */
     updateCamera() {
         const maxCameraX = Math.max(0, this.level.width - CanvasResolution.width);
         const wantedX = this.character.x - CanvasResolution.width / 3;
         this.cameraX = Math.max(0, Math.min(wantedX, maxCameraX));
     }
-
 
     /** Draws enemies and player relative to the camera without moving the HUD. */
     drawFigures() {
@@ -289,7 +252,6 @@ class World {
         this.ctx.restore();
     }
 
-
     /** @param {DrawableObject[]} objects - Draw only objects near the visible camera section. */
     drawVisible(objects) {
         const left = this.cameraX - 64;
@@ -298,7 +260,6 @@ class World {
             if (object.x + object.width >= left && object.x <= right) object.draw(this.ctx);
         }
     }
-
 
     /**
      * Limits the time step to avoid large jumps after a tab pause.
@@ -312,13 +273,11 @@ class World {
         return deltaTime;
     }
 
-
     /** Stops drawing and cancels the pending animation frame. */
     stop() {
         this.active = false;
         cancelAnimationFrame(this.animationFrame);
     }
-
 
     /** Draws either the jungle layers or the fixed throne room. */
     drawSceneBackground() {
@@ -330,7 +289,6 @@ class World {
         }
     }
 
-
     /** Draws the jungle foreground and the entrance over the player. */
     drawSceneForeground() {
         if (this.bossChamber.inside) return;
@@ -338,8 +296,9 @@ class World {
         this.bossChamber.drawEntrance(this.ctx, Math.round(this.cameraX), 'front');
     }
 
-
-    /** Joins the regular floor to the separate exit floor at a shared height. */
+    /** Joins the regular floor to the separate exit floor at a shared height.
+     * @returns {void} Updates state or drawing only.
+     */
     drawSceneGround() {
         if (this.bossChamber.inside) return this.ground.draw(this.ctx, this.cameraX);
         const cameraX = Math.round(this.cameraX);
@@ -351,7 +310,6 @@ class World {
         this.ctx.restore();
         this.bossChamber.drawGround(this.ctx, cameraX);
     }
-
 
     /** Redraws loaded objects in order. @param {boolean} force - Refresh a frozen scene after resizing. */
     draw(force = false) {
@@ -368,4 +326,37 @@ class World {
         this.bossHealthBar.draw(this.ctx, this.boss);
         this.bossChamber.drawFade(this.ctx);
     }
+
+    /** Creates the shared scene, character, projectiles and cave in their original loading order. */
+    createSceneAssets() {
+        this.createBackgrounds();
+        BananaProjectile.preloadImages();
+        this.ground = new Ground(() => this.draw());
+        this.ground.y += this.level.groundY - 330;
+        this.createCharacter();
+        this.throwController = new ThrowController(this.character);
+        this.bossChamber = new BossChamber(this.level, () => this.draw());
+    }
+
+    /** @param {Level} level - Level whose collectible total defines the score meter. */
+    createHud(level) {
+        this.healthBar = new HealthBar(() => this.draw());
+        this.ammoBar = new AmmoBar(() => this.draw());
+        const totalScore = level.scoreItems.reduce((sum, item) => sum + item.points, 0);
+        this.scoreBar = new ScoreBar(totalScore, () => this.draw());
+        this.bossHealthBar = new BossHealthBar(() => this.draw());
+    }
+
+    /** @param {Character} previous - Character whose floor, life, score and ammunition are preserved. */
+    prepareBossRoom(previous) {
+        this.level = new Level(CanvasResolution.width, 120, previous.floorGroundY);
+        this.ground = this.bossChamber.roomGround;
+        this.ground.alignBossGround(CanvasResolution.width, previous.floorGroundY + 122);
+        this.keyboard.reset();
+        this.projectiles = [];
+        this.cameraX = 0;
+        this.createCharacter();
+        Object.assign(this.character, { health: previous.health, ammo: previous.ammo, score: previous.score });
+    }
+
 }

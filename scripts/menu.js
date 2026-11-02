@@ -36,20 +36,8 @@ function t(key) { return menuTexts[gameSettings.language][key] || key; }
 
 /** Updates static interface labels and the active dialog after a language change. */
 function updateMenuLanguage() {
-    document.documentElement.lang = gameSettings.language;
-    document.querySelectorAll('[data-i18n-aria]').forEach((element) =>
-        element.setAttribute('aria-label', t(element.dataset.i18nAria)));
-    document.getElementById('pause-button').setAttribute('aria-label', t('openPause'));
-    document.querySelectorAll('[data-i18n]').forEach((element) => element.textContent = t(element.dataset.i18n));
-    document.querySelectorAll('[data-menu]').forEach((button) => button.setAttribute('aria-label', t(button.dataset.menu)));
-    document.querySelectorAll('[data-language]').forEach((section) => section.hidden = section.dataset.language !== gameSettings.language);
-    for (const key of ['music', 'sfx']) {
-        for (const button of document.querySelectorAll('[data-setting="' + key + '"]')) {
-            button.textContent = t(gameSettings[key + 'Muted'] ? 'off' : 'on');
-            button.setAttribute('aria-pressed', String(!gameSettings[key + 'Muted']));
-            button.setAttribute('aria-label', t(key) + ': ' + button.textContent);
-        }
-    }
+    updateStaticMenuText();
+    for (const key of ['music', 'sfx']) updateSoundButtons(key);
     document.querySelectorAll('[data-language-option]').forEach((button) =>
         button.setAttribute('aria-pressed', String(button.dataset.languageOption === gameSettings.language)));
     document.getElementById('storage-note').textContent = t(storageAvailable ? 'local' : 'session');
@@ -109,22 +97,9 @@ function connectMenuButtons() {
 
 /** Connects shared settings in the main menu and pause menu. */
 function connectOptions() {
-    for (const key of ['music', 'sfx']) {
-        for (const button of document.querySelectorAll('[data-setting="' + key + '"]')) button.addEventListener('click', () => {
-            gameSettings[key + 'Muted'] = !gameSettings[key + 'Muted'];
-            applyOptions();
-        });
-    }
-    document.querySelectorAll('[data-setting="displaySize"]').forEach((button) => button.addEventListener('click', () => {
-        gameSettings.displaySize = gameSettings.displaySize === 'max' ? 'standard' : 'max';
-        applyOptions();
-    }));
-    document.querySelectorAll('[data-language-option]').forEach((button) => {
-        button.addEventListener('click', () => {
-            gameSettings.language = button.dataset.languageOption;
-            applyOptions();
-        });
-    });
+    connectSoundOptions();
+    connectSizeOptions();
+    connectLanguageOptions();
     updateMenuLanguage();
     document.querySelectorAll('audio, video:not(#intro-video)').forEach((media) => media.muted = gameSettings.sfxMuted);
 }
@@ -142,7 +117,6 @@ Promise.all([...menuWalker.screen.querySelectorAll('img, svg image')].map((eleme
     .catch(() => { });
 document.getElementById('intro-play-button').focus({ preventScroll: true });
 
-
 /** @param {KeyboardEvent} event - Arrow navigation inside the options panel. */
 function handleOptionsKeys(event) {
     if (menuDialog.dataset.panel !== 'options' || !event.key.startsWith('Arrow')) return;
@@ -157,7 +131,6 @@ function handleOptionsKeys(event) {
     } else changeOptionWithArrow(event.key, document.activeElement.id);
 }
 
-
 /** @param {string} key - Left or right arrow. @param {string} field - Active option. */
 function changeOptionWithArrow(key, field) {
     const setting = document.getElementById(field)?.dataset.setting;
@@ -167,10 +140,61 @@ function changeOptionWithArrow(key, field) {
         return;
     }
     else if (setting === 'displaySize') gameSettings.displaySize = key === 'ArrowLeft' ? 'standard' : 'max';
-    else if (field.startsWith('language-')) {
-        gameSettings.language = key === 'ArrowLeft' ? 'de' : 'en';
-        document.getElementById('language-' + gameSettings.language).focus();
-    }
+    else if (field.startsWith('language-')) changeLanguageWithArrow(key);
     else return;
     applyOptions();
+}
+
+/** Updates translated text and accessible labels without replacing controls. */
+function updateStaticMenuText() {
+    document.documentElement.lang = gameSettings.language;
+    document.querySelectorAll('[data-i18n-aria]').forEach((element) =>
+        element.setAttribute('aria-label', t(element.dataset.i18nAria)));
+    document.getElementById('pause-button').setAttribute('aria-label', t('openPause'));
+    document.querySelectorAll('[data-i18n]').forEach((element) => element.textContent = t(element.dataset.i18n));
+    document.querySelectorAll('[data-menu]').forEach((button) => button.setAttribute('aria-label', t(button.dataset.menu)));
+    document.querySelectorAll('[data-language]').forEach((section) => section.hidden = section.dataset.language !== gameSettings.language);
+}
+
+/** @param {string} key - Shared music or SFX setting. */
+function updateSoundButtons(key) {
+    for (const button of document.querySelectorAll('[data-setting="' + key + '"]')) {
+        button.textContent = t(gameSettings[key + 'Muted'] ? 'off' : 'on');
+        button.setAttribute('aria-pressed', String(!gameSettings[key + 'Muted']));
+        button.setAttribute('aria-label', t(key) + ': ' + button.textContent);
+    }
+}
+
+/** Connects each sound button to the same persisted state. */
+function connectSoundOptions() {
+    for (const key of ['music', 'sfx']) {
+        for (const button of document.querySelectorAll('[data-setting="' + key + '"]')) button.addEventListener('click', () => {
+            gameSettings[key + 'Muted'] = !gameSettings[key + 'Muted'];
+            applyOptions();
+        });
+    }
+}
+
+/** Connects both display-size buttons. */
+function connectSizeOptions() {
+    document.querySelectorAll('[data-setting="displaySize"]').forEach((button) => button.addEventListener('click', () => {
+        gameSettings.displaySize = gameSettings.displaySize === 'max' ? 'standard' : 'max';
+        applyOptions();
+    }));
+}
+
+/** Connects the two language flag buttons. */
+function connectLanguageOptions() {
+    document.querySelectorAll('[data-language-option]').forEach((button) => {
+        button.addEventListener('click', () => {
+            gameSettings.language = button.dataset.languageOption;
+            applyOptions();
+        });
+    });
+}
+
+/** @param {string} key - Horizontal arrow determining the language. */
+function changeLanguageWithArrow(key) {
+    gameSettings.language = key === 'ArrowLeft' ? 'de' : 'en';
+    document.getElementById('language-' + gameSettings.language).focus();
 }

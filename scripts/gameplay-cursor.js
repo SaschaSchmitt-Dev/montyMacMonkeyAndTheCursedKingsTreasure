@@ -1,7 +1,8 @@
-﻿/** Hides the cursor only during gameplay until a real mouse movement. */
+/** Hides the cursor only during gameplay until a real mouse movement. */
 class GameplayCursor {
     frame = document.querySelector('.game-frame');
 
+    /** Connects input events without starting another animation loop. */
     constructor() {
         document.addEventListener('pointermove', (event) => {
             if (event.pointerType === 'mouse') this.show();

@@ -28,7 +28,6 @@ class BossChamber {
         this.loadRoom(level, onLoad);
     }
 
-
     /** @param {Level} level - Level with the shared floor height.
      * @param {Function} onLoad - Requests a redraw after loading.
      */
@@ -39,13 +38,11 @@ class BossChamber {
         this.boss = new Boss(this.background.width, level.groundY + 122, onLoad);
     }
 
-
     /** @returns {boolean} Whether the chamber's required images loaded successfully. */
     isRoomReady() {
         const images = [this.background.img, this.roomGround.img, ...Object.values(this.boss.imageCache)];
         return images.every((image) => image.complete && image.naturalWidth > 0);
     }
-
 
     /** @param {Function} onLoad - Requests a redraw after loading. */
     createGrass(onLoad) {
@@ -57,7 +54,6 @@ class BossChamber {
         this.grass.loadImage('assets/images/objects/entrances/jungle-cave-grass-overlay.png', onLoad);
     }
 
-
     /** @param {Function} onLoad - Requests a redraw after loading. */
     loadLayers(onLoad) {
         this.layers = { back: this.entrance, ground: new DrawableObject(), front: new DrawableObject() };
@@ -65,7 +61,6 @@ class BossChamber {
             layer.loadImage('assets/images/objects/entrances/cave-transition-' + name + '.png', onLoad);
         }
     }
-
 
     /** @param {number} floorY - Shared walkable surface.
      * @param {Function} onLoad - Requests a redraw after loading.
@@ -78,7 +73,6 @@ class BossChamber {
         this.seam.y = floorY - 22;
         this.seam.loadImage('assets/images/objects/entrances/jungle-seam-overlay.png', onLoad);
     }
-
 
     /** @param {World} world - Game scene.
      * @returns {boolean} Whether the transition temporarily freezes gameplay.
@@ -95,7 +89,6 @@ class BossChamber {
         return true;
     }
 
-
     /** @param {World} world - Scene whose level changes at full darkness. */
     finishFade(world) {
         if (this.phase === 'out' && !this.isRoomReady()) return;
@@ -108,7 +101,6 @@ class BossChamber {
             this.phase = 'idle';
         }
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Canvas context.
      * @param {number} cameraX - Jungle camera position.
@@ -123,7 +115,6 @@ class BossChamber {
         if (layer === 'ground') this.extendGround(ctx, image, door.x - cameraX, y);
     }
 
-
     /** Extends only the lowest rock strip, preserving the entrance and walkable surface.
      * @param {CanvasRenderingContext2D} ctx - Scene context. @param {HTMLImageElement} image - Ground layer.
      * @param {number} x - Screen position. @param {number} y - Unchanged layer top.
@@ -136,7 +127,6 @@ class BossChamber {
             x, targetY, door.width, CanvasResolution.height - targetY);
     }
 
-
     /** @param {CanvasRenderingContext2D} ctx - Canvas context.
      * @param {number} cameraX - World camera position.
      */
@@ -144,7 +134,6 @@ class BossChamber {
         this.drawEntrance(ctx, cameraX, 'ground');
         this.grass.draw(ctx, this.grass.x - cameraX);
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Canvas context. */
     drawFade(ctx) {

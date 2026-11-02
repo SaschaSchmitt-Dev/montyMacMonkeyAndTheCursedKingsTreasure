@@ -12,7 +12,6 @@ class ThrowController {
         character.loadImages(character.throwImages);
     }
 
-
     /** @param {World} world - Current player, input and projectiles. */
     update(world) {
         const character = world.character;
@@ -25,7 +24,6 @@ class ThrowController {
         character.updateAnimation(0);
     }
 
-
     /** @param {Character} character - Player beginning a throw. */
     start(character) {
         character.ammo--;
@@ -37,8 +35,9 @@ class ThrowController {
         this.facingLeft = character.facingLeft;
     }
 
-
-    /** @param {World} world - Scene containing the active throw. */
+    /** @param {World} world - Scene containing the active throw.
+     * @returns {void} Updates state or drawing only.
+     */
     advance(world) {
         const character = world.character;
         if (character.health === 0 || character.hitTime > 0) return this.cancel(character);
@@ -51,7 +50,6 @@ class ThrowController {
         }
         if (character.throwTime === 0) this.active = false;
     }
-
 
     /** @param {Character} character - Player interrupted before or after release. */
     cancel(character) {

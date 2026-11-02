@@ -9,7 +9,6 @@ document.getElementById('start-button').addEventListener('click', restartGame);
 document.getElementById('menu-button').addEventListener('click', showMainMenu);
 document.getElementById('loading-menu-button').addEventListener('click', showMainMenu);
 
-
 /** Replaces the stopped game world and clears held input without reloading the page. */
 async function restartGame() {
     if (world) world.stop();
@@ -19,20 +18,17 @@ async function restartGame() {
     const nextWorld = new World(canvas, keyboard, createLevel1(CanvasResolution.width), false);
     world = nextWorld;
     try {
-        await Promise.all([nextWorld.waitForImages(), document.fonts.load('104px "Racing Sans One"')]);
-        await ImageQuality.preloadWorld(nextWorld);
+        await waitForGameResources(nextWorld);
         if (world === nextWorld) finishLoading(nextWorld);
     } catch {
         if (world === nextWorld) showLoadingError();
     }
 }
 
-
 /** Hides the result overlay for a fresh game. */
 function resetEndScreen() {
     document.getElementById('end-screen').hidden = true;
 }
-
 
 /** @param {string} result - Either victory or defeat.
  * @param {Object|null} score - Final victory points and resource bonuses.
@@ -43,17 +39,10 @@ function showEndScreen(result, score) {
     hidePauseMenu();
     gameAudio.setScene('result', false);
     gameAudio.playResult(result);
-    const victory = result === 'victory';
-    saveRunScore(world, result);
-    document.getElementById('end-title').textContent = victory ? t('won') : t('lost');
-    document.getElementById('end-message').textContent = victory
-        ? t('winMessage') : t('loseMessage');
-    document.getElementById('end-panel').classList.toggle('victory', victory);
-    showVictoryScore(score);
+    updateEndPanel(result, score);
     document.getElementById('end-screen').hidden = false;
     document.getElementById('restart-button').focus({ preventScroll: true });
 }
-
 
 /** @param {Object|null} score - Captured victory result, absent after a defeat. */
 function showVictoryScore(score) {
@@ -67,7 +56,6 @@ function showVictoryScore(score) {
     document.getElementById('total-score').textContent = score.total;
 }
 
-
 /** Stops the previous run and restores the start screen without reloading. */
 function showMainMenu() {
     gameplayCursor.show();
@@ -78,15 +66,8 @@ function showMainMenu() {
     if (world) world.stop();
     world = null;
     keyboard.reset();
-    document.getElementById('loading-screen').hidden = true;
-    resetEndScreen();
-    canvas.inert = true;
-    document.getElementById('intro-screen').hidden = true;
-    document.getElementById('start-screen').hidden = false;
-    menuWalker.start();
-    document.getElementById('start-screen').focus({ preventScroll: true });
+    restoreMainMenuView();
 }
-
 
 /** Covers the canvas while the next level loads and disables game input. */
 function showLoadingScreen() {
@@ -104,7 +85,6 @@ function showLoadingScreen() {
     document.getElementById('loading-screen').focus({ preventScroll: true });
 }
 
-
 /** @param {World} nextWorld - Fully loaded world to reveal and start. */
 function finishLoading(nextWorld) {
     nextWorld.ready = true;
@@ -121,7 +101,6 @@ function finishLoading(nextWorld) {
     gameplayCursor.hide();
 }
 
-
 /** Offers a way back to the menu if a required game image cannot load. */
 function showLoadingError() {
     world.stop();
@@ -131,8 +110,8 @@ function showLoadingError() {
     document.getElementById('loading-menu-button').focus({ preventScroll: true });
 }
 
-
-/** Moves between the two result actions with the horizontal arrow keys. */
+/** Moves between the two result actions with the horizontal arrow keys.
+ * @param {KeyboardEvent} event - Result-menu key press. */
 function selectEndAction(event) {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
     event.preventDefault();
@@ -141,4 +120,33 @@ function selectEndAction(event) {
     const direction = event.key === 'ArrowRight' ? 1 : -1;
     const next = (current + direction + buttons.length) % buttons.length;
     buttons[next].focus({ preventScroll: true });
+}
+
+/** @param {World} nextWorld - Hidden run whose images, font and high-resolution bitmaps must be ready.
+ * @returns {Promise<void>} Resolves after every required resource is prepared.
+ */
+async function waitForGameResources(nextWorld) {
+    await Promise.all([nextWorld.waitForImages(), document.fonts.load('104px "Racing Sans One"')]);
+    await ImageQuality.preloadWorld(nextWorld);
+}
+
+/** @param {string} result - Victory or defeat. @param {Object|null} score - Captured victory bonuses. */
+function updateEndPanel(result, score) {
+    const victory = result === 'victory';
+    saveRunScore(world, result);
+    document.getElementById('end-title').textContent = victory ? t('won') : t('lost');
+    document.getElementById('end-message').textContent = victory ? t('winMessage') : t('loseMessage');
+    document.getElementById('end-panel').classList.toggle('victory', victory);
+    showVictoryScore(score);
+}
+
+/** Restores menu visibility and focus after stopping the previous scene. */
+function restoreMainMenuView() {
+    document.getElementById('loading-screen').hidden = true;
+    resetEndScreen();
+    canvas.inert = true;
+    document.getElementById('intro-screen').hidden = true;
+    document.getElementById('start-screen').hidden = false;
+    menuWalker.start();
+    document.getElementById('start-screen').focus({ preventScroll: true });
 }

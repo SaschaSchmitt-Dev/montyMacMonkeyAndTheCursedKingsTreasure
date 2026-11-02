@@ -46,14 +46,12 @@ class Character extends MovableObject {
         this.setupDamageAnimations(onLoad);
     }
 
-
     /** @param {Function} onLoad - Requests a redraw after loading. */
     setupDamageAnimations(onLoad) {
         this.hitImages = this.createFramePaths('hit/hit', 4);
         this.deathImages = this.createFramePaths('death/death', 4);
         this.loadImages([...this.hitImages, ...this.deathImages], onLoad);
     }
-
 
     /** Removes one life unless protection is active or no lives remain. */
     takeHit() {
@@ -69,7 +67,6 @@ class Character extends MovableObject {
         this.updateAnimation(0);
     }
 
-
     /** @param {Function} onLoad - Requests a redraw after loading. */
     setupIdleAnimations(onLoad) {
         const hat = this.createFramePaths('idle-hat/hat', 3);
@@ -80,7 +77,6 @@ class Character extends MovableObject {
         };
         this.loadImages([...hat, ...map], onLoad);
     }
-
 
     /** @param {number} deltaTime - Frame duration in seconds.
      * @returns {string} Current idle image, including occasional hat/map gestures.
@@ -99,7 +95,6 @@ class Character extends MovableObject {
         return this.idlePath;
     }
 
-
     /** Restarts the quiet delay after movement or a completed gesture. */
     resetIdle() {
         if (this.idleTime > 0) {
@@ -107,7 +102,6 @@ class Character extends MovableObject {
             this.idleDelay = 4 + Math.random() * 4;
         }
     }
-
 
     /**
      * @param {string} name - Animation folder and filename prefix.
@@ -120,12 +114,12 @@ class Character extends MovableObject {
         );
     }
 
-
     /**
      * @param {number} deltaTime - Frame duration in seconds.
      * @param {Keyboard} keyboard - Current input state.
      * @param {number} levelWidth - Width of the playable level.
      * @param {Platform[]} platforms - Floating landing surfaces.
+     * @returns {void} Updates state or drawing only.
      */
     update(deltaTime, keyboard, levelWidth, platforms = []) {
         this.invulnerableTime = Math.max(0, this.invulnerableTime - deltaTime);
@@ -142,7 +136,6 @@ class Character extends MovableObject {
         this.updateAnimation(deltaTime);
     }
 
-
     /** @param {number} deltaTime - Frame duration in seconds.
      * @param {Platform[]} platforms - Surfaces below the falling figure.
      */
@@ -151,7 +144,6 @@ class Character extends MovableObject {
         this.applyGravity(deltaTime);
         this.updateAnimation(deltaTime);
     }
-
 
     /** @param {Platform[]} platforms - Landing surfaces, including solid blocks.
      * @param {number} previousX - Horizontal position before movement.
@@ -167,7 +159,6 @@ class Character extends MovableObject {
         }
     }
 
-
     /** @param {Platform[]} platforms - Ledges below the player's feet. */
     updateSupport(platforms) {
         this.groundY = this.floorGroundY;
@@ -182,7 +173,6 @@ class Character extends MovableObject {
         this.updateEnemySupport();
     }
 
-
     /** Keeps the current armored back as support only while standing above it. */
     updateEnemySupport() {
         const enemy = this.ridingEnemy;
@@ -196,7 +186,6 @@ class Character extends MovableObject {
         }
     }
 
-
     /** @param {boolean} pressed - A new press may interrupt the landing pose. */
     readJumpInput(pressed) {
         if (pressed && !this.jumpHeld && this.isGrounded()
@@ -206,7 +195,6 @@ class Character extends MovableObject {
         }
         this.jumpHeld = pressed;
     }
-
 
     /** @param {number} deltaTime - Frame duration in seconds. */
     updateJump(deltaTime) {
@@ -221,7 +209,6 @@ class Character extends MovableObject {
         if (wasInAir && this.isGrounded()) this.landingTime = 0.1;
     }
 
-
     /** @param {number} deltaTime - Frame duration in seconds. */
     updateTakeoff(deltaTime) {
         this.takeoffTime = Math.max(0, this.takeoffTime - deltaTime);
@@ -230,7 +217,6 @@ class Character extends MovableObject {
             this.jump();
         }
     }
-
 
     /**
      * @param {number} deltaTime - Frame duration in seconds.
@@ -247,7 +233,6 @@ class Character extends MovableObject {
         }
     }
 
-
     /** @param {Platform[]} platforms - Ledges supporting the lying figure.
      * @returns {boolean} Whether the sleeping pose fits on the current surface.
      */
@@ -261,7 +246,6 @@ class Character extends MovableObject {
             && centerX + halfWidth <= platform.x + platform.width * 0.94);
     }
 
-
     /** @returns {string} Highest-priority animation for the current state. */
     getAnimation() {
         if (this.health === 0) return 'death';
@@ -273,7 +257,6 @@ class Character extends MovableObject {
         return this.moving ? 'run' : 'idle';
     }
 
-
     /** @param {number} deltaTime - Frame duration in seconds. */
     updateAnimation(deltaTime) {
         const nextAnimation = this.getAnimation();
@@ -283,7 +266,6 @@ class Character extends MovableObject {
         const image = this.imageCache[this.getAnimationPath(deltaTime)];
         if (image.complete && image.naturalWidth > 0) this.img = image;
     }
-
 
     /** @param {number} deltaTime - Frame duration in seconds.
      * @returns {string} Image path for the current animation frame.
@@ -298,7 +280,6 @@ class Character extends MovableObject {
         return this.getIdlePath(deltaTime);
     }
 
-
     /** @returns {string} Lie-down transition followed by the supplied breathing loop. */
     getSleepPath() {
         const transitionDuration = 5 / 6;
@@ -310,7 +291,6 @@ class Character extends MovableObject {
         return this.restImages[loop[frame]];
     }
 
-
     /** @returns {number} Pose for takeoff, ascent, apex, fall or landing. */
     getJumpFrame() {
         if (this.takeoffTime > 0) return 0;
@@ -319,7 +299,6 @@ class Character extends MovableObject {
         if (this.velocityY < 0) return this.airTime < 0.09 ? 1 : 2;
         return 4;
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context. */
     draw(ctx) {

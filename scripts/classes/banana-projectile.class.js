@@ -30,7 +30,6 @@ class BananaProjectile extends MovableObject {
         this.img = this.imageCache[this.frames[0]];
     }
 
-
     /** Loads the shared flight and impact images once. */
     static preloadImages() {
         if (Object.keys(this.images).length > 0) return;
@@ -39,7 +38,6 @@ class BananaProjectile extends MovableObject {
             ...this.createPaths('impact/banana-impact', 5)]);
         this.images = loader.imageCache;
     }
-
 
     /** @param {string} prefix - Folder and filename prefix.
      * @param {number} count - Number of images.
@@ -50,7 +48,6 @@ class BananaProjectile extends MovableObject {
             'assets/images/projectiles/banana/' + prefix + '-' + String(index).padStart(2, '0') + '.png'
         );
     }
-
 
     /** @param {number} deltaTime - Frame duration in seconds. */
     update(deltaTime) {
@@ -64,14 +61,12 @@ class BananaProjectile extends MovableObject {
         if (this.impacted && this.animationTime >= 0.25) this.finished = true;
     }
 
-
     /** @param {number} deltaTime - Frame duration in seconds. */
     updateFlight(deltaTime) {
         this.x += (this.facingLeft ? -1 : 1) * this.speed * deltaTime;
         this.applyGravity(deltaTime);
         if (this.isGrounded()) this.impact();
     }
-
 
     /** Stops the banana and starts its impact animation once. */
     impact() {
@@ -83,7 +78,6 @@ class BananaProjectile extends MovableObject {
         const image = this.imageCache[this.impactFrames[0]];
         if (image.complete && image.naturalWidth > 0) this.img = image;
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context. */
     draw(ctx) {

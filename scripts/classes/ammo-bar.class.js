@@ -13,7 +13,6 @@ class AmmoBar extends DrawableObject {
         this.loadImages([this.framePath, this.iconPath], onLoad);
     }
 
-
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
      * @param {number} ammo - Current banana count.
      */
@@ -28,7 +27,6 @@ class AmmoBar extends DrawableObject {
         this.drawText(ctx, ammo);
         ctx.restore();
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
      * @param {number} ammo - Current banana count.

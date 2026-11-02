@@ -13,7 +13,6 @@ class ProjectileCollisions {
         }
     }
 
-
     /** @param {BananaProjectile[]} projectiles - Active bananas and impact effects.
      * @param {Boss|null} boss - Boss in the active chamber, if present.
      */
@@ -26,7 +25,6 @@ class ProjectileCollisions {
             if (boss.defeated) break;
         }
     }
-
 
     /** @param {BossProjectile[]} projectiles - Active curse orbs.
      * @param {Character} character - Player with damage protection.
@@ -41,7 +39,6 @@ class ProjectileCollisions {
         });
     }
 
-
     /** @param {BossProjectile} projectile - Curse orb with transparent outer areas.
      * @param {Character} character - Player body.
      * @returns {boolean} Whether the narrowed visible bodies overlap.
@@ -52,7 +49,6 @@ class ProjectileCollisions {
             && projectile.y + projectile.height * 0.8 > character.y + 20
             && projectile.y + projectile.height * 0.2 < character.y + character.height * 244 / 256;
     }
-
 
     /** @param {BananaProjectile} projectile - Banana with transparent image margins.
      * @param {Enemy|Boss} enemy - Living opponent body.

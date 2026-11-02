@@ -18,18 +18,15 @@ class MovableObject extends DrawableObject {
         this.x = Math.max(0, Math.min(this.x, levelWidth - this.width));
     }
 
-
     /** @returns {boolean} Whether the object rests on the ground. */
     isGrounded() {
         return this.y >= this.groundY && this.velocityY >= 0;
     }
 
-
     /** Starts one upward impulse; the character checks when jumping is allowed. */
     jump() {
         this.velocityY = -this.jumpSpeed;
     }
-
 
     /** @param {number} deltaTime - Frame duration in seconds. */
     applyGravity(deltaTime) {

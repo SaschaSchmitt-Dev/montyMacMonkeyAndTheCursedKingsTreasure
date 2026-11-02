@@ -23,13 +23,11 @@ class Level {
         this.groundY = groundY;
     }
 
-
     /** @param {number} width - Width of the appended exit section in world pixels. */
     addTransition(width = 720) {
         this.transitionX = this.width;
         this.width += width;
     }
-
 
     /** @returns {Array[]} Ledge positions, height offsets, types and rewards. */
     getPlatformLayout() {
@@ -47,7 +45,6 @@ class Level {
         ];
     }
 
-
     /** @param {number} heightAboveGround - Minimum ledge height above the floor. */
     createPlatforms(heightAboveGround = 140) {
         this.platforms = [];
@@ -63,17 +60,10 @@ class Level {
         }
     }
 
-
     /** @param {number} blockGroundOffsetY - Downward adjustment for both blocks and their surfaces. */
     createEnemyZone(blockGroundOffsetY = 6) {
-        this.blocks = [];
         const floorY = this.groundY + 122;
-        for (let offset = 0; offset < this.width; offset += this.platformRepeatWidth) {
-            for (const x of [3500, 4240]) {
-                const block = new Platform(x + offset, floorY - 58 + blockGroundOffsetY, 'block');
-                if (block.x + block.width <= this.width - 200) this.blocks.push(block);
-            }
-        }
+        this.createZoneBlocks(blockGroundOffsetY);
         if (this.width < 4500) return;
         this.enemies = this.enemies.filter((enemy) => enemy.x + enemy.width < 3500 || enemy.x > 4400);
         ['vine-lizard', 'thorn-beetle', 'armored-armadillo'].forEach((type, index) => {
@@ -81,12 +71,10 @@ class Level {
         });
     }
 
-
     /** Fits every patrol into an open corridor before the first game frame. */
     configureEnemyPatrols() {
         this.enemies = this.enemies.filter((enemy) => enemy.setPatrolBounds(this.width, this.blocks));
     }
-
 
     /** Adds floor treasures between the two blocks. */
     addGuardedTreasures() {
@@ -98,7 +86,6 @@ class Level {
         this.scoreItems.push(new ScoreItem('ingot', 3830, floorY - 50, floorY));
         this.scoreItems.push(new ScoreItem('relic', 3990, floorY - 50, floorY));
     }
-
 
     /** Places ammunition on the floor and on ledges reserved for ammunition. */
     createAmmo() {
@@ -113,15 +100,9 @@ class Level {
         this.ammoPickups = this.ammoPickups.filter((pickup) => !this.isInsideFloorBlock(pickup));
     }
 
-
     /** Places floor coins and each ledge's chosen treasure formation. */
     createScoreItems() {
-        this.scoreItems = [];
-        for (let x = 1150; x + 200 <= this.width - 200; x += 1500) {
-            for (let index = 0; index < 3; index++) {
-                this.scoreItems.push(new ScoreItem('coin', x + index * 80, this.groundY + 122));
-            }
-        }
+        this.createFloorTreasures();
         this.platforms.filter((platform) => platform.reward !== 'ammo')
             .forEach((platform) => this.addPlatformTreasures(platform));
         if (this.blocks.length > 0) {
@@ -132,7 +113,6 @@ class Level {
         this.scoreItems = this.scoreItems.filter((item) => !this.isInsideFloorBlock(item));
     }
 
-
     /** @param {BananaAmmo|ScoreItem} item - Pickup whose support may be blocked.
      * @returns {boolean} Whether a floor pickup would be hidden inside a solid block.
      */
@@ -141,7 +121,6 @@ class Level {
         return this.blocks.some((block) => item.x + item.width > block.x + block.width * 0.06
             && item.x < block.x + block.width * 0.94);
     }
-
 
     /** @param {Platform} platform - Ledge and its chosen treasure layout. */
     addPlatformTreasures(platform) {
@@ -153,7 +132,6 @@ class Level {
                 platform.surfaceY + y, platform.surfaceY));
         });
     }
-
 
     /** @param {string} pattern - Name of a treasure formation.
      * @returns {number[][]} Horizontal and vertical offsets from the ledge center.
@@ -183,4 +161,27 @@ class Level {
             this.enemies.push(enemy);
         }
     }
+
+    /** @param {number} blockGroundOffsetY - Shared visual and collision offset of the floor blocks. */
+    createZoneBlocks(blockGroundOffsetY) {
+        this.blocks = [];
+        const floorY = this.groundY + 122;
+        for (let offset = 0; offset < this.width; offset += this.platformRepeatWidth) {
+            for (const x of [3500, 4240]) {
+                const block = new Platform(x + offset, floorY - 58 + blockGroundOffsetY, 'block');
+                if (block.x + block.width <= this.width - 200) this.blocks.push(block);
+            }
+        }
+    }
+
+    /** Adds the regular rows of floor coins before filtering guarded areas. */
+    createFloorTreasures() {
+        this.scoreItems = [];
+        for (let x = 1150; x + 200 <= this.width - 200; x += 1500) {
+            for (let index = 0; index < 3; index++) {
+                this.scoreItems.push(new ScoreItem('coin', x + index * 80, this.groundY + 122));
+            }
+        }
+    }
+
 }

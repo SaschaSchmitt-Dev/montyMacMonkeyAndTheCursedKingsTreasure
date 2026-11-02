@@ -1,4 +1,4 @@
-﻿/** Keeps gameplay coordinates fixed while supplying more drawing pixels on large/retina screens. */
+/** Keeps gameplay coordinates fixed while supplying more drawing pixels on large/retina screens. */
 class CanvasResolution {
     static width = 960;
     static height = 540;

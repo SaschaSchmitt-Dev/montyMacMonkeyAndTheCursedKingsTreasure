@@ -18,7 +18,6 @@ class ScoreBar extends DrawableObject {
         this.loadImages([this.framePath, this.iconPath, this.fillPath], onLoad);
     }
 
-
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
      * @param {number} score - Current collected points.
      */
@@ -35,7 +34,6 @@ class ScoreBar extends DrawableObject {
         ctx.restore();
     }
 
-
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
      * @param {number} score - Current collected points.
      */
@@ -51,7 +49,6 @@ class ScoreBar extends DrawableObject {
         ImageQuality.draw(ctx, fill, 0, 295 * scaleY, 2172 * scaleX, 132 * scaleY, 578, 326, 1239, 100);
         ctx.restore();
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
      * @param {number} score - Current collected points.

@@ -16,7 +16,6 @@ class BananaAmmo extends DrawableObject {
         this.loadImage('assets/images/items/banana-ammo/banana-ammo-bunch.png');
     }
 
-
     /** @param {Character} character - Player with a narrower body hitbox.
      * @returns {boolean} Whether the player touches this bunch.
      */

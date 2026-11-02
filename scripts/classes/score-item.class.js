@@ -34,7 +34,6 @@ class ScoreItem extends DrawableObject {
         this.img = this.imageCache[this.frames[0]];
     }
 
-
     /** @param {number} deltaTime - Frame duration in seconds. */
     update(deltaTime) {
         this.animationTime += deltaTime;
@@ -42,7 +41,6 @@ class ScoreItem extends DrawableObject {
         const image = this.imageCache[this.frames[frame]];
         if (image.complete && image.naturalWidth > 0) this.img = image;
     }
-
 
     /** @param {Character} character - Player body.
      * @returns {boolean} Whether the player's body touches this treasure.

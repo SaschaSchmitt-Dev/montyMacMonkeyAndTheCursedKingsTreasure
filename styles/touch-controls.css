@@ -1,0 +1,84 @@
+/* Gameplay touch controls; pointer events are limited to the four buttons. */
+
+.touch-controls {
+    display: none;
+}
+
+.touch-controls:not([hidden]) {
+    position: absolute;
+    inset: auto 0 calc(env(safe-area-inset-bottom, 0px) - 15px);
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 0 max(10px, env(safe-area-inset-left)) 0 max(10px, env(safe-area-inset-right));
+    pointer-events: none;
+    container-type: inline-size;
+}
+
+.touch-group {
+    display: flex;
+    gap: 10px;
+}
+
+.touch-controls button {
+    width: clamp(79.8px, 11.4cqw, 102.6px);
+    height: clamp(79.8px, 11.4cqw, 102.6px);
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: rgb(255, 240, 191);
+    box-shadow: none;
+    font: bold 30px Arial, sans-serif;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.touch-controls button > span {
+    pointer-events: none;
+}
+
+.touch-controls .touch-held {
+    background: transparent;
+    border-color: rgb(255, 240, 191);
+    filter: brightness(1.25);
+    transform: translateY(2px);
+}
+
+.touch-controls button > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    object-fit: contain;
+}
+
+@media (max-width: 380px) {
+    .touch-group {
+        gap: 4px;
+    }
+
+    .touch-controls:not([hidden]) {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+}
+
+@media (max-width: 500px) {
+    .touch-group {
+        gap: 4px;
+    }
+
+    .touch-controls:not([hidden]) {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    .touch-controls button {
+        width: calc(min(84px, (100cqw - 32px) / 4) * 0.95);
+        height: calc(min(84px, (100cqw - 32px) / 4) * 0.95);
+    }
+}

@@ -37,7 +37,6 @@ class Enemy extends MovableObject {
         this.loadDeathFrames();
     }
 
-
     /** Loads the four images used when the enemy is defeated. */
     loadDeathFrames() {
         this.deathFrames = Array.from({ length: 4 }, (_, index) =>
@@ -45,7 +44,6 @@ class Enemy extends MovableObject {
         );
         this.loadImages(this.deathFrames);
     }
-
 
     /** Stops movement and starts the defeat animation once. */
     defeat() {
@@ -55,7 +53,6 @@ class Enemy extends MovableObject {
         this.deathTime = 0;
         this.img = this.imageCache[this.deathFrames[0]];
     }
-
 
     /** @param {string} type - Enemy type.
      * @param {number} x - Starting position.
@@ -74,11 +71,11 @@ class Enemy extends MovableObject {
         this.canBeStomped = settings.stompable;
     }
 
-
     /** @param {number} deltaTime - Frame duration in seconds.
      * @param {number} levelWidth - Horizontal level boundary.
      * @param {boolean} canMove - Whether walking and its animation are enabled.
      * @param {Platform[]} blocks - Solid floor obstacles.
+     * @returns {void} Updates state or drawing only.
      */
     update(deltaTime, levelWidth, canMove = true, blocks = []) {
         if (this.defeated) return this.updateDeath(deltaTime);
@@ -89,7 +86,6 @@ class Enemy extends MovableObject {
         const image = this.imageCache[path];
         if (image.complete && image.naturalWidth > 0) this.img = image;
     }
-
 
     /** @param {number} deltaTime - Frame duration in seconds.
      * @param {number} levelWidth - Horizontal level boundary.
@@ -104,7 +100,6 @@ class Enemy extends MovableObject {
         this.facingLeft = this.direction < 0;
     }
 
-
     /** @param {number} levelWidth - Playable width before the exit transition.
      * @param {Platform[]} blocks - Fixed solid floor obstacles.
      * @returns {boolean} Whether the enemy fits in a free corridor, even when its preferred route is longer.
@@ -114,17 +109,9 @@ class Enemy extends MovableObject {
         if (areas.length === 0) return false;
         const distance = (area) => Math.abs(this.spawnX - Math.max(area.left, Math.min(this.spawnX, area.right)));
         areas.sort((a, b) => distance(a) - distance(b));
-        const area = areas[0];
-        const span = Math.min(Math.max(this.patrolRadius * 2, this.width * this.preferredPatrolBodyLengths), area.right - area.left);
-        this.patrolLeft = Math.max(area.left, Math.min(this.spawnX - span / 2, area.right - span));
-        this.patrolRight = this.patrolLeft + span;
-        this.x = Math.max(this.patrolLeft, Math.min(this.spawnX, this.patrolRight));
-        this.spawnX = this.x;
-        this.direction = this.x <= this.patrolLeft ? 1 : -1;
-        this.facingLeft = this.direction < 0;
+        this.applyPatrolArea(areas[0]);
         return true;
     }
-
 
     /** @param {number} levelWidth - Playable width.
      * @param {Platform[]} blocks - Obstacles dividing the floor into open corridors.
@@ -143,14 +130,12 @@ class Enemy extends MovableObject {
         return areas;
     }
 
-
     /** @param {number} deltaTime - Frame duration in seconds. */
     updateDeath(deltaTime) {
         this.deathTime += deltaTime;
         const frame = Math.min(3, Math.floor(this.deathTime / 0.15));
         this.img = this.imageCache[this.deathFrames[frame]];
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context. */
     draw(ctx) {
@@ -161,4 +146,16 @@ class Enemy extends MovableObject {
         ImageQuality.draw(ctx, this.img, -this.width / 2, 0, this.width, this.height);
         ctx.restore();
     }
+
+    /** @param {{left: number, right: number}} area - Nearest free corridor that fits this enemy. */
+    applyPatrolArea(area) {
+        const span = Math.min(Math.max(this.patrolRadius * 2, this.width * this.preferredPatrolBodyLengths), area.right - area.left);
+        this.patrolLeft = Math.max(area.left, Math.min(this.spawnX - span / 2, area.right - span));
+        this.patrolRight = this.patrolLeft + span;
+        this.x = Math.max(this.patrolLeft, Math.min(this.spawnX, this.patrolRight));
+        this.spawnX = this.x;
+        this.direction = this.x <= this.patrolLeft ? 1 : -1;
+        this.facingLeft = this.direction < 0;
+    }
+
 }

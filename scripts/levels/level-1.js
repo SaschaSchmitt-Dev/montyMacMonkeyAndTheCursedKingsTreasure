@@ -10,6 +10,14 @@ function createLevel1(viewWidth = 960) {
     const blockGroundOffsetY = 6;
     const enemyPatrolRadius = viewWidth * 0.25;
     const level = new Level(levelSections * sectionWidth, 120, 330 + groundOffsetY);
+    populateLevel1(level, platformHeight, blockGroundOffsetY, enemyPatrolRadius);
+    return level;
+}
+
+/** @param {Level} level - Empty world. @param {number} platformHeight - Base platform offset.
+ * @param {number} blockGroundOffsetY - Floor-block offset. @param {number} enemyPatrolRadius - Preferred movement radius.
+ */
+function populateLevel1(level, platformHeight, blockGroundOffsetY, enemyPatrolRadius) {
     level.createEnemies(enemyPatrolRadius);
     level.createPlatforms(platformHeight);
     level.createEnemyZone(blockGroundOffsetY);
@@ -17,5 +25,4 @@ function createLevel1(viewWidth = 960) {
     level.createAmmo();
     level.createScoreItems();
     level.addTransition();
-    return level;
 }

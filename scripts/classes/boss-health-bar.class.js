@@ -12,7 +12,6 @@ class BossHealthBar extends DrawableObject {
         this.loadImages([this.framePath, this.fillPath], onLoad);
     }
 
-
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
      * @param {Boss|null} boss - Boss in the active chamber, if present.
      */
@@ -28,7 +27,6 @@ class BossHealthBar extends DrawableObject {
         ctx.restore();
     }
 
-
     /** @param {CanvasRenderingContext2D} ctx - Panel-local drawing context. */
     drawFrame(ctx) {
         ctx.save();
@@ -38,7 +36,6 @@ class BossHealthBar extends DrawableObject {
         ImageQuality.draw(ctx, this.imageCache[this.framePath], 0, 0, 2172, 724);
         ctx.restore();
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Panel-local drawing context.
      * @param {Boss} boss - Boss whose health determines the filled width.
@@ -57,7 +54,6 @@ class BossHealthBar extends DrawableObject {
         ImageQuality.draw(ctx, fill, 76 * scaleX, 452 * scaleY, 1384 * scaleX, 118 * scaleY, 528, 300, 1392, 100);
         ctx.restore();
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Panel-local drawing context.
      * @param {Boss} boss - Boss with current and maximum health.

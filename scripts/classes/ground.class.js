@@ -3,7 +3,6 @@ class Ground extends DrawableObject {
     y = 330;
     height = 320;
 
-
     /** @param {Function} onLoad - Requests a redraw after loading.
      * @param {string} imagePath - Ground image path.
      */
@@ -13,7 +12,6 @@ class Ground extends DrawableObject {
         this.loadImage(imagePath, onLoad);
     }
 
-
     /** Aligns the jungle tile with the cave floor at the same image scale. */
     alignJungleGround() {
 
@@ -22,7 +20,6 @@ class Ground extends DrawableObject {
         this.height = 268 * scale;
         this.y = 442 - 64 * scale;
     }
-
 
     /** @param {number} viewWidth - Canvas width in pixels.
      * @param {number} floorY - Player foot position on the floor.
@@ -35,14 +32,12 @@ class Ground extends DrawableObject {
         this.y = floorY - 10 - 64 * scale;
     }
 
-
     /**
      * Repeats the ground image across the visible area.
      * @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
      * @param {number} cameraX - Horizontal camera position.
      */
     draw(ctx, cameraX = 0) {
-
 
         const currentSection = Math.floor(cameraX / this.width);
         for (let section = currentSection - 1; section <= currentSection + Math.ceil(CanvasResolution.width / this.width); section++) {
@@ -54,6 +49,7 @@ class Ground extends DrawableObject {
     /** Keeps the walkable upper edge unchanged while extending rock down to the frame bottom.
      * @param {CanvasRenderingContext2D} ctx - Scene context.
      * @param {number} x - Tile position in view coordinates.
+     * @returns {void} Updates state or drawing only.
      */
     drawTile(ctx, x) {
         if (!this.img.complete || this.img.naturalWidth === 0) return;

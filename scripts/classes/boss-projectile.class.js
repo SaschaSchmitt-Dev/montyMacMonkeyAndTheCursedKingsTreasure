@@ -19,7 +19,6 @@ class BossProjectile extends MovableObject {
         this.img = image;
     }
 
-
     /** @param {number} deltaTime - Frame duration in seconds. */
     update(deltaTime) {
         this.x -= this.speed * deltaTime;
@@ -27,7 +26,6 @@ class BossProjectile extends MovableObject {
         const progress = Math.min(1, this.flightTime / 0.22);
         this.y = this.launchY + (this.targetY - this.launchY) * progress;
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context. */
     draw(ctx) {

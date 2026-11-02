@@ -15,7 +15,6 @@ pauseDialog.addEventListener('cancel', (event) => {
 });
 pauseDialog.addEventListener('keydown', selectPauseAction);
 
-
 /** Freezes the simulation and opens the modal keyboard/touch controls. */
 function openPauseMenu() {
     if (!world || !world.active || world.result || world.paused) return;
@@ -29,7 +28,6 @@ function openPauseMenu() {
     pauseDialog.showModal();
     document.getElementById('resume-button').focus({ preventScroll: true });
 }
-
 
 /** Continues the same world without counting time spent in the menu. */
 function resumeGame() {
@@ -45,15 +43,14 @@ function resumeGame() {
     gameplayCursor.hide();
 }
 
-
 /** Clears pause controls when leaving a run or showing its result. */
 function hidePauseMenu() {
     pauseDialog.close();
     document.getElementById('pause-button').hidden = true;
 }
 
-
-/** Cycles through actions with arrows; native Tab, Enter and Space remain available. */
+/** Cycles through actions with arrows; native Tab, Enter and Space remain available.
+ * @param {KeyboardEvent} event - Key pressed inside the pause dialog. */
 function selectPauseAction(event) {
     const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
     if (!keys.includes(event.key) && event.key !== 'Tab') return;

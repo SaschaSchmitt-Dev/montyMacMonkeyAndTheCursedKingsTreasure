@@ -2,7 +2,9 @@ const settingsKey = 'montyMacMonkey.settings';
 const scoresKey = 'montyMacMonkey.highscores';
 let storageAvailable = true;
 
-/** @param {string} key - Local record. @param {*} fallback - Value on missing or invalid data. */
+/** @param {string} key - Local record. @param {*} fallback - Value on missing or invalid data.
+ * @returns {*} Decoded record or supplied fallback.
+ */
 function readLocal(key, fallback) {
     let value;
     try { value = localStorage.getItem(key); }

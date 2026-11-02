@@ -25,15 +25,7 @@ class SoundEffect {
         try {
             const buffer = await this.owner.getEffectBuffer(this.src);
             if (generation !== this.generation || !this.owner.canPlay() || this.owner.sfxMuted) return;
-            const context = this.owner.context;
-            this.source = context.createBufferSource();
-            this.gain = context.createGain();
-            this.gain.gain.value = this.volume;
-            this.source.buffer = buffer;
-            this.source.connect(this.gain);
-            this.gain.connect(context.destination);
-            this.source.onended = () => this.finish(generation);
-            this.source.start();
+            this.startSource(buffer, generation);
         } catch (error) {
             if (generation === this.generation) this.paused = true;
             throw error;
@@ -62,4 +54,18 @@ class SoundEffect {
         this.source = this.gain = null;
         this.paused = true;
     }
+
+    /** @param {AudioBuffer} buffer - Shared decoded data. @param {number} generation - Cancellation token. */
+    startSource(buffer, generation) {
+        const context = this.owner.context;
+        this.source = context.createBufferSource();
+        this.gain = context.createGain();
+        this.gain.gain.value = this.volume;
+        this.source.buffer = buffer;
+        this.source.connect(this.gain);
+        this.gain.connect(context.destination);
+        this.source.onended = () => this.finish(generation);
+        this.source.start();
+    }
+
 }

@@ -40,32 +40,14 @@ class GameAudio {
         focus: ['effects/ui/focus.wav', 0.12]
     };
 
+    /** Registers sound files and connects audio lifecycle events. */
     constructor() {
-        for (const [group, count] of Object.entries(this.variants)) {
-            for (let index = 1; index <= count; index++) {
-                const suffix = String(index).padStart(2, '0');
-                const files = { step: 'player/step-', land: 'player/land-',
-                    hurt: 'player/player-hurt-', treasure: 'collectibles/pickup-coin-' };
-                const volume = { step: 0.5, land: 0.55, hurt: 0.65, treasure: 0.65 };
-                this.sounds[group + index] = ['v2/effects/' + files[group] + suffix + '.wav', volume[group]];
-            }
-        }
+        this.addSoundVariants();
         for (const type of Object.keys(Enemy.types)) {
             this.sounds[type] = ['v2/effects/world-01/enemies/' + type + '/death.wav', 0.45];
         }
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) this.stopEffects();
-            this.syncLoops();
-        });
-        for (const event of ['pointerdown', 'keydown']) {
-            document.addEventListener(event, () => this.unlock(), { capture: true });
-        }
-        document.addEventListener('click', (event) => {
-            if (event.target.closest('button')) this.effect('confirm');
-        });
-        document.addEventListener('focusin', (event) => {
-            if (event.target.matches('button')) this.effect('focus');
-        });
+        this.connectPlaybackEvents();
+        this.connectInterfaceSounds();
     }
 
     /** Unlocks only after input; rejected playback never interrupts the game. */
@@ -126,23 +108,9 @@ class GameAudio {
 
     /** Starts only loops belonging to the current screen, never duplicate instances. */
     syncLoops() {
-        const wanted = [];
-        if (['menu', 'jungle', 'boss'].includes(this.scene)) wanted.push(this.scene);
-        if (this.scene === 'jungle') wanted.push('ambience');
-        if (this.previous?.sleeping && ['menu', 'jungle', 'boss'].includes(this.scene)) wanted.push('snore');
-        for (const key of wanted) {
-            if (!this.loops.has(key)) {
-                const clip = this.createClip(key);
-                clip.loop = true;
-                this.loops.set(key, clip);
-            }
-        }
-        for (const [key, clip] of this.loops) {
-            const muted = ['menu', 'jungle', 'boss'].includes(key) ? this.musicMuted : this.sfxMuted;
-            if (this.canPlay() && !muted && wanted.includes(key)) {
-                if (clip.paused) clip.play().catch(() => {});
-            } else clip.pause();
-        }
+        const wanted = this.getWantedLoops();
+        for (const key of wanted) this.ensureLoop(key);
+        for (const [key, clip] of this.loops) this.syncLoop(key, clip, wanted);
     }
 
     /** @param {string} key - Short effect. @param {number|null} x - Optional world position. */
@@ -152,16 +120,7 @@ class GameAudio {
         const now = performance.now();
         if (now - (this.lastEffect.get(key) ?? -Infinity) < 65) return;
         this.lastEffect.set(key, now);
-        key = this.selectVariant(key);
-        if (!this.sounds[key]) return;
-        if (!this.effects.has(key)) this.effects.set(key, []);
-        const pool = this.effects.get(key);
-        let clip = pool.find((audio) => audio.paused || audio.ended);
-        if (!clip && pool.length < 2 && this.context) {
-            const [path, volume] = this.sounds[key];
-            clip = new SoundEffect(this, path, volume);
-            pool.push(clip);
-        }
+        const clip = this.getEffectVoice(this.selectVariant(key));
         if (!clip) return;
         clip.currentTime = 0;
         clip.play().catch(() => {});
@@ -192,7 +151,9 @@ class GameAudio {
         return key + (index + 1);
     }
 
-    /** @param {string} result - Result cue follows the longer boss defeat instead of covering it. */
+    /** @param {string} result - Result cue follows the longer boss defeat instead of covering it.
+     * @returns {void} Updates state or drawing only.
+     */
     playResult(result) {
         const defeat = this.effects.get('bossDefeat')?.find((clip) => !clip.paused && !clip.ended);
         if (result !== 'victory' || !defeat) return this.effect(result === 'victory' ? 'victory' : 'defeat');
@@ -219,11 +180,7 @@ class GameAudio {
         if (this.previous?.character !== character) this.previous = null;
         if (this.previous?.grounded && character.velocityY < 0) this.effect('jump');
         if (this.previous && !this.previous.grounded && grounded) this.effect('land');
-        this.stepTime = grounded && character.moving ? this.stepTime + delta : 0;
-        if (this.stepTime >= 0.24) {
-            this.effect('step');
-            this.stepTime = 0;
-        }
+        this.updateFootsteps(character, grounded, delta);
         const changed = this.previous?.sleeping !== sleeping;
         this.previous = { character, grounded, sleeping };
         if (changed) this.syncLoops();
@@ -235,5 +192,92 @@ class GameAudio {
         this.stepTime = 0;
         this.syncLoops();
     }
+
+    /** Registers footstep, landing, hurt and coin variants without creating audio players. */
+    addSoundVariants() {
+        for (const [group, count] of Object.entries(this.variants)) {
+            for (let index = 1; index <= count; index++) {
+                const suffix = String(index).padStart(2, '0');
+                const files = { step: 'player/step-', land: 'player/land-',
+                    hurt: 'player/player-hurt-', treasure: 'collectibles/pickup-coin-' };
+                const volume = { step: 0.5, land: 0.55, hurt: 0.65, treasure: 0.65 };
+                this.sounds[group + index] = ['v2/effects/' + files[group] + suffix + '.wav', volume[group]];
+            }
+        }
+    }
+
+    /** Connects tab visibility and the gestures required to unlock browser audio. */
+    connectPlaybackEvents() {
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) this.stopEffects();
+            this.syncLoops();
+        });
+        for (const event of ['pointerdown', 'keydown']) {
+            document.addEventListener(event, () => this.unlock(), { capture: true });
+        }
+    }
+
+    /** Connects button confirmation and keyboard-focus feedback. */
+    connectInterfaceSounds() {
+        document.addEventListener('click', (event) => {
+            if (event.target.closest('button')) this.effect('confirm');
+        });
+        document.addEventListener('focusin', (event) => {
+            if (event.target.matches('button')) this.effect('focus');
+        });
+    }
+
+    /** @returns {string[]} Loops belonging to the active scene and character state. */
+    getWantedLoops() {
+        const wanted = [];
+        if (['menu', 'jungle', 'boss'].includes(this.scene)) wanted.push(this.scene);
+        if (this.scene === 'jungle') wanted.push('ambience');
+        if (this.previous?.sleeping && ['menu', 'jungle', 'boss'].includes(this.scene)) wanted.push('snore');
+        return wanted;
+    }
+
+    /** @param {string} key - Loop to create at most once. */
+    ensureLoop(key) {
+        if (this.loops.has(key)) return;
+        const clip = this.createClip(key);
+        clip.loop = true;
+        this.loops.set(key, clip);
+    }
+
+    /** @param {string} key - Loop name. @param {HTMLAudioElement} clip - Cached player.
+     * @param {string[]} wanted - Loops that currently belong to the scene.
+     */
+    syncLoop(key, clip, wanted) {
+        const muted = ['menu', 'jungle', 'boss'].includes(key) ? this.musicMuted : this.sfxMuted;
+        if (this.canPlay() && !muted && wanted.includes(key)) {
+            if (clip.paused) clip.play().catch(() => {});
+        } else clip.pause();
+    }
+
+    /** @param {string} key - Selected effect variant. @returns {SoundEffect|null} Available bounded voice. */
+    getEffectVoice(key) {
+        if (!this.sounds[key]) return null;
+        if (!this.effects.has(key)) this.effects.set(key, []);
+        const pool = this.effects.get(key);
+        let clip = pool.find((audio) => audio.paused || audio.ended);
+        if (!clip && pool.length < 2 && this.context) {
+            const [path, volume] = this.sounds[key];
+            clip = new SoundEffect(this, path, volume);
+            pool.push(clip);
+        }
+        return clip || null;
+    }
+
+    /** @param {Character} character - Moving figure. @param {boolean} grounded - Ground contact.
+     * @param {number} delta - Simulation seconds since the previous frame.
+     */
+    updateFootsteps(character, grounded, delta) {
+        this.stepTime = grounded && character.moving ? this.stepTime + delta : 0;
+        if (this.stepTime >= 0.24) {
+            this.effect('step');
+            this.stepTime = 0;
+        }
+    }
+
 }
 const gameAudio = new GameAudio();

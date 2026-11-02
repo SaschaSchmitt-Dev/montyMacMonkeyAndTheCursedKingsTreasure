@@ -21,7 +21,6 @@ class Keyboard {
         });
     }
 
-
     /** @param {KeyboardEvent} event - Key pressed on the game canvas. */
     pressKey(event) {
         if (Object.hasOwn(this.bindings, event.code)) {
@@ -29,7 +28,6 @@ class Keyboard {
             this.setKey(event.code, true);
         }
     }
-
 
     /**
      * Updates the action associated with a known key.
@@ -50,7 +48,6 @@ class Keyboard {
         this[action] = held;
     }
 
-
     /** @returns {number} -1 for left, 1 for right, or 0 for no held direction. */
     getDirection() {
         if (this.left && this.right) {
@@ -60,7 +57,6 @@ class Keyboard {
         if (this.right) return 1;
         return 0;
     }
-
 
     /** Releases all actions after focus loss or a tab change. */
     reset() {

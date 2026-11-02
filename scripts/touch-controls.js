@@ -1,4 +1,4 @@
-﻿/** Tracks each finger within its original group, allowing sliding between paired actions. */
+/** Tracks each finger within its original group, allowing sliding between paired actions. */
 class TouchControls {
     element = document.getElementById('touch-controls');
     pointers = new Map();
@@ -6,6 +6,7 @@ class TouchControls {
     touchMode = false;
     enabled = false;
 
+    /** Connects input events without starting another animation loop. */
     constructor() {
         document.addEventListener('pointerdown', (event) => this.selectInput(event.pointerType), { capture: true });
         document.addEventListener('pointermove', (event) => {

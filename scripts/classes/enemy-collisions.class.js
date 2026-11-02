@@ -17,7 +17,6 @@ class EnemyCollisions {
         }
     }
 
-
     /** @param {Character} character - Player landing on the dangerous back.
      * @param {Enemy} enemy - Living armored enemy.
      * @param {number} top - Back surface in world pixels.
@@ -30,7 +29,6 @@ class EnemyCollisions {
         character.velocityY = 0;
     }
 
-
     /** @param {Character} character - Player body.
      * @param {Enemy} enemy - Enemy body.
      * @returns {boolean} Whether the narrowed body regions overlap horizontally.
@@ -39,7 +37,6 @@ class EnemyCollisions {
         return character.x + character.width * 0.75 > enemy.x + enemy.width * 0.15
             && character.x + character.width * 0.25 < enemy.x + enemy.width * 0.85;
     }
-
 
     /** @param {Character} character - Falling player.
      * @param {Enemy} enemy - Stompable enemy.

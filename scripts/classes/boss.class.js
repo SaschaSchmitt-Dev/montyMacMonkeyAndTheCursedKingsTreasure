@@ -44,14 +44,12 @@ class Boss extends DrawableObject {
         this.img = this.imageCache[this.frames[0]];
     }
 
-
     /** @param {Function} onLoad - Requests a redraw after loading. */
     loadDamageFrames(onLoad) {
         this.hitFrames = this.createFramePaths('hit', 2);
         this.deathFrames = this.createFramePaths('death', 4);
         this.loadImages([...this.hitFrames, ...this.deathFrames], onLoad);
     }
-
 
     /** Removes one life unless the boss is defeated or temporarily protected. */
     takeHit() {
@@ -68,7 +66,6 @@ class Boss extends DrawableObject {
         if (this.defeated || !this.attacking) this.updateDamageAnimation(0);
     }
 
-
     /** @param {number} deltaTime - Frame duration in seconds. */
     updateDamageAnimation(deltaTime) {
         if (this.defeated) this.deathTime += deltaTime;
@@ -77,7 +74,6 @@ class Boss extends DrawableObject {
         const time = this.defeated ? this.deathTime * 3.5 : (0.25 - this.hitTime) * 8;
         this.img = this.imageCache[paths[Math.min(paths.length - 1, Math.floor(time))]];
     }
-
 
     /** @param {string} animation - Animation folder and filename prefix.
      * @param {number} count - Number of frames.
@@ -89,9 +85,9 @@ class Boss extends DrawableObject {
         );
     }
 
-
     /** @param {number} deltaTime - Frame duration in seconds.
      * @param {boolean} canAttack - Whether the player is alive.
+     * @returns {void} Updates state or drawing only.
      */
     update(deltaTime, canAttack = true) {
         this.projectiles.forEach((projectile) => projectile.update(deltaTime));
@@ -103,7 +99,6 @@ class Boss extends DrawableObject {
         if (this.hitTime > 0 && !this.attacking) this.updateDamageAnimation(0);
         else this.updateAnimation(deltaTime);
     }
-
 
     /** @param {number} deltaTime - Frame duration in seconds.
      * @param {boolean} canAttack - Whether the player is alive.
@@ -117,7 +112,6 @@ class Boss extends DrawableObject {
         }
     }
 
-
     /** Selects the next pattern and resets the timed projectile releases. */
     startAttack() {
         this.attacking = true;
@@ -128,7 +122,6 @@ class Boss extends DrawableObject {
         this.attackPattern = this.attackPatterns[this.patternIndex % this.attackPatterns.length];
         this.patternIndex++;
     }
-
 
     /** @param {number} deltaTime - Frame duration in seconds. */
     advanceAttack(deltaTime) {
@@ -145,7 +138,6 @@ class Boss extends DrawableObject {
         }
     }
 
-
     /** Releases the opposite-height orb once during either two-shot attack. */
     releaseFollowUp() {
         if (!this.hasFollowUp() || this.followUpReleased) return;
@@ -154,12 +146,10 @@ class Boss extends DrawableObject {
         this.followUpReleased = true;
     }
 
-
     /** @returns {boolean} Whether this pattern contains a delayed second shot. */
     hasFollowUp() {
         return this.attackPattern === 'pair' || this.attackPattern === 'high-low';
     }
-
 
     /** @param {boolean} high - Whether the orb travels above the standing player. */
     releaseShot(high) {
@@ -167,7 +157,6 @@ class Boss extends DrawableObject {
         const y = this.y + this.height - 80 - (high ? this.highShotOffset : 0);
         this.projectiles.push(new BossProjectile(this.x - 20, y, this.imageCache[this.projectilePath], this.y - 20));
     }
-
 
     /** @param {number} deltaTime - Frame duration in seconds. */
     updateAnimation(deltaTime) {
@@ -180,7 +169,6 @@ class Boss extends DrawableObject {
         const image = this.imageCache[paths[frame]];
         if (image.complete && image.naturalWidth > 0) this.img = image;
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context. */
     draw(ctx) {

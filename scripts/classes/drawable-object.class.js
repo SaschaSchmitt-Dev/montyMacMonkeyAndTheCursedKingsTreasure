@@ -19,7 +19,6 @@ class DrawableObject {
         this.img = DrawableObject.getImage(path, onLoad);
     }
 
-
     /**
      * Preloads animation frames without replacing the current image.
      * @param {string[]} paths - Paths to the animation images.
@@ -31,22 +30,13 @@ class DrawableObject {
         });
     }
 
-
     /** @param {string} path - Original asset path.
      * @param {Function} onLoad - Optional redraw, grouped into a single animation frame.
      * @returns {HTMLImageElement} Shared web-sized image.
      */
     static getImage(path, onLoad) {
         const source = optimizedImagePaths[path] || path;
-        if (!this.sharedImages.has(source)) {
-            const image = new Image();
-            image.decoding = 'async';
-            image.addEventListener('error', () => {
-                if (this.sharedImages.get(source) === image) this.sharedImages.delete(source);
-            }, { once: true });
-            image.src = source;
-            this.sharedImages.set(source, image);
-        }
+        if (!this.sharedImages.has(source)) this.createSharedImage(source);
         const image = this.sharedImages.get(source);
         if (onLoad) {
             if (image.complete) this.queueRedraw(onLoad);
@@ -54,7 +44,6 @@ class DrawableObject {
         }
         return image;
     }
-
 
     /** @param {Function} callback - Loaded-image redraw; never once per image in the same frame. */
     static queueRedraw(callback) {
@@ -68,7 +57,6 @@ class DrawableObject {
         });
     }
 
-
     /**
      * Draws the object once its image has loaded successfully.
      * @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
@@ -79,4 +67,16 @@ class DrawableObject {
             ImageQuality.draw(ctx, this.img, x, this.y, this.width, this.height);
         }
     }
+
+    /** @param {string} source - Resolved URL to cache until a load failure. */
+    static createSharedImage(source) {
+        const image = new Image();
+        image.decoding = 'async';
+        image.addEventListener('error', () => {
+            if (this.sharedImages.get(source) === image) this.sharedImages.delete(source);
+        }, { once: true });
+        image.src = source;
+        this.sharedImages.set(source, image);
+    }
+
 }

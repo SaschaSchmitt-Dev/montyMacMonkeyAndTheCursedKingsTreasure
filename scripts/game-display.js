@@ -2,12 +2,12 @@
 class GameDisplay {
     frame = document.querySelector('.game-frame');
     orientationDialog = document.getElementById('orientation-dialog');
-    fullscreenButton = document.getElementById('fullscreen-toggle');
     automaticAttempted = false;
     pending = false;
     mobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
         || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
+    /** Connects layout, fullscreen and gesture events before measuring the view. */
     constructor() {
         window.addEventListener('resize', () => this.updateLayout());
         window.visualViewport?.addEventListener('resize', () => this.updateLayout());
@@ -39,7 +39,8 @@ class GameDisplay {
         return this.mobileDevice || window.innerWidth <= 1024 || window.innerHeight <= 600;
     }
 
-    /** Requests fullscreen within a start gesture, never on load or repeatedly after Escape. */
+    /** Requests fullscreen within a start gesture, never on load or repeatedly after Escape.
+     * @param {MouseEvent} event - Trusted start-button activation. */
     startFullscreen(event) {
         if (!event.target.closest('#intro-play-button, #intro-menu-button, #start-button')) return;
         if (!this.isCompact() || this.automaticAttempted || !this.supportsFullscreen()) return;
@@ -62,7 +63,9 @@ class GameDisplay {
         }
     }
 
-    /** Uses the whole document so modal menus remain visible in the fullscreen top layer. */
+    /** Uses the whole document so modal menus remain visible in the fullscreen top layer.
+     * @returns {Promise<void>|void} Result of the browser fullscreen request.
+     */
     enterFullscreen() {
         const root = document.documentElement;
         if (root.requestFullscreen) return root.requestFullscreen({ navigationUI: 'hide' });
@@ -107,21 +110,9 @@ class GameDisplay {
     /** Updates options after language changes, Escape, and native fullscreen transitions. */
     updateLabels() {
         const available = this.supportsFullscreen();
-        for (const button of document.querySelectorAll('[data-setting="fullscreen"]')) {
-            button.disabled = !available;
-            button.textContent = t(this.isFullscreen() ? 'on' : 'off');
-            button.setAttribute('aria-pressed', String(this.isFullscreen()));
-            button.setAttribute('aria-label', t('fullscreen') + ': ' + button.textContent);
-        }
-        for (const button of document.querySelectorAll('[data-setting="displaySize"]')) {
-            button.textContent = t(gameSettings.displaySize === 'max' ? 'maxSize' : 'standardSize');
-            button.setAttribute('aria-pressed', String(gameSettings.displaySize === 'max'));
-            button.setAttribute('aria-label', t('displaySize') + ': ' + button.textContent);
-        }
-        document.querySelectorAll('[data-fullscreen-note]').forEach((note) => {
-            note.hidden = available;
-            note.textContent = available ? '' : t(note.closest('#pause-dialog') ? 'fullscreenUnavailableShort' : 'fullscreenUnavailable');
-        });
+        this.updateFullscreenButtons(available);
+        this.updateSizeButtons();
+        this.updateFullscreenNotes(available);
     }
 
     /** Prevents selection, long-press menus and multi-finger browser gestures only on game artwork. */
@@ -144,5 +135,33 @@ class GameDisplay {
             }, { passive: false });
         }
     }
+
+    /** @param {boolean} available - Whether the browser supports element fullscreen. */
+    updateFullscreenButtons(available) {
+        for (const button of document.querySelectorAll('[data-setting="fullscreen"]')) {
+            button.disabled = !available;
+            button.textContent = t(this.isFullscreen() ? 'on' : 'off');
+            button.setAttribute('aria-pressed', String(this.isFullscreen()));
+            button.setAttribute('aria-label', t('fullscreen') + ': ' + button.textContent);
+        }
+    }
+
+    /** Keeps main-menu and pause-menu size controls in sync. */
+    updateSizeButtons() {
+        for (const button of document.querySelectorAll('[data-setting="displaySize"]')) {
+            button.textContent = t(gameSettings.displaySize === 'max' ? 'maxSize' : 'standardSize');
+            button.setAttribute('aria-pressed', String(gameSettings.displaySize === 'max'));
+            button.setAttribute('aria-label', t('displaySize') + ': ' + button.textContent);
+        }
+    }
+
+    /** @param {boolean} available - Show the full or compact fallback note when unsupported. */
+    updateFullscreenNotes(available) {
+        document.querySelectorAll('[data-fullscreen-note]').forEach((note) => {
+            note.hidden = available;
+            note.textContent = available ? '' : t(note.closest('#pause-dialog') ? 'fullscreenUnavailableShort' : 'fullscreenUnavailable');
+        });
+    }
+
 }
 window.gameDisplay = new GameDisplay();

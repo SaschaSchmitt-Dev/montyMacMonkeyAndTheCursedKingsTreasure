@@ -1,4 +1,4 @@
-﻿/** Five heart slots within the second panel of the HUD row. */
+/** Five heart slots within the second panel of the HUD row. */
 class HealthBar extends DrawableObject {
     x = 301.333333;
     y = 0;
@@ -17,7 +17,6 @@ class HealthBar extends DrawableObject {
         this.loadImages([this.fullPath, this.emptyPath, this.panelPath], onLoad);
     }
 
-
     /** @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
      * @param {number} health - Current player lives.
      * @param {number} maxHealth - Number of available heart slots.
@@ -31,7 +30,6 @@ class HealthBar extends DrawableObject {
         this.drawHearts(ctx, health, maxHealth);
         ctx.restore();
     }
-
 
     /** @param {CanvasRenderingContext2D} ctx - Panel-local drawing context.
      * @param {number} health - Current player lives.

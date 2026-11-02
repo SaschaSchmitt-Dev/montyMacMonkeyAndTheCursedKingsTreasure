@@ -43,7 +43,6 @@ class MenuWalker {
         }
     }
 
-
     /** Starts one fresh menu loop with Monty on his own ledge. */
     start() {
         this.stop();
@@ -107,7 +106,6 @@ class MenuWalker {
         this.character.velocityY = 0;
     }
 
-
     /** Finds the function platform directly below Monty. */
     updateNearby() {
         const feet = this.character.y + 91.5;
@@ -123,7 +121,6 @@ class MenuWalker {
         this.updateNearby();
         this.nearby?.click();
     }
-
 
     /** @param {HTMLElement|null} button - Platform under Monty's feet. */
     setNearby(button) {
