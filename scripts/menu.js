@@ -1,7 +1,8 @@
 const menuTexts = {
     de: {
+        imprint: 'Impressum', provider: 'Anbieter', contact: 'Kontakt',
         fullscreenUnavailableShort: 'Vollbild nicht verfügbar. Siehe Anleitung.', displaySize: 'Spielgröße', standardSize: 'Standard', maxSize: 'Max Size', fullscreen: 'Vollbild', fullscreenUnavailable: 'Dieser Browser unterstützt kein Spiele-Vollbild. Die Ansicht nutzt die verfügbare Fläche.', rotateTitle: 'Bitte Gerät drehen', rotateMessage: 'Montys Abenteuer spielst du im Querformat.',
-        start: 'Spiel starten', options: 'Optionen', highscores: 'Highscores', guide: 'Anleitung',
+        start: 'Spiel starten', options: 'Optionen', highscores: 'Highscores', guide: 'Anleitung & Impressum',
         quit: 'Beenden', close: 'Schließen', touchControls: 'Touchsteuerung', moveLeft: 'Nach links', moveRight: 'Nach rechts', jumpAction: 'Springen', throwAction: 'Banane werfen', sound: 'Ton', music: 'Musik', sfx: 'Geräusche (SFX)', on: 'An', off: 'Aus', language: 'Sprache', optionKeys: '↑ ↓ Auswahl · ← → ändern · Enter/Space aktivieren · Esc zurück',
         hint: '← → Laufen · ↑ Springen · Space: Plattform aktivieren · oder anklicken',
         empty: 'Noch keine abgeschlossenen Abenteuer.', local: 'Die besten 10 Ergebnisse bleiben nur in diesem Browser auf diesem Gerät. Beim Löschen der Browserdaten gehen sie verloren.',
@@ -13,8 +14,9 @@ const menuTexts = {
         loadError: 'Laden fehlgeschlagen. Bitte erneut starten.'
     },
     en: {
+        imprint: 'Legal notice', provider: 'Provider', contact: 'Contact',
         fullscreenUnavailableShort: 'Fullscreen unavailable. See How to play.', displaySize: 'Game size', standardSize: 'Standard', maxSize: 'Max Size', fullscreen: 'Fullscreen', fullscreenUnavailable: 'This browser does not support game fullscreen. The game uses the available space.', rotateTitle: 'Please rotate your device', rotateMessage: 'Play Monty’s adventure in landscape orientation.',
-        start: 'Start game', options: 'Options', highscores: 'High scores', guide: 'How to play',
+        start: 'Start game', options: 'Options', highscores: 'High scores', guide: 'Guide & Legal Notice',
         quit: 'Exit', close: 'Close', touchControls: 'Touch controls', moveLeft: 'Move left', moveRight: 'Move right', jumpAction: 'Jump', throwAction: 'Throw banana', sound: 'Sound', music: 'Music', sfx: 'Sound effects (SFX)', on: 'On', off: 'Off', language: 'Language', optionKeys: '↑ ↓ Select · ← → Change · Enter/Space activate · Esc back',
         hint: '← → Move · ↑ Jump · Space: activate platform · or click',
         empty: 'No completed adventures yet.', local: 'The top 10 results stay only in this browser on this device. Clearing browser data removes them.',

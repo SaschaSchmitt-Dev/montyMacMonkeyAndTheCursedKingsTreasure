@@ -112,7 +112,7 @@
                 <svg viewBox="13 24 1634 911" preserveAspectRatio="none" aria-hidden="true">
                     <image href="assets/images/optimized/ui/startscreen/platform-guide.webp" width="1649" height="954" />
                 </svg>
-                <span class="menu-label" data-i18n="guide">Anleitung</span>
+                <span class="menu-label" data-i18n="guide">Anleitung &amp; Impressum</span>
             </button>
             <button id="quit-button" class="menu-island quit-island" data-menu="quit" data-surface="0.5" type="button"
                 aria-label="Beenden">
@@ -205,7 +205,7 @@
         <p data-i18n="rotateMessage">Montys Abenteuer spielst du im Querformat.</p>
     </dialog>
 
-    <dialog id="menu-dialog" class="menu-dialog" aria-labelledby="menu-dialog-title">
+<dialog id="menu-dialog" class="menu-dialog" aria-labelledby="menu-dialog-title">
         <div class="dialog-card">
             <header>
                 <h2 id="menu-dialog-title"></h2><button id="close-menu-dialog" type="button"
@@ -237,64 +237,79 @@
                 <ol id="highscore-list"></ol>
                 <p id="storage-note"></p>
             </section>
+
             <section data-panel="guide" class="guide-panel" hidden>
+                <details class="guide-topic imprint-panel" id="guide-imprint">
+                    <summary>1. <span data-i18n="imprint">Impressum</span></summary>
+                    <div class="guide-topic-content">
+                <h3 data-i18n="provider">Anbieter</h3>
+                <address id="imprint-address">
+                    <strong>Sascha Schmitt</strong><br>
+                    <span id="imprint-street">Lothringer Straße 33</span><br>
+                    66740 Saarlouis<br>
+                    Deutschland
+                </address>
+                <h3 data-i18n="contact">Kontakt</h3>
+                <p id="imprint-contact">E-Mail: <a href="mailto:sschmitt1977@googlemail.com">sschmitt1977@googlemail.com</a></p>
+                    </div>
+                </details>
                 <div data-language="de" lang="de">
                     <details class="guide-topic">
-                        <summary>1. Steuerung – Info</summary>
+                        <summary>2. Steuerung – Info</summary>
                         <div class="guide-topic-content"><p><kbd>←</kbd> <kbd>→</kbd> Laufen · <kbd>↑</kbd> Springen · <kbd>Space</kbd> Banane werfen.</p><p><kbd>Esc</kbd> oder der Pause-Button oben rechts öffnet das Pausenmenü.</p><p>Im Hauptmenü kannst du zu den Plattformen laufen und springen. Mit <kbd>Space</kbd> aktivierst du die Plattform vor Ort. Alle Plattformen lassen sich auch anklicken oder antippen.</p><p>Auf Touchgeräten: links unten laufen, rechts unten springen und werfen. Mehrere Buttons können gleichzeitig gehalten werden. Gleite innerhalb einer Gruppe von Links zu Rechts oder von Sprung zu Wurf, ohne den Finger abzusetzen. Zwischen den Buttons wird die jeweilige Aktion kurz freigegeben.</p><p>In den Menüs funktionieren auch Tastatur, Tab und Enter. Die Sprache wechselst du unter Optionen. Beenden führt zurück zur Intro-Auswahl.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>2. Musik & SFX</summary>
+                        <summary>3. Musik & SFX</summary>
                         <div class="guide-topic-content"><p>Unter Optionen und im Pausenmenü kannst du Musik und Geräusche (SFX) unabhängig voneinander ein- und ausschalten.</p><p>Zu den SFX gehören beispielsweise Schritte, Sprünge, Sammel- und Kampfeffekte. Das Intro spielt unabhängig von diesen Einstellungen immer mit seinem eigenen Ton und startet erst nach deiner Eingabe.</p><p>Deine Einstellungen werden gespeichert, sofern der Browser lokale Speicherung erlaubt.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>3. Verhalten bei Mobil und Vollbild</summary>
+                        <summary>4. Verhalten bei Mobil und Vollbild</summary>
                         <div class="guide-topic-content"><p>Spiele auf Smartphones und Tablets im Querformat. Drehst du während eines laufenden Spiels ins Hochformat, wird pausiert. Drehe zurück und wähle Fortsetzen.</p><p>Auf mobilen Geräten und bei kleinen Fenstern wird Vollbild beim Start angefordert, sofern der Browser es unterstützt. Unter Optionen und im Pausenmenü kannst du Vollbild umschalten: An bedeutet aktiv, Aus bedeutet inaktiv.</p><p>Standard begrenzt die Spielfläche auf Full HD und zentriert sie auf großen Bildschirmen. Max Size nutzt die verfügbare Fläche; das Bild kann dabei vergrößert werden. Beide Größen findest du unter Optionen und im Pausenmenü. Je nach Bildschirmformat bleiben freie Ränder, damit nichts abgeschnitten wird.</p><p>Falls Browserleisten sichtbar bleiben, helfen die Hinweise für dein Gerät in den folgenden Bereichen.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>4. Vollbildfix iPhone & iPad</summary>
+                        <summary>5. Vollbildfix iPhone & iPad</summary>
                         <div class="guide-topic-content"><p>Wenn Safari kein direktes Spiele-Vollbild anbietet oder die Browserleisten sichtbar bleiben, starte das Spiel über den Home-Bildschirm:</p><ol><li>Öffne das Spiel in Safari und tippe auf Teilen.</li><li>Wähle „Zum Home-Bildschirm“; gegebenenfalls findest du den Eintrag unter „Mehr“.</li><li>Aktiviere „Als Web-App öffnen“, falls diese Auswahl angeboten wird, und füge das Symbol hinzu.</li><li>Starte Monty über das neue Symbol und drehe das Gerät ins Querformat.</li></ol><p>Bezeichnungen und Vollbildmöglichkeiten unterscheiden sich je nach iOS-/iPadOS-Version. Auf unterstützten iPads kann Vollbild auch direkt im Browser funktionieren.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>5. Vollbildfix Android</summary>
+                        <summary>6. Vollbildfix Android</summary>
                         <div class="guide-topic-content"><p>Öffne das Spiel möglichst direkt in einem aktuellen Browser, zum Beispiel Chrome, statt im eingebauten Browser einer anderen App.</p><ol><li>Drehe dein Smartphone oder Tablet ins Querformat.</li><li>Tippe auf Intro starten oder Zum Hauptmenü. Unterstützt der Browser Spiele-Vollbild, wird es dabei angefordert.</li><li>Falls Vollbild aus ist, öffne Optionen und schalte Vollbild ein.</li></ol><p>Optional kannst du im Browsermenü (⋮) „Zum Startbildschirm hinzufügen“ oder, falls angeboten, „App installieren“ wählen und das neue Symbol nutzen. Eine reine Verknüpfung blendet die Browserleisten nicht automatisch aus.</p><p>Menünamen und Unterstützung hängen von Gerät und Browser ab. Das Hinzufügen zum Startbildschirm garantiert keine Offline-Spielbarkeit.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>6. Dein Abenteuer</summary>
+                        <summary>7. Dein Abenteuer</summary>
                         <div class="guide-topic-content"><p>Sammle Schätze und Bananenmunition, überwinde die Gegner und besiege den verfluchten König.</p><p>Eidechse und Käfer kannst du von oben treffen. Der gepanzerte Armadillo ist nur mit Bananen besiegbar.</p><p>Bei Sieg: Sammelpunkte + verbleibende Leben × 50 + verbleibende Munition × 10. Bei Niederlage zählen die Sammelpunkte.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>7. Lokale Highscores</summary>
+                        <summary>8. Lokale Highscores</summary>
                         <div class="guide-topic-content"><p>Die besten 10 abgeschlossenen Läufe bleiben nur in diesem Browser auf diesem Gerät gespeichert. Es gibt keine Online-Rangliste.</p><p>Beim Löschen der Browserdaten gehen die Highscores verloren. Im privaten Modus können sie nach dem Schließen verschwinden.</p><p>Ist lokale Speicherung gesperrt, gelten Ergebnisse und Einstellungen nur für die laufende Sitzung. Ein anderer Browser oder ein Start als Web-App kann einen eigenen Speicherbereich verwenden.</p></div>
                     </details>
                 </div>
                 <div data-language="en" lang="en" hidden>
                     <details class="guide-topic">
-                        <summary>1. Controls – Info</summary>
+                        <summary>2. Controls – Info</summary>
                         <div class="guide-topic-content"><p><kbd>←</kbd> <kbd>→</kbd> Move · <kbd>↑</kbd> Jump · <kbd>Space</kbd> Throw a banana.</p><p><kbd>Esc</kbd> or the top-right pause button opens the pause menu.</p><p>Walk and jump between the main-menu platforms. Press <kbd>Space</kbd> while standing on one to activate it. You can also click or tap any platform.</p><p>On touch devices: move at the bottom left; jump and throw at the bottom right. You can hold multiple buttons at once. Slide within either group between Left and Right or Jump and Throw without lifting your finger. Moving through the gap releases that action until you reach a button.</p><p>Menus also support the keyboard, Tab and Enter. Change the language in Options. Exit returns to the intro entry screen.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>2. Music & SFX</summary>
+                        <summary>3. Music & SFX</summary>
                         <div class="guide-topic-content"><p>Switch music and sound effects (SFX) on or off independently in Options or the pause menu.</p><p>SFX include footsteps, jumping, collecting and combat effects. The intro always plays with its own audio, independently of these settings, and starts after your interaction.</p><p>Your settings are saved if your browser allows local storage.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>3. Mobile play and fullscreen</summary>
+                        <summary>4. Mobile play and fullscreen</summary>
                         <div class="guide-topic-content"><p>Play on phones and tablets in landscape orientation. Rotating to portrait during a run pauses your game. Rotate back and choose Resume.</p><p>On mobile devices and in small windows, fullscreen is requested when you start, if supported by your browser. Toggle it in Options or the pause menu: On means active; Off means inactive.</p><p>Standard limits the play area to Full HD and centers it on large screens. Max Size uses the available space and may enlarge the image. Choose either size in Options or the pause menu. Empty margins may remain so the entire play area stays visible.</p><p>If browser bars remain visible, see the device-specific sections below.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>4. Fullscreen help: iPhone & iPad</summary>
+                        <summary>5. Fullscreen help: iPhone & iPad</summary>
                         <div class="guide-topic-content"><p>If Safari does not offer game fullscreen or its browser bars remain visible, launch the game from your Home Screen:</p><ol><li>Open the game in Safari and tap Share.</li><li>Choose “Add to Home Screen”; you may need to select “More” first.</li><li>Enable “Open as Web App” if offered, then add the icon.</li><li>Launch Monty from the new icon and rotate to landscape.</li></ol><p>Labels and fullscreen support vary between iOS/iPadOS versions. Supported iPads may also offer fullscreen directly in the browser.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>5. Fullscreen help: Android</summary>
+                        <summary>6. Fullscreen help: Android</summary>
                         <div class="guide-topic-content"><p>Open the game directly in an up-to-date browser such as Chrome, rather than another app’s built-in browser.</p><ol><li>Rotate your phone or tablet to landscape.</li><li>Tap Play intro or Main menu. Game fullscreen is requested if your browser supports it.</li><li>If fullscreen is off, open Options and switch it on.</li></ol><p>Optionally, choose “Add to Home screen” or “Install app”, if offered, from the browser menu (⋮), then use the new icon. A plain shortcut does not automatically hide browser bars.</p><p>Menu labels and support depend on your device and browser. Adding the game to your Home Screen does not guarantee offline play.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>6. Your adventure</summary>
+                        <summary>7. Your adventure</summary>
                         <div class="guide-topic-content"><p>Collect treasures and banana ammunition, overcome enemies and defeat the cursed king.</p><p>Stomp the lizard and beetle from above. The armored armadillo can only be defeated with bananas.</p><p>Victory: collected points + remaining lives × 50 + remaining ammunition × 10. Defeat counts collected points.</p></div>
                     </details>
                     <details class="guide-topic">
-                        <summary>7. Local high scores</summary>
+                        <summary>8. Local high scores</summary>
                         <div class="guide-topic-content"><p>The top 10 completed runs are saved only in this browser on this device. There is no online leaderboard.</p><p>Clearing browser data removes your scores. Private browsing may discard them when closed.</p><p>If local storage is blocked, results and settings last only for this session. Another browser or a Home Screen web app may use separate storage.</p></div>
                     </details>
                 </div>

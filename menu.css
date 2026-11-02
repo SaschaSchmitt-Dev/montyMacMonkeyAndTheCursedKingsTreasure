@@ -78,7 +78,7 @@
 #highscore-list { padding-left: 28px; }
 #highscore-list li { padding: 6px; font-variant-numeric: tabular-nums; }
 kbd { border: 1px solid #9c783b; border-radius: 3px; padding: 1px 5px; background: #fff1cb; }
-.intro-screen { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; container-type: inline-size; }
+.intro-screen { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: transparent; container-type: inline-size; }
 .intro-screen[hidden] { display: none; }
 .intro-screen > img { width: 55%; max-height: 65%; object-fit: contain; }
 
@@ -131,3 +131,25 @@ kbd { border: 1px solid #9c783b; border-radius: 3px; padding: 1px 5px; backgroun
 .guide-topic-content p, .guide-topic-content li { line-height: 1.5; }
 .guide-topic-content ol { padding-left: 24px; }
 .guide-topic-content li { margin: 8px 0; }
+
+.imprint-panel address {
+    font-style: normal;
+    line-height: 1.6;
+}
+
+.imprint-panel a {
+    color: #215552;
+    overflow-wrap: anywhere;
+}
+
+.guide-island .menu-label {
+    font-size: clamp(6px, 1cqw, 20px);
+}
+
+.intro-screen:not([hidden]) ~ #canvas {
+    visibility: hidden;
+}
+
+.intro-screen.intro-playing {
+    background: #000;
+}
