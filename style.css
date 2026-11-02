@@ -86,7 +86,7 @@ canvas {
 .end-panel p {
     max-width: 72%;
     margin: 0;
-    font-size: clamp(10px, 2cqw, 19px);
+    font-size: clamp(16px, 2cqw, 19px);
 }
 
 .retry-button {
@@ -96,7 +96,7 @@ canvas {
     background: url('assets/images/optimized/ui/endscreens/retry-plattform.webp') center / contain no-repeat;
     border: 0;
     color: rgb(255, 240, 191);
-    font: bold clamp(12px, 2.3cqw, 22px) Arial, sans-serif;
+    font: bold clamp(16px, 2.3cqw, 22px) Arial, sans-serif;
     text-shadow: 0 2px 3px rgb(36, 21, 9), 1px 0 2px rgb(36, 21, 9), -1px 0 2px rgb(36, 21, 9);
     cursor: pointer;
 }
@@ -115,7 +115,7 @@ canvas {
     column-gap: 2cqw;
     width: 40%;
     margin: 0.5% 0 0;
-    font-size: clamp(9px, 1.65cqw, 16px);
+    font-size: clamp(16px, 1.65cqw, 16px);
     line-height: 1.15;
     text-align: left;
 }
@@ -143,7 +143,7 @@ canvas {
 }
 
 .end-panel.victory p {
-    font-size: clamp(9px, 1.8cqw, 17px);
+    font-size: clamp(16px, 1.8cqw, 17px);
 }
 
 .page-title {
@@ -218,7 +218,7 @@ canvas {
 .end-actions .retry-button {
     width: 48%;
     padding: 0 3%;
-    font-size: 2.99cqw;
+    font-size: max(16px, 2.99cqw);
 }
 
 .loading-screen {
@@ -242,7 +242,7 @@ canvas {
 
 .loading-screen p {
     margin: 0;
-    font-size: clamp(12px, 2.2cqw, 21px);
+    font-size: clamp(16px, 2.2cqw, 21px);
 }
 
 .loading-spinner {
@@ -328,5 +328,5 @@ canvas {
     display: block;
     width: 100%;
     margin: 0;
-    font-size: min(39px, 9.5cqw);
+    font-size: clamp(16px, 9.5cqw, 39px);
 }

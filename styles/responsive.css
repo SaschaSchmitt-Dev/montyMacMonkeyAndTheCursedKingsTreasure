@@ -124,7 +124,7 @@ html {
 }
 
 .pause-actions .retry-button > span {
-    font-size: min(32px, 9cqw);
+    font-size: clamp(16px, 9cqw, 32px);
 }
 
 .pause-settings {
@@ -167,7 +167,7 @@ html {
 
 .pause-settings [data-fullscreen-note] {
     margin: 6px 0 0;
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1.4;
 }
 
@@ -183,6 +183,10 @@ html {
 }
 
 @media (max-height: 400px) and (min-width: 561px) {
+    .pause-dialog {
+        padding-block: 6px;
+    }
+
     .pause-settings h3 {
         display: none;
     }

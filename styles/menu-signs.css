@@ -1,0 +1,43 @@
+/* Independent, text-sized signs stay below each platform's walking surface. */
+
+.menu-label {
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    top: calc(var(--menu-surface) + clamp(6px, 1cqw, 12px));
+    display: block;
+    box-sizing: border-box;
+    width: max-content;
+    max-width: max(154px, 94%);
+    padding: 0.1em 0.2em;
+    border: solid transparent;
+    border-width: 0.3em 0.9em;
+    border-image: url('../assets/images/optimized/ui/startscreen/signboard.webp') 24% 18% fill / 0.3em 0.9em / 0 stretch;
+    color: #35200d;
+    font-family: 'Luckiest Guy', sans-serif;
+    font-size: clamp(16px, 1.85cqw, 20px);
+    font-weight: 400;
+    line-height: 1.1;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 rgb(255 241 195 / 45%);
+    pointer-events: auto;
+    transform: translateX(-50%);
+}
+
+.guide-island .menu-label {
+    max-width: clamp(154px, 40cqw, 360px);
+}
+@container (max-width: 500px) {
+    .guide-island .menu-label {
+        max-width: 154px;
+    }
+
+    .start-island .menu-label {
+        max-width: 125px;
+    }
+
+    .highscores-island .menu-label {
+        top: calc(var(--menu-surface) + 22px);
+    }
+}
