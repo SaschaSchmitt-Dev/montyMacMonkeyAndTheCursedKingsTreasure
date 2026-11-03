@@ -253,6 +253,7 @@ const optimizedImagePaths = {
     "assets/images/ui/hud/pause-taste.png": "assets/images/optimized/ui/hud/pause-taste.webp",
     "assets/images/ui/hud/score-icon.png": "assets/images/optimized/ui/hud/score-icon.webp",
     "assets/images/ui/hud/statusbar-fill-gold.png": "assets/images/optimized/ui/hud/statusbar-fill-gold.webp",
+    "assets/images/ui/hud/statusbar-fill-orange.png": "assets/images/optimized/ui/hud/statusbar-fill-orange.webp",
     "assets/images/ui/hud/statusbar-frame.png": "assets/images/optimized/ui/hud/statusbar-frame.webp",
     "assets/images/ui/startscreen/background-far.png": "assets/images/optimized/ui/startscreen/background-far.webp",
     "assets/images/ui/startscreen/bridge-long.png": "assets/images/optimized/ui/startscreen/bridge-long.webp",

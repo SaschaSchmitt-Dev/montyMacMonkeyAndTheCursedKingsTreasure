@@ -1,6 +1,15 @@
 /** A rotating banana with gravity and a short impact animation. */
 class BananaProjectile extends MovableObject {
     static images = {};
+    /** Visible lower edge of each 128px flight frame, measured from its alpha channel. */
+    static flightBottomPixels = [
+        77, 78, 78, 79, 79, 80, 81, 81, 82, 83, 83, 84,
+        85, 86, 86, 86, 86, 86, 86, 86, 85, 84, 83, 82,
+        80, 79, 77, 75, 74, 75, 76, 78, 80, 81, 83, 84,
+        85, 86, 86, 87, 87, 88, 87, 87, 86, 85, 84, 83,
+        82, 82, 81, 80, 80, 79, 79, 78, 78, 78, 78, 77,
+    ];
+    floorY;
     width = 64;
     height = 64;
     speed = 600;
@@ -21,13 +30,24 @@ class BananaProjectile extends MovableObject {
         this.facingLeft = facingLeft;
         this.x = character.x + (facingLeft ? -4 : character.width - 60);
         this.y = character.y + 20;
-        this.groundY = floorY - this.height;
+        this.floorY = floorY;
+        this.groundY = floorY - this.height * BananaProjectile.flightBottomPixels[0] / 128;
+        this.loadProjectileFrames();
+    }
+
+    /** Reuses decoded flight and impact images across all thrown bananas. */
+    loadProjectileFrames() {
         BananaProjectile.preloadImages();
         this.imageCache = BananaProjectile.images;
         this.frames = BananaProjectile.createPaths('flight/banana', 60);
         this.impactFrames = BananaProjectile.createPaths('impact/banana-impact', 5);
-
         this.img = this.imageCache[this.frames[0]];
+    }
+
+    /** @returns {number} Normalized lower edge of the current visible flight frame. */
+    getFlightBottom() {
+        const frame = Math.floor(this.animationTime / (1 / 60)) % this.frames.length;
+        return BananaProjectile.flightBottomPixels[frame] / 128;
     }
 
     /** Loads the shared flight and impact images once. */
@@ -63,9 +83,13 @@ class BananaProjectile extends MovableObject {
 
     /** @param {number} deltaTime - Frame duration in seconds. */
     updateFlight(deltaTime) {
+        this.groundY = this.floorY - this.height * this.getFlightBottom();
         this.x += (this.facingLeft ? -1 : 1) * this.speed * deltaTime;
         this.applyGravity(deltaTime);
-        if (this.isGrounded()) this.impact();
+        if (this.isGrounded()) {
+            this.y = this.groundY;
+            this.impact();
+        }
     }
 
     /** Stops the banana and starts its impact animation once. */

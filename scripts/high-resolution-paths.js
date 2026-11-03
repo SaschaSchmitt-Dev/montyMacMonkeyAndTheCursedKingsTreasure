@@ -129,6 +129,7 @@ const highResolutionImagePaths = {
     "assets/images/optimized/ui/hud/pause-taste.webp": "assets/images/high-resolution/ui/hud/pause-taste.webp",
     "assets/images/optimized/ui/hud/score-icon.webp": "assets/images/high-resolution/ui/hud/score-icon.webp",
     "assets/images/optimized/ui/hud/statusbar-fill-gold.webp": "assets/images/high-resolution/ui/hud/statusbar-fill-gold.webp",
+    "assets/images/optimized/ui/hud/statusbar-fill-orange.webp": "assets/images/high-resolution/ui/hud/statusbar-fill-orange.webp",
     "assets/images/optimized/ui/hud/statusbar-frame.webp": "assets/images/high-resolution/ui/hud/statusbar-frame.webp",
     "assets/images/optimized/ui/startscreen/bridge-long.webp": "assets/images/high-resolution/ui/startscreen/bridge-long.webp",
     "assets/images/optimized/ui/startscreen/bridge-rise.webp": "assets/images/high-resolution/ui/startscreen/bridge-rise.webp",

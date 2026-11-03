@@ -345,10 +345,11 @@ class World {
         this.bossChamber = new BossChamber(this.level, () => this.draw());
     }
 
-    /** @param {Level} level - Level whose collectible total defines the score meter. */
+    /** @param {Level} level - Level whose initial pickup totals define the ammunition and score meters. */
     createHud(level) {
         this.healthBar = new HealthBar(() => this.draw());
-        this.ammoBar = new AmmoBar(() => this.draw());
+        const totalAmmo = level.ammoPickups.reduce((sum, pickup) => sum + pickup.amount, 0);
+        this.ammoBar = new AmmoBar(totalAmmo, () => this.draw());
         const totalScore = level.scoreItems.reduce((sum, item) => sum + item.points, 0);
         this.scoreBar = new ScoreBar(totalScore, () => this.draw());
         this.bossHealthBar = new BossHealthBar(() => this.draw());
