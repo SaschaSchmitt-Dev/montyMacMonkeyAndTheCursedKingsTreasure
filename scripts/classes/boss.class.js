@@ -17,17 +17,18 @@ class Boss extends DrawableObject {
     projectiles = [];
     projectilePath = 'assets/images/projectiles/boss/curse-orb.png';
     animationTime = 0;
-    attackInterval = 2.5;
+    attackInterval = 0.8;
+    attackIntervalVariation = 0.4;
     cooldown = 2.5;
     attacking = false;
     attackTime = 0;
-    shotReleased = false;
-    followUpReleased = false;
-    followUpDelay = 0.6;
+    shotsReleased = 0;
+    attackShots = [];
+    shotInterval = 0.6;
     highShotOffset = 96;
-    attackPatterns = ['low', 'pair', 'high-low', 'low'];
-    patternIndex = 0;
-    attackPattern = 'low';
+    attackPatterns = ['low-high', 'high-low', 'low-high-low', 'high-low-high', 'high-high-low', 'low-high-high'];
+    patternStreak = 0;
+    attackPattern = null;
 
     /** @param {number} roomWidth - Chamber width in pixels.
      * @param {number} floorY - Player foot position on the floor.
@@ -112,43 +113,55 @@ class Boss extends DrawableObject {
         }
     }
 
-    /** Selects the next pattern and resets the timed projectile releases. */
+    /** Selects a random pattern and resets the timed projectile releases. */
     startAttack() {
         this.attacking = true;
         gameAudio.effect('charge');
         this.attackTime = 0;
-        this.shotReleased = false;
-        this.followUpReleased = false;
-        this.attackPattern = this.attackPatterns[this.patternIndex % this.attackPatterns.length];
-        this.patternIndex++;
+        this.shotsReleased = 0;
+        this.selectAttackPattern();
+        this.attackShots = this.attackPattern.split('-').map((height) => height === 'high');
+    }
+
+    /** Allows random repeats but prevents the same pattern more than twice in a row. */
+    selectAttackPattern() {
+        const alternatives = this.attackPatterns.filter((pattern) => pattern !== this.attackPattern);
+        const choices = this.patternStreak >= 2 && alternatives.length > 0 ? alternatives : this.attackPatterns;
+        const next = choices[Math.floor(Math.random() * choices.length)];
+        this.patternStreak = next === this.attackPattern ? this.patternStreak + 1 : 1;
+        this.attackPattern = next;
+    }
+
+    /** @returns {number} Recovery pause between 0.8 and 1.2 seconds after a salvo. */
+    getAttackDelay() {
+        return this.attackInterval + Math.random() * this.attackIntervalVariation;
     }
 
     /** @param {number} deltaTime - Frame duration in seconds. */
     advanceAttack(deltaTime) {
         this.attackTime += deltaTime;
-        if (!this.shotReleased && this.attackTime >= 0.36) {
-            this.releaseShot(this.attackPattern === 'high-low');
-            this.shotReleased = true;
-        }
-        this.releaseFollowUp();
-        const duration = 0.78 + (this.hasFollowUp() ? this.followUpDelay : 0);
+        this.releaseDueShots();
+        const duration = 0.78 + (this.attackShots.length - 1) * this.shotInterval;
         if (this.attackTime >= duration) {
             this.attacking = false;
-            this.cooldown = this.attackInterval;
+            this.cooldown = this.getAttackDelay();
         }
     }
 
-    /** Releases the opposite-height orb once during either two-shot attack. */
-    releaseFollowUp() {
-        if (!this.hasFollowUp() || this.followUpReleased) return;
-        if (this.attackTime < 0.36 + this.followUpDelay) return;
-        this.releaseShot(this.attackPattern === 'pair');
-        this.followUpReleased = true;
+    /** Fires each scheduled orb once, preserving the proven gap between shots. */
+    releaseDueShots() {
+        while (this.shotsReleased < this.attackShots.length
+            && this.attackTime >= 0.36 + this.shotsReleased * this.shotInterval) {
+            this.releaseShot(this.attackShots[this.shotsReleased]);
+            this.shotsReleased++;
+        }
     }
 
-    /** @returns {boolean} Whether this pattern contains a delayed second shot. */
-    hasFollowUp() {
-        return this.attackPattern === 'pair' || this.attackPattern === 'high-low';
+    /** @returns {number} Time within the casting animation for the current shot. */
+    getCastingTime() {
+        const last = Math.max(0, this.attackShots.length - 1);
+        const cycle = Math.min(last, Math.floor(this.attackTime / this.shotInterval));
+        return this.attackTime - cycle * this.shotInterval;
     }
 
     /** @param {boolean} high - Whether the orb travels above the standing player. */
@@ -162,9 +175,7 @@ class Boss extends DrawableObject {
     updateAnimation(deltaTime) {
         this.animationTime += deltaTime;
         const paths = this.attacking ? this.attackFrames : this.frames;
-        const repeatTime = this.hasFollowUp() && this.attackTime >= this.followUpDelay
-            ? this.attackTime - this.followUpDelay : this.attackTime;
-        const time = this.attacking ? repeatTime / 0.18 : this.animationTime / 0.65;
+        const time = this.attacking ? this.getCastingTime() / 0.18 : this.animationTime / 0.65;
         const frame = this.attacking ? Math.min(3, Math.floor(time)) : Math.floor(time) % paths.length;
         const image = this.imageCache[paths[frame]];
         if (image.complete && image.naturalWidth > 0) this.img = image;
