@@ -6,6 +6,7 @@ class Level {
     enemies = [];
     platforms = [];
     platformRepeatWidth = 5400;
+    upperPlatformOffset = 120;
     blocks = [];
     ammoPickups = [];
     scoreItems = [];
@@ -33,15 +34,15 @@ class Level {
     getPlatformLayout() {
         return [
             [600, 0, 'short', 'coins', 'column'],
-            [870, 50, 'short', 'ammo', 'row'],
+            [870, this.upperPlatformOffset, 'short', 'ammo', 'row'],
             [1450, 0, 'long', 'ingot', 'pyramid'],
-            [1960, 45, 'short', 'relic', 'diamond'],
+            [1960, this.upperPlatformOffset, 'short', 'relic', 'row'],
             [2550, 0, 'short', 'ammo', 'row'],
-            [2860, 50, 'long', 'ingot', 'row'],
-            [3735, 50, 'long', 'relic', 'row'],
+            [2860, this.upperPlatformOffset, 'long', 'ingot', 'row'],
+            [3735, this.upperPlatformOffset, 'long', 'relic', 'row'],
             [4240, 150, 'short', 'ammo', 'row'],
             [4820, 0, 'short', 'coins', 'arc'],
-            [5100, 50, 'long', 'relic', 'row']
+            [5100, this.upperPlatformOffset, 'long', 'relic', 'row']
         ];
     }
 
@@ -57,6 +58,18 @@ class Level {
                 platform.pattern = pattern;
                 this.platforms.push(platform);
             }
+        }
+        this.addIntermediatePlatforms(heightAboveGround);
+    }
+
+    /** @param {number} heightAboveGround - Lower tier height used to reach the guarded upper ledge. */
+    addIntermediatePlatforms(heightAboveGround) {
+        const surfaceY = this.groundY + 122 - heightAboveGround;
+        for (let offset = 0; offset < this.width; offset += this.platformRepeatWidth) {
+            const platform = new Platform(3655 + offset, surfaceY, 'step');
+            if (platform.x + platform.width > this.width - 200) continue;
+            platform.reward = null;
+            this.platforms.push(platform);
         }
     }
 
@@ -103,7 +116,7 @@ class Level {
     /** Places floor coins and each ledge's chosen treasure formation. */
     createScoreItems() {
         this.createFloorTreasures();
-        this.platforms.filter((platform) => platform.reward !== 'ammo')
+        this.platforms.filter((platform) => platform.reward && platform.reward !== 'ammo')
             .forEach((platform) => this.addPlatformTreasures(platform));
         if (this.blocks.length > 0) {
             this.scoreItems = this.scoreItems.filter((item) => item.supportY !== this.groundY + 122
