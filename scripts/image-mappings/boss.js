@@ -1,0 +1,45 @@
+/** Boss animations, chamber, projectiles and health bar, grouped by image resolution. */
+const bossImageMappings = {
+    // Original asset path -> optimized web image.
+    optimized: {
+        "assets/images/backgrounds/boss-chamber/background.png": "assets/images/optimized/backgrounds/boss-chamber/background.webp",
+        "assets/images/enemies/cursed-monkey-king/attack/attack-01.png": "assets/images/optimized/enemies/cursed-monkey-king/attack/attack-01.webp",
+        "assets/images/enemies/cursed-monkey-king/attack/attack-02.png": "assets/images/optimized/enemies/cursed-monkey-king/attack/attack-02.webp",
+        "assets/images/enemies/cursed-monkey-king/attack/attack-03.png": "assets/images/optimized/enemies/cursed-monkey-king/attack/attack-03.webp",
+        "assets/images/enemies/cursed-monkey-king/attack/attack-04.png": "assets/images/optimized/enemies/cursed-monkey-king/attack/attack-04.webp",
+        "assets/images/enemies/cursed-monkey-king/death/death-01.png": "assets/images/optimized/enemies/cursed-monkey-king/death/death-01.webp",
+        "assets/images/enemies/cursed-monkey-king/death/death-02.png": "assets/images/optimized/enemies/cursed-monkey-king/death/death-02.webp",
+        "assets/images/enemies/cursed-monkey-king/death/death-03.png": "assets/images/optimized/enemies/cursed-monkey-king/death/death-03.webp",
+        "assets/images/enemies/cursed-monkey-king/death/death-04.png": "assets/images/optimized/enemies/cursed-monkey-king/death/death-04.webp",
+        "assets/images/enemies/cursed-monkey-king/hit/hit-01.png": "assets/images/optimized/enemies/cursed-monkey-king/hit/hit-01.webp",
+        "assets/images/enemies/cursed-monkey-king/hit/hit-02.png": "assets/images/optimized/enemies/cursed-monkey-king/hit/hit-02.webp",
+        "assets/images/enemies/cursed-monkey-king/idle/idle-01.png": "assets/images/optimized/enemies/cursed-monkey-king/idle/idle-01.webp",
+        "assets/images/enemies/cursed-monkey-king/idle/idle-02.png": "assets/images/optimized/enemies/cursed-monkey-king/idle/idle-02.webp",
+        "assets/images/enemies/cursed-monkey-king/idle/idle-03.png": "assets/images/optimized/enemies/cursed-monkey-king/idle/idle-03.webp",
+        "assets/images/enemies/cursed-monkey-king/idle/idle-04.png": "assets/images/optimized/enemies/cursed-monkey-king/idle/idle-04.webp",
+        "assets/images/objects/platforms/boss-chamber-ground.png": "assets/images/optimized/objects/platforms/boss-chamber-ground.webp",
+        "assets/images/projectiles/boss/curse-orb.png": "assets/images/optimized/projectiles/boss/curse-orb.webp",
+        "assets/images/ui/hud/boss-health-fill.png": "assets/images/optimized/ui/hud/boss-health-fill.webp",
+        "assets/images/ui/hud/boss-health-frame.png": "assets/images/optimized/ui/hud/boss-health-frame.webp",
+    },
+    // Optimized web image -> higher-resolution variant, where one exists.
+    highResolution: {
+        "assets/images/optimized/enemies/cursed-monkey-king/attack/attack-01.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/attack/attack-01.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/attack/attack-02.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/attack/attack-02.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/attack/attack-03.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/attack/attack-03.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/attack/attack-04.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/attack/attack-04.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/death/death-01.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/death/death-01.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/death/death-02.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/death/death-02.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/death/death-03.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/death/death-03.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/death/death-04.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/death/death-04.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/hit/hit-01.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/hit/hit-01.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/hit/hit-02.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/hit/hit-02.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/idle/idle-01.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/idle/idle-01.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/idle/idle-02.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/idle/idle-02.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/idle/idle-03.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/idle/idle-03.webp",
+        "assets/images/optimized/enemies/cursed-monkey-king/idle/idle-04.webp": "assets/images/high-resolution/enemies/cursed-monkey-king/idle/idle-04.webp",
+        "assets/images/optimized/projectiles/boss/curse-orb.webp": "assets/images/high-resolution/projectiles/boss/curse-orb.webp",
+        "assets/images/optimized/ui/hud/boss-health-fill.webp": "assets/images/high-resolution/ui/hud/boss-health-fill.webp",
+        "assets/images/optimized/ui/hud/boss-health-frame.webp": "assets/images/high-resolution/ui/hud/boss-health-frame.webp",
+    }
+};
