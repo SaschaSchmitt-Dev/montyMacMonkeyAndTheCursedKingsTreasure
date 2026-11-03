@@ -157,12 +157,19 @@ class World {
         this.updateEnemies();
         if (this.boss) this.boss.update(this.deltaTime, this.character.health > 0);
         const previousFeet = this.character.y + this.character.height * 244 / 256;
-        this.character.update(this.deltaTime, this.keyboard, this.level.width, [...this.level.platforms, ...this.level.blocks]);
+        this.character.update(this.deltaTime, this.keyboard, this.getCharacterMovementWidth(), [...this.level.platforms, ...this.level.blocks]);
         this.updateThrowing();
         this.collectAmmo();
         this.updateScoreItems();
         this.checkEnemyContact(previousFeet);
         this.updateCamera();
+    }
+
+    /** @returns {number} Movement extent that keeps Monty in front of a living arena boss at any height. */
+    getCharacterMovementWidth() {
+        if (!this.boss || this.boss.defeated) return this.level.width;
+        const front = this.boss.x + this.boss.width * 0.15;
+        return Math.min(this.level.width, front + this.character.width * 0.25);
     }
 
     /** Places the player in a fresh room while preserving the collected resources. */
