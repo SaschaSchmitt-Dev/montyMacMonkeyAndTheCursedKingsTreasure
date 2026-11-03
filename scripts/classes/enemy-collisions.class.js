@@ -8,7 +8,7 @@ class EnemyCollisions {
         if (character.health === 0) return;
         for (const enemy of enemies) {
             if (enemy.defeated || !this.overlapsHorizontally(character, enemy)) continue;
-            const top = enemy.y + enemy.height * 0.2;
+            const top = enemy.y + enemy.height * enemy.hitboxTop;
             const feet = character.y + character.height * 244 / 256;
             const fromAbove = character.velocityY > 0 && previousFeet <= top + 4 && feet >= top;
             if (fromAbove && enemy.canBeStomped) this.stomp(character, enemy, top);
@@ -34,8 +34,9 @@ class EnemyCollisions {
      * @returns {boolean} Whether the narrowed body regions overlap horizontally.
      */
     static overlapsHorizontally(character, enemy) {
-        return character.x + character.width * 0.75 > enemy.x + enemy.width * 0.15
-            && character.x + character.width * 0.25 < enemy.x + enemy.width * 0.85;
+        const inset = enemy.hitboxInsetX;
+        return character.x + character.width * 0.75 > enemy.x + enemy.width * inset
+            && character.x + character.width * 0.25 < enemy.x + enemy.width * (1 - inset);
     }
 
     /** @param {Character} character - Falling player.

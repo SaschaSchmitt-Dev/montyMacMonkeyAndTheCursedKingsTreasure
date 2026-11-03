@@ -55,9 +55,11 @@ class ProjectileCollisions {
      * @returns {boolean} Whether the visible body regions overlap.
      */
     static touches(projectile, enemy) {
-        return projectile.x + projectile.width * 0.7 > enemy.x + enemy.width * 0.15
-            && projectile.x + projectile.width * 0.3 < enemy.x + enemy.width * 0.85
-            && projectile.y + projectile.height * 0.7 > enemy.y + enemy.height * 0.2
+        const inset = enemy.hitboxInsetX ?? 0.15;
+        const top = enemy.hitboxTop ?? 0.2;
+        return projectile.x + projectile.width * 0.7 > enemy.x + enemy.width * inset
+            && projectile.x + projectile.width * 0.3 < enemy.x + enemy.width * (1 - inset)
+            && projectile.y + projectile.height * 0.7 > enemy.y + enemy.height * top
             && projectile.y + projectile.height * 0.3 < enemy.y + enemy.height * 0.94;
     }
 }

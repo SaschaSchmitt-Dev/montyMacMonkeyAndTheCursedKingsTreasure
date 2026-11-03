@@ -37,6 +37,16 @@ class Enemy extends MovableObject {
         this.loadDeathFrames();
     }
 
+    /** @returns {number} Transparent side margin; the unarmored beetle gets a slightly wider body. */
+    get hitboxInsetX() {
+        return this.type === 'thorn-beetle' ? 0.1 : 0.15;
+    }
+
+    /** @returns {number} Top body offset, matching the unarmored beetle's raised shell. */
+    get hitboxTop() {
+        return this.type === 'thorn-beetle' ? 0.16 : 0.2;
+    }
+
     /** Loads the four images used when the enemy is defeated. */
     loadDeathFrames() {
         this.deathFrames = Array.from({ length: 4 }, (_, index) =>
