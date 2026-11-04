@@ -1,9 +1,9 @@
 /** An animated enemy that moves along the ground. */
 class Enemy extends MovableObject {
     static types = {
-        'vine-lizard': { speed: 140, width: 120, height: 80, facesLeft: false, stompable: true },
-        'thorn-beetle': { speed: 95, width: 108, height: 72, facesLeft: false, stompable: true },
-        'armored-armadillo': { speed: 55, width: 132, height: 88, facesLeft: true, stompable: false }
+        'vine-lizard': { speed: 140, width: 120, height: 80, facesLeft: false, stompable: true, points: 20 },
+        'thorn-beetle': { speed: 95, width: 108, height: 72, facesLeft: false, stompable: true, points: 20 },
+        'armored-armadillo': { speed: 55, width: 132, height: 88, facesLeft: true, stompable: false, points: 30 }
     };
     type;
     frames;
@@ -47,6 +47,11 @@ class Enemy extends MovableObject {
         return this.type === 'thorn-beetle' ? 0.16 : 0.2;
     }
 
+    /** @returns {number} Score awarded for defeating this enemy type. */
+    get points() {
+        return Enemy.types[this.type].points;
+    }
+
     /** Loads the four images used when the enemy is defeated. */
     loadDeathFrames() {
         this.deathFrames = Array.from({ length: 4 }, (_, index) =>
@@ -55,10 +60,11 @@ class Enemy extends MovableObject {
         this.loadImages(this.deathFrames);
     }
 
-    /** Stops movement and starts the defeat animation once. */
-    defeat() {
+    /** @param {Character} character - Player receiving the defeat reward exactly once. */
+    defeat(character) {
         if (this.defeated) return;
         this.defeated = true;
+        character.score += this.points;
         gameAudio.effect(this.type, this.x);
         this.deathTime = 0;
         this.img = this.imageCache[this.deathFrames[0]];

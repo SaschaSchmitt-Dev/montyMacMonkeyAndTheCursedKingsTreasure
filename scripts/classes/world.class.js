@@ -187,7 +187,7 @@ class World {
     updateThrowing() {
         this.throwController.update(this);
         this.projectiles.forEach((projectile) => projectile.update(this.deltaTime));
-        ProjectileCollisions.check(this.projectiles, this.level.enemies);
+        ProjectileCollisions.check(this.projectiles, this.level.enemies, this.character);
         ProjectileCollisions.checkBoss(this.projectiles, this.boss);
         this.projectiles = this.projectiles.filter((projectile) => !projectile.finished
             && projectile.x + projectile.width >= 0 && projectile.x <= this.level.width);
@@ -345,13 +345,14 @@ class World {
         this.bossChamber = new BossChamber(this.level, () => this.draw());
     }
 
-    /** @param {Level} level - Level whose initial pickup totals define the ammunition and score meters. */
+    /** @param {Level} level - Level whose initial pickups and enemies define the ammunition and score meters. */
     createHud(level) {
         this.healthBar = new HealthBar(() => this.draw());
         const totalAmmo = level.ammoPickups.reduce((sum, pickup) => sum + pickup.amount, 0);
         this.ammoBar = new AmmoBar(totalAmmo, () => this.draw());
         const totalScore = level.scoreItems.reduce((sum, item) => sum + item.points, 0);
-        this.scoreBar = new ScoreBar(totalScore, () => this.draw());
+        const enemyScore = level.enemies.reduce((sum, enemy) => sum + enemy.points, 0);
+        this.scoreBar = new ScoreBar(totalScore + enemyScore, () => this.draw());
         this.bossHealthBar = new BossHealthBar(() => this.draw());
     }
 

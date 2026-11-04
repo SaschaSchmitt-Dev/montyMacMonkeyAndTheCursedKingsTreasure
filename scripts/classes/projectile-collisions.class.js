@@ -2,13 +2,14 @@
 class ProjectileCollisions {
     /** @param {BananaProjectile[]} projectiles - Active bananas and impact effects.
      * @param {Enemy[]} enemies - Enemies in the current level.
+     * @param {Character} character - Player receiving points for defeated enemies.
      */
-    static check(projectiles, enemies) {
+    static check(projectiles, enemies, character) {
         for (const projectile of projectiles) {
             if (projectile.impacted || projectile.finished) continue;
             const enemy = enemies.find((candidate) => !candidate.defeated && this.touches(projectile, candidate));
             if (!enemy) continue;
-            enemy.defeat();
+            enemy.defeat(character);
             projectile.impact();
         }
     }

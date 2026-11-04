@@ -44,7 +44,7 @@ class EnemyCollisions {
      * @param {number} top - Enemy contact surface.
      */
     static stomp(character, enemy, top) {
-        enemy.defeat();
+        enemy.defeat(character);
         character.y = top - character.height * 244 / 256;
         character.velocityY = -400;
         character.takeoffTime = 0;
