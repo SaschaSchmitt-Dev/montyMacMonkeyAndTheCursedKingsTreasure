@@ -115,7 +115,7 @@ canvas {
     column-gap: 2cqw;
     width: 40%;
     margin: 0.5% 0 0;
-    font-size: clamp(16px, 1.65cqw, 16px);
+    font-size: clamp(16px, 1.65cqw, 32px);
     line-height: 1.15;
     text-align: left;
 }
@@ -139,11 +139,11 @@ canvas {
 
 .end-panel.victory h2 {
     margin-bottom: 0.5%;
-    font-size: clamp(17px, 4cqw, 38px);
+    font-size: clamp(17px, 4cqw, 76px);
 }
 
 .end-panel.victory p {
-    font-size: clamp(16px, 1.8cqw, 17px);
+    font-size: clamp(16px, 1.8cqw, 34px);
 }
 
 .page-title {
