@@ -28,6 +28,7 @@
 .guide-island .menu-label {
     max-width: clamp(154px, 40cqw, 360px);
 }
+
 @container (max-width: 500px) {
     .guide-island .menu-label {
         max-width: 154px;
